@@ -1,0 +1,12 @@
+go 1.26
+
+use (
+	./gen/go
+	./pkg
+	./services/gateway
+	./services/grading
+	./services/identity
+	./services/submission
+	./services/vcs
+	./test/e2e
+)

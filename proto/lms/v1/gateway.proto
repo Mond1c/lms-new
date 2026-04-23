@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "google/protobuf/timestamp.proto";
+import "lms/v1/identity.proto";
+import "lms/v1/submission.proto";
+import "lms/v1/grading.proto";
+import "lms/v1/vcs.proto";
+
+service GatewayService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc Whoami(WhoamiRequest) returns (WhoamiResponse);
+
+  rpc MyDashboard(MyDashboardRequest) returns (MyDashboardResponse);
+  rpc MySubmission(MySubmissionRequest) returns (MySubmissionResponse);
+
+  rpc ResolveSubmission(ResolveSubmissionRequest) returns (ResolveSubmissionResponse);
+
+  rpc SubmitFromWeb(SubmitFromWebRequest) returns (SubmitResponse);
+}
+
+
+message LoginRequest {
+  oneof credential {
+    VCSOAuthCode vcs_code = 1;
+    EmailPassword email_password = 2;
+  }
+}
+
+message VCSOAuthCode {
+  ProviderRef provider = 1;
+  string code = 2;
+  string redirect_uri = 3;
+}
+
+message EmailPassword {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 expires_in_seconds = 3;
+  string user_id = 4;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  int64 expires_in_seconds = 2;
+}
+
+message WhoamiRequest {}
+
+message WhoamiResponse {
+  string user_id = 1;
+  string display_name = 2;
+  string email = 3;
+  repeated CourseMembership memberships = 4;
+}
+
+message CourseMembership {
+  string course_id = 1;
+  string course_code = 2;
+  string course_title = 3;
+  Role role = 4;
+}
+
+message MyDashboardRequest {}
+
+message MyDashboardResponse {
+  repeated AssignmentCard assignments = 1;
+}
+
+message AssignmentCard {
+  string assignment_id = 1;
+  string course_code = 2;
+  string assignment_title = 3;
+  string slug = 4;
+  google.protobuf.Timestamp deadline = 5;
+  google.protobuf.Timestamp hard_deadline = 6;
+  SubmissionState latest_state = 7;
+  optional int32 latest_score = 8;
+  int32 max_score = 9;
+  int32 attempt_count = 10;
+}
+
+message MySubmissionRequest {
+  string submission_id = 1;
+}
+
+message MySubmissionResponse {
+  Submission submission = 1;
+  GradingResult result = 2;
+}
+
+message SubmitFromWebRequest {
+  string assignment_id = 1;
+  SubmissionArtifact artifact = 2;
+  string idempotency_key = 3;
+}
+
+message ResolveSubmissionRequest {
+  string repo_full_name = 1;
+  string commit_sha = 2;
+}
+
+message ResolveSubmissionResponse {
+  string submission_id = 1;
+  string user_id = 2;
+  string assignment_id = 3;
+  string course_id = 4;
+}

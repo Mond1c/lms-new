@@ -1,0 +1,241 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "google/protobuf/timestamp.proto";
+
+service VCSService {
+  rpc ProcessWebhook(ProcessWebhookRequest) returns(ProcessWebhookResponse);
+  rpc ProvisionStudentRepo(ProvisionStudentRepoRequest) returns(ProvisionStudentRepoResponse);
+  rpc DownloadArchive(DownloadArchiveRequest) returns(stream ArchiveChunk);
+  rpc PostPRComment(PostPRCommentRequest) returns(PostPRCommentResponse);
+  rpc SetCommitStatus(SetCommitStatusRequest) returns(SetCommitStatusResponse);
+  rpc RequestReview(RequestReviewRequest) returns(RequestReviewResponse);
+  rpc ExchangeOAuthCode(ExchangeOAuthCodeRequest) returns(ExchangeOAuthCodeResponse);
+  rpc GetVCSUser(GetVCSUserRequest) returns(VCSUser);
+  rpc ConfigureProvider(ConfigureProviderRequest) returns(ConfigureProviderResponse);
+}
+
+enum ProviderKind {
+  PROVIDER_KIND_UNSPECIFIED = 0;
+  PROVIDER_KIND_GITEA = 1;
+  PROVIDER_KIND_GITHUB = 2;
+  PROVIDER_KIND_GITLAB = 3;
+}
+
+message ProviderRef {
+  ProviderKind kind = 1;
+  string instance = 2;
+}
+
+message Repo {
+  ProviderRef provider = 1;
+  string owner = 2;
+  string name = 3;
+  string default_branch = 4;
+  int64 external_id = 5;
+  bool is_template = 6;
+  bool is_private = 7;
+}
+
+message VCSUser {
+  ProviderRef provider = 1;
+  int64 external_id = 2;
+  string login = 3;
+  string display_name = 4;
+  string email = 5;
+  string avatar_url = 6;
+}
+
+message NormalizedEvent {
+  ProviderRef provider = 1;
+  EventKind kind = 2;
+  string delivery_id = 3;
+  Repo repo = 4;
+  string ref = 5;
+  string commit_sha = 6;
+  VCSUser actor = 7;
+  google.protobuf.Timestamp received_at = 8;
+  oneof payload {
+    PushPayload push = 10;
+    PullRequestPayload pull_request = 11;
+    ReviewPayload review = 12;
+  }
+}
+
+enum EventKind {
+  EVENT_KIND_UNSPECIFIED = 0;
+  EVENT_KIND_PUSH = 1;
+  EVENT_KIND_PR_OPENED = 2;
+  EVENT_KIND_PR_UPDATED = 3;
+  EVENT_KIND_PR_CLOSED = 4;
+  EVENT_KIND_PR_MERGED = 5;
+  EVENT_KIND_PR_READY_FOR_REVIEW = 6;
+  EVENT_KIND_REVIEW_SUBMITTED = 7;
+  EVENT_KIND_REVIEW_REQUESTED = 8;
+}
+
+message PushPayload {
+  string before_sha = 1;
+  string after_sha = 2;
+  int32 commit_count = 3;
+}
+
+message PullRequestPayload {
+  string title = 1;
+  string body = 2;
+  bool draft = 3;
+  string head_ref = 4;
+  string base_ref = 5;
+  string head_sha = 6;
+}
+
+message ReviewPayload {
+  ReviewState state = 1;
+  string body = 2;
+  VCSUser reviewer = 3;
+}
+
+enum ReviewState {
+  REVIEW_STATE_UNSPECIFIED = 0;
+  REVIEW_STATE_APPROVED = 1;
+  REVIEW_STATE_CHANGED_REQUESTED = 2;
+  REVIEW_STATE_COMMENTED = 3;
+  REVIEW_STATE_DISMISSED = 4;
+}
+
+message ProcessWebhookRequest {
+  ProviderRef provider = 1;
+  map<string, string> headers = 2;
+  bytes body = 3;
+}
+
+message ProcessWebhookResponse {
+  bool duplicate = 1;
+  bool forwarded = 2;
+  NormalizedEvent event = 3;
+}
+
+message ProvisionStudentRepoRequest {
+  string user_id = 1;
+  string assignment_id = 2;
+  ProviderRef provider = 3;
+  string template_owner = 4;
+  string template_repo = 5;
+  string target_owner = 6;
+  string target_name = 7;
+  string student_vcs_login = 8;
+  bool private = 9;
+}
+
+message ProvisionStudentRepoResponse {
+  Repo repo = 1;
+  bool already_exists = 2;
+  string clone_url_https = 3;
+  string clone_url_ssh = 4;
+}
+
+message DownloadArchiveRequest {
+  Repo repo = 1;
+  string ref = 2;
+  ArchiveFormat format = 3;
+}
+
+enum ArchiveFormat {
+  ARCHIVE_FORMAT_UNSPECIFIED = 0;
+  ARCHIVE_FORMAT_TAR_GZ = 1;
+  ARCHIVE_FORMAT_ZIP = 2;
+}
+
+message ArchiveChunk {
+  bytes data = 1;
+  int64 total_size_hint = 2;
+  string sha256 = 3;
+}
+
+message PostPRCommentRequest {
+  Repo repo = 1;
+  int64 pr_number = 2;
+  string body_markdown = 3;
+  string update_key = 4;
+}
+
+message PostPRCommentResponse {
+  int64 comment_id = 1;
+  string url = 2;
+}
+
+message SetCommitStatusRequest {
+  Repo repo = 1;
+  string commit_sha = 2;
+  CommitStatus status = 3;
+  string context = 4;
+  string description = 5;
+  string target_url = 6;
+}
+
+enum CommitStatus {
+  COMMIT_STATUS_UNSPECIFIED = 0;
+  COMMIT_STATUS_PENDING = 1;
+  COMMIT_STATUS_SUCCESS = 2;
+  COMMIT_STATUS_FAILURE = 3;
+  COMMIT_STATUS_ERROR = 4;
+}
+
+message SetCommitStatusResponse {}
+
+message RequestReviewRequest {
+  Repo repo = 1;
+  int64 pr_number = 2;
+  repeated string reviewer_logins = 3;
+  string reviewer_team = 4;
+}
+
+message RequestReviewResponse {
+  repeated string added = 1;
+  repeated string failed = 2;
+}
+
+message ExchangeOAuthCodeRequest {
+  ProviderRef provider = 1;
+  string code = 2;
+  string redirect_url = 3;
+}
+
+message ExchangeOAuthCodeResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  google.protobuf.Timestamp expires_at = 3;
+  VCSUser user = 4;
+}
+
+message GetVCSUserRequest {
+  ProviderRef provider = 1;
+  string access_token = 2;
+}
+
+message ConfigureProviderRequest {
+  ProviderRef provider = 1;
+  oneof credentials {
+    GitHubAppCredentials github_app = 22;
+    PATCredentials pat = 3;
+  }
+  string webhook_secret = 4;
+  string oauth_client_id = 5;
+  string oauth_client_secret = 6;
+}
+
+message GitHubAppCredentials {
+  int64 app_id = 1;
+  int64 installation_id = 2;
+  bytes private_key_pem = 3;
+}
+
+message PATCredentials {
+  string username = 1;
+  string token = 2;
+}
+
+message ConfigureProviderResponse {
+  bool updated = 1;
+}

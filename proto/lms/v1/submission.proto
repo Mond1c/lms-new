@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "google/protobuf/timestamp.proto";
+import "lms/v1/common.proto";
+import "lms/v1/vcs.proto";
+
+service SubmissionService {
+  rpc Submit(SubmitRequest) returns (SubmitResponse);
+  rpc Get(GetSubmissionRequest) returns (Submission);
+  rpc List(ListSubmissionsRequest) returns (ListSubmissionsResponse);
+  rpc StreamStatus(StreamStatusRequest) returns (stream SubmissionStatus);
+  rpc UpdateState(UpdateStateRequest) returns (Submission);
+}
+
+enum SubmissionState {
+  SUBMISSION_STATE_UNSPECIFIED = 0;
+  SUBMISSION_STATE_PENDING = 1;
+  SUBMISSION_STATE_GRADING = 2;
+  SUBMISSION_STATE_GRADED = 3;
+  SUBMISSION_STATE_FAILED = 4;
+  SUBMISSION_STATE_REJECTED = 5;
+}
+
+enum SubmissionSource {
+  SUBMISSION_SOURCE_UNSPECIFIED = 0;
+  SUBMISSION_SOURCE_VCS_PUSH = 1;
+  SUBMISSION_SOURCE_VCS_PR = 2;
+  SUBMISSION_SOURCE_VCS_REVIEW_REQUEST = 3;
+  SUBMISSION_SOURCE_WEB_UPLOAD = 4;
+  SUBMISSION_SOURCE_CLI = 5;
+}
+
+message Submission {
+  string id = 1;
+  string user_id = 2;
+  string assignment_id = 3;
+  string course_id = 4;
+  SubmissionSource source = 5;
+  SubmissionArtifact artifact = 6;
+  SubmissionState state = 7;
+  string state_reason = 8;
+  optional int32 score = 9;
+  AuditFields audit = 10;
+  VCSAttribution vcs = 11;
+}
+
+message SubmissionArtifact {
+  string url = 1;
+  string sha256 = 2;
+  int64 size_bytes = 3;
+  string content_type = 4;
+}
+
+message VCSAttribution {
+  ProviderRef provider = 1;
+  string repo_full_name = 2;
+  string commit_sha = 3;
+  int64 pr_number = 4;
+  string delivery_id = 5;
+}
+
+message SubmitRequest {
+  string user_id = 1;
+  string assignment_id = 2;
+  SubmissionSource source = 3;
+  SubmissionArtifact artifact = 4;
+  VCSAttribution vcs = 5;
+  string idempotency_key = 6;
+}
+
+message SubmitResponse {
+  Submission submission = 1;
+  bool already_existed = 2;
+}
+
+message GetSubmissionRequest {
+  string id = 1;
+}
+
+message ListSubmissionsRequest {
+  PageRequest page = 1;
+  string course_id = 2;
+  string assignment_id = 3;
+  string user_id = 4;
+  repeated SubmissionState states = 5;
+  SortOrder order_by_created = 6;
+}
+
+message ListSubmissionsResponse {
+  repeated Submission submissions = 1;
+  PageResponse page = 2;
+}
+
+message StreamStatusRequest {
+  string submission_id = 1;
+}
+
+message SubmissionStatus {
+  string submission_id = 1;
+  SubmissionState state = 2;
+  string message = 3;
+  google.protobuf.Timestamp at = 4;
+}
+
+message UpdateStateRequest {
+  string id = 1;
+  SubmissionState state = 2;
+  string reason = 3;
+  optional int32 score = 4;
+}

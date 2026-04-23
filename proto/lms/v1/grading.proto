@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "google/protobuf/duration.proto";
+import "lms/v1/common.proto";
+
+service GradingService {
+  rpc GetResult(GetResultRequest) returns (GradingResult);
+  rpc ListResultsForSubmission(ListResultsForSubmissionRequest) returns (ListResultsForSubmissionResponse);
+  rpc ListResults(ListResultsRequest) returns (ListResultsResponse);
+  rpc IngestResult(IngestResultRequest) returns (IngestResultResponse);
+  rpc ReportProgress(ReportProgressRequest) returns (ReportProgressResponse);
+}
+
+enum ResultStatus {
+  RESULT_STATUS_UNSPECIFIED = 0;
+  RESULT_STATUS_OK = 1;
+  RESULT_STATUS_PARTIAL = 2;
+  RESULT_STATUS_COMPILE_ERROR = 3;
+  RESULT_STATUS_RUNTIME_ERROR = 4;
+  RESULT_STATUS_WRONG_ANSWER = 5;
+  RESULT_STATUS_TIMEOUT = 6;
+  RESULT_STATUS_MEMORY_LIMIT = 7;
+  RESULT_STATUS_GRADER_ERROR = 8;
+}
+
+message GradingResult {
+  string id = 1;
+  string submission_id = 2;
+  string grader_version = 3;
+  string judge_config_hash = 4;
+  CIRunRef ci_run = 5;
+  ResultStatus status = 6;
+  int32 score = 7;
+  int32 max_score = 8;
+  repeated TestCaseResult tests = 9;
+  repeated CategoryScore category_scores = 10;
+  string feedback_markdown = 11;
+  google.protobuf.Duration total_duration = 12;
+  AuditFields audit = 13;
+}
+
+message CategoryScore {
+  string name = 1;
+  int32 score = 2;
+  int32 max_score = 3;
+  double weight = 4;
+}
+
+message TestCaseResult {
+  string name = 1;
+  string category = 2;
+  bool passed = 3;
+  google.protobuf.Duration duration = 4;
+  int64 memory_kb = 5;
+  string message = 6;
+  string diff = 7;
+  bool hidden = 8;
+  string diagnostic = 9;
+}
+
+message CIRunRef {
+  ProviderKindLite provider = 1;
+  string repo_full_name = 2;
+  int64 run_id = 3;
+  int64 run_attempt = 4;
+  string run_url = 5;
+  string workflow_name = 6;
+  string commit_sha = 7;
+}
+
+enum ProviderKindLite {
+  PROVIDER_KIND_LITE_UNSPECIFIED = 0;
+  PROVIDER_KIND_LITE_GITEA = 1;
+  PROVIDER_KIND_LITE_GITHUB = 2;
+  PROVIDER_KIND_LITE_GITLAB = 3;
+}
+
+message GetResultRequest {
+  string submission_id = 1;
+}
+
+message ListResultsForSubmissionRequest {
+  string submission_id = 1;
+  PageRequest page = 2;
+}
+
+message ListResultsForSubmissionResponse {
+  repeated GradingResult results = 1;
+  PageResponse page = 2;
+}
+
+message ListResultsRequest {
+  PageRequest page = 1;
+  string user_id = 2;
+  string assignment_id = 3;
+  string course_id = 4;
+  repeated ResultStatus statuses = 5;
+  SortOrder order_by_created = 6;
+}
+
+message ListResultsResponse {
+  repeated GradingResult results = 1;
+  PageResponse page = 2;
+}
+
+message IngestResultRequest {
+  oneof target {
+    string submission_id = 1;
+    CommitRef commit = 2;
+  }
+
+  string grader_version = 3;
+  string judge_config_hash = 4;
+  CIRunRef ci_run = 5;
+  ResultStatus status = 6;
+  int32 score = 7;
+  int32 max_score = 8;
+  repeated TestCaseResult tests = 9;
+  repeated CategoryScore category_scores = 10;
+  string feedback_markdown = 11;
+  google.protobuf.Duration total_duration = 12;
+}
+
+message CommitRef {
+  string repo_full_name = 1;
+  string commit_sha = 2;
+}
+
+message IngestResultResponse {
+  GradingResult result = 1;
+  bool already_existed = 2;
+}
+
+message ReportProgressRequest {
+  oneof target {
+    string submission_id = 1;
+    CommitRef commit = 2;
+  }
+  string phase = 3;
+  int32 completed = 4;
+  int32 total = 5;
+}
+
+message ReportProgressResponse {}

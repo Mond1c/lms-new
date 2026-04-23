@@ -1,0 +1,256 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "google/protobuf/timestamp.proto";
+import "lms/v1/common.proto";
+import "lms/v1/vcs.proto";
+
+service IdentityService {
+  rpc CreateUser(CreateUserRequest) returns (User);
+  rpc GetUser(GetUserRequest) returns (User);
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+
+  rpc CreateCourse(CreateCourseRequest) returns (Course);
+  rpc GetCourse(GetCourseRequest) returns (Course);
+  rpc ListCourses(ListCoursesRequest) returns (ListCoursesResponse);
+
+  rpc Enroll(EnrollRequest) returns (Enrollment);
+  rpc Unenroll(UnenrollRequest) returns (UnenrollResponse);
+  rpc ListEnrollments(ListEnrollmentsRequest) returns (ListEnrollmentsResponse);
+
+  rpc CreateAssignment(CreateAssignmentRequest) returns (Assignment);
+  rpc GetAssignment(GetAssignmentRequest) returns (Assignment);
+  rpc ListAssignments(ListAssignmentsRequest) returns (ListAssignmentsResponse);
+
+  rpc LinkVCSIdentity(LinkVCSIdentityRequest) returns (VCSIdentity);
+  rpc UnlinkVCSIdentity(UnlinkVCSIdentityRequest) returns (UnlinkVCSIdentityResponse);
+  rpc ListVCSIdentities(ListVCSIdentitiesRequest) returns (ListVCSIdentitiesResponse);
+
+  rpc RegisterStudentRepo(RegisterStudentRepoRequest) returns (StudentRepo);
+  rpc GetStudentRepo(GetStudentRepoRequest) returns (StudentRepo);
+}
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_STUDENT = 1;
+  ROLE_INSTRUCTOR = 2;
+  ROLE_ADMIN = 3;
+}
+
+message User {
+  string id = 1;
+  string email = 2;
+  string display_name = 3;
+  repeated VCSIdentity vcs_identities = 4;
+  string telegram_id = 5;
+  AuditFields audit = 6;
+}
+
+message VCSIdentity {
+  ProviderRef provider = 1;
+  int64 external_user_id = 2;
+  string external_login = 3;
+  google.protobuf.Timestamp linked_at = 4;
+  bool token_valid = 5;
+}
+
+message Course {
+  string id = 1;
+  string code = 2;
+  string title = 3;
+  string description = 4;
+  string instructor_id = 5;
+  VCSBinding vcs = 6;
+  AuditFields audit = 7;
+}
+
+message VCSBinding {
+  ProviderRef provider = 1;
+  string target_org = 2;
+  string student_team = 3;
+  string reviewer_team = 4;
+  repeated string reviewer_logins = 5;
+}
+
+message Enrollment {
+  string id = 1;
+  string user_id = 2;
+  string course_id = 3;
+  Role role = 4;
+  google.protobuf.Timestamp enrolled_at = 5;
+}
+
+message Assignment {
+  string id = 1;
+  string course_id = 2;
+  string slug = 3;
+  string title = 4;
+  string description_markdown = 5;
+  google.protobuf.Timestamp deadline = 6;
+  google.protobuf.Timestamp hard_deadline = 7;
+  int32 max_score = 8;
+  string template_repo = 9;
+  string repo_naming_pattern = 10;
+  bool auto_request_review_on_pass = 11;
+  AuditFields audit = 12;
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string display_name = 2;
+  string telegram_id = 3;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message ListUsersRequest {
+  PageRequest page = 1;
+  string course_id = 2;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+  PageResponse page = 2;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  optional string display_name = 2;
+  optional string telegram_id = 3;
+}
+
+message CreateCourseRequest {
+  string code = 1;
+  string title = 2;
+  string description = 3;
+  string instructor_id = 4;
+}
+
+message GetCourseRequest {
+  string id = 1;
+}
+
+message ListCoursesRequest {
+  PageRequest page = 1;
+  string instructor_id = 2;
+}
+
+message ListCoursesResponse {
+  repeated Course courses = 1;
+  PageResponse page = 2;
+}
+
+message EnrollRequest {
+  string user_id = 1;
+  string course_id = 2;
+  Role role = 3;
+}
+
+message UnenrollRequest {
+  string user_id = 1;
+  string course_id = 2;
+}
+
+message UnenrollResponse {}
+
+message ListEnrollmentsRequest {
+  PageRequest page = 1;
+  string course_id = 2;
+  string user_id = 3;
+}
+
+message ListEnrollmentsResponse {
+  repeated Enrollment enrollments = 1;
+  PageResponse page = 2;
+}
+
+message CreateAssignmentRequest {
+  string course_id = 1;
+  string slug = 2;
+  string title = 3;
+  string description_markdown = 4;
+  string template_repo = 5;
+  string repo_naming_pattern = 6;
+  google.protobuf.Timestamp deadline = 7;
+  google.protobuf.Timestamp hard_deadline = 8;
+  int32 max_score = 9;
+  bool auto_request_review_on_pass = 10;
+}
+
+message GetAssignmentRequest {
+  string id = 1;
+}
+
+message ListAssignmentsRequest {
+  PageRequest page = 1;
+  string course_id = 2;
+}
+
+message ListAssignmentsResponse {
+  repeated Assignment assignments = 1;
+  PageResponse page = 2;
+}
+
+message LinkVCSIdentityRequest {
+  string user_id = 1;
+  ProviderRef provider = 2;
+  int64 external_user_id = 3;
+  string external_login = 4;
+  string access_token = 5;
+  string refresh_token = 6;
+  google.protobuf.Timestamp expires_at = 7;
+}
+
+message UnlinkVCSIdentityRequest {
+  string user_id = 1;
+  ProviderRef provider = 2;
+}
+
+message UnlinkVCSIdentityResponse {}
+
+message ListVCSIdentitiesRequest {
+  string user_id = 1;
+}
+
+message ListVCSIdentitiesResponse {
+  repeated VCSIdentity identities = 1;
+}
+
+message StudentRepo {
+  string id = 1;
+  string user_id = 2;
+  string assignment_id = 3;
+  ProviderRef provider = 4;
+  string full_name = 5;
+  int64 external_id = 6;
+  ProvisioningState state = 7;
+  string clone_url_https = 8;
+  string clone_url_ssh = 9;
+  AuditFields audit = 10;
+}
+
+enum ProvisioningState {
+  PROVISIONING_STATE_UNSPECIFIED = 0;
+  PROVISIONING_STATE_PENDING = 1;
+  PROVISIONING_STATE_READY = 2;
+  PROVISIONING_STATE_FAILED = 3;
+}
+
+message RegisterStudentRepoRequest {
+  string user_id = 1;
+  string assignment_id = 2;
+  ProviderRef provider = 3;
+  string full_name = 4;
+  int64 external_id = 5;
+  string clone_url_https = 6;
+  string clone_url_ssh = 7;
+}
+
+message GetStudentRepoRequest {
+  string user_id = 1;
+  string assignment_id = 2;
+}

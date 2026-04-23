@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "google/protobuf/timestamp.proto";
+import "lms/v1/vcs.proto";
+
+message SubmissionCreatedEvent {
+  string event_id = 1;
+  string submission_id = 2;
+  string user_id = 3;
+  string assignment_id = 4;
+  string course_id = 5;
+  string artifact_url = 6;
+  string artifact_sha256 = 7;
+  int64 artifact_size_bytes = 8;
+  int32 attempt_number = 9;
+  google.protobuf.Timestamp occurred_at = 10;
+}
+
+message SubmissionUpdatedEvent {
+  string event_id = 1;
+  string submission_id = 2;
+  string user_id = 3;
+  string assignment_id = 4;
+  string course_id = 5;
+  string previous_state = 6;
+  string new_state = 7;
+  string reason = 8;
+  google.protobuf.Timestamp occurred_at = 9;
+}
+
+message GradingResultEvent {
+  string event_id = 1;
+  string result_id = 2;
+  string submission_id = 3;
+  string user_id = 4;
+  string assignment_id = 5;
+  string course_id = 6;
+  string grader_version = 7;
+  string status = 8;
+  int32 score = 9;
+  int32 max_score = 10;
+  int32 tests_passed = 11;
+  int32 tests_total = 12;
+  google.protobuf.Timestamp occurred_at = 13;
+}
+
+message AuditEvent {
+  string event_id = 1;
+  string actor_id = 2;
+  string actor_type = 3;
+  string action = 4;
+  string resource_type = 5;
+  string resource_id = 6;
+  map<string, string> metadata = 7;
+  string service = 8;
+  string trace_id = 9;
+  google.protobuf.Timestamp occurred_at = 10;
+}
+
+message EventEnvelope {
+  string event_id = 1;
+  string event_type = 2;
+  string schema_version = 3;
+  google.protobuf.Timestamp occurred_at = 4;
+  bytes payload = 5;
+  map<string, string> headers = 6;
+}
+
+message VCSEventReceived {
+  string event_id = 1;
+  ProviderRef provider = 2;
+  string delivery_id = 3;
+  string repo_full_name = 4;
+  EventKind kind = 5;
+  string commit_sha = 6;
+  int64 pr_number = 7;
+  int64 actor_external_id = 8;
+  string actor_login = 9;
+  google.protobuf.Timestamp occurred_at = 10;
+}
+
+message VCSReviewRequestedEvent {
+  string event_id = 1;
+  string submission_id = 2;
+  string user_id = 3;
+  string assignment_id = 4;
+  repeated string reviewer_logins = 5;
+  google.protobuf.Timestamp occurred_at = 6;
+}
+
+message VCSReviewSubmittedEvent {
+  string event_id = 1;
+  string submission_id = 2;
+  string reviewer_login = 3;
+  string review_state = 4;
+  google.protobuf.Timestamp occurred_at = 5;
+}
+
+message StudentRepoProvisionedEvent {
+  string event_id = 1;
+  string user_id = 2;
+  string assignment_id = 3;
+  string course_id = 4;
+  ProviderRef provider = 5;
+  string repo_full_name = 6;
+  string clone_url_https = 7;
+  google.protobuf.Timestamp occurred_at = 8;
+}

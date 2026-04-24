@@ -9,12 +9,13 @@ import (
 	"sync/atomic"
 	"time"
 
+	"connectrpc.com/connect"
 	"github.com/Mond1c/lms/gen/go/lms/v1/lmsv1connect"
+	"github.com/Mond1c/lms/pkg/obs"
+	"github.com/Mond1c/lms/pkg/pg"
 	"github.com/Mond1c/lms/services/identity/internal/config"
 	"github.com/Mond1c/lms/services/identity/internal/handler"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/mkorn/lms/pkg/obs"
-	"github.com/mkorn/lms/pkg/pg"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 )
@@ -57,15 +58,23 @@ func New(ctx context.Context, cfg *config.Config) (*App, error) {
 	})
 	slog.Info("database connected")
 
+	otelInterceptor, err := obs.ConnectInterceptor()
+	if err != nil {
+		return nil, fmt.Errorf("otel interceptor: %w", err)
+	}
+
 	mux := http.NewServeMux()
-	path, h := lmsv1connect.NewIdentityServiceHandler(handler.New())
+	path, h := lmsv1connect.NewIdentityServiceHandler(
+		handler.New(),
+		connect.WithInterceptors(otelInterceptor),
+	)
 	mux.Handle(path, h)
 	mux.HandleFunc("/healthz", a.healthz)
 	mux.HandleFunc("/readyz", a.readyz)
 
 	a.srv = &http.Server{
 		Addr:              cfg.HTTPAddr,
-		Handler:           h2c.NewHandler(mux, &http2.Server{}),
+		Handler:           h2c.NewHandler(obs.WrapHTTP(mux, cfg.ServiceName), &http2.Server{}),
 		ReadHeaderTimeout: IdentityHttpTimeout,
 	}
 

@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 
+	"github.com/Mond1c/lms/pkg/obs"
 	"github.com/caarlos0/env/v11"
-	"github.com/mkorn/lms/pkg/obs"
 )
 
 type Config struct {
@@ -12,7 +12,7 @@ type Config struct {
 	DatabaseURL  string        `env:"IDENTITY_DATABASE_URL,required"`
 	ServiceName  string        `env:"IDENTITY_SERVICE_NAME" envDefault:"identity-svc"`
 	ServiceVer   string        `env:"IDENTITY_SERVICE_VER" envDefault:"dev"`
-	OTLPEndpoint string        `env:"IDENTITY_OTLP_ENDPOINT" envDefault:""`
+	OTLPEndpoint string        `env:"OTLP_ENDPOINT" envDefault:""`
 	LogLevel     obs.LogLevel  `env:"IDENTITY_LOG_LEVEL" envDefault:"info"`
 	LogFormat    obs.LogFormat `env:"IDENTITY_LOG_FORMAT" envDefault:"json"`
 }

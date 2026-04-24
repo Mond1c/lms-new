@@ -95,103 +95,103 @@ services:
       timeout: 2s
       retries: 30
 
-#  submission:
-#    build:
-#      context: ..
-#      dockerfile: deploy/Dockerfile
-#      args:
-#        SERVICE: submission
-#    environment:
-#      SUBMISSION_HTTP_ADDR: ":8082"
-#      SUBMISSION_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_submission?sslmode=disable"
-#      OTLP_ENDPOINT: "jaeger:4317"
-#      LOG_LEVEL: "info"
-#      LOG_FORMAT: "json"
-#    ports:
-#      - "8082:8082"
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      redpanda:
-#        condition: service_healthy
-#      jaeger:
-#        condition: service_started
-#    healthcheck:
-#      test: ["CMD-SHELL", "wget -qO- http://localhost:8082/readyz || exit 1"]
-#      interval: 3s
-#      timeout: 2s
-#      retries: 30
-#
-#  grading:
-#    build:
-#      context: ..
-#      dockerfile: deploy/Dockerfile
-#      args:
-#        SERVICE: grading
-#    environment:
-#      GRADING_HTTP_ADDR: ":8083"
-#      GRADING_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_grading?sslmode=disable"
-#      OTLP_ENDPOINT: "jaeger:4317"
-#    ports:
-#      - "8083:8083"
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      redpanda:
-#        condition: service_healthy
-#    healthcheck:
-#      test: ["CMD-SHELL", "wget -qO- http://localhost:8083/readyz || exit 1"]
-#      interval: 3s
-#      timeout: 2s
-#      retries: 30
-#
-#  vcs:
-#    build:
-#      context: ..
-#      dockerfile: deploy/Dockerfile
-#      args:
-#        SERVICE: vcs
-#    environment:
-#      VCS_HTTP_ADDR: ":8084"
-#      VCS_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_vcs?sslmode=disable"
-#      OTLP_ENDPOINT: "jaeger:4317"
-#    ports:
-#      - "8084:8084"
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#    healthcheck:
-#      test: ["CMD-SHELL", "wget -qO- http://localhost:8084/readyz || exit 1"]
-#      interval: 3s
-#      timeout: 2s
-#      retries: 30
-#
-#  gateway:
-#    build:
-#      context: ..
-#      dockerfile: deploy/Dockerfile
-#      args:
-#        SERVICE: gateway
-#    environment:
-#      GATEWAY_HTTP_ADDR: ":8080"
-#      GATEWAY_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_gateway?sslmode=disable"
-#      OTLP_ENDPOINT: "jaeger:4317"
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      identity:
-#        condition: service_healthy
-#      submission:
-#        condition: service_healthy
-#      grading:
-#        condition: service_healthy
-#      vcs:
-#        condition: service_healthy
-#    healthcheck:
-#      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/readyz || exit 1"]
-#      interval: 3s
-#      timeout: 2s
-#      retries: 30
+  submission:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        SERVICE: submission
+    environment:
+      SUBMISSION_HTTP_ADDR: ":8082"
+      SUBMISSION_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_submission?sslmode=disable"
+      OTLP_ENDPOINT: "jaeger:4317"
+      LOG_LEVEL: "info"
+      LOG_FORMAT: "json"
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8082/readyz || exit 1"]
+      interval: 3s
+      timeout: 2s
+      retries: 30
+
+  grading:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        SERVICE: grading
+    environment:
+      GRADING_HTTP_ADDR: ":8083"
+      GRADING_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_grading?sslmode=disable"
+      OTLP_ENDPOINT: "jaeger:4317"
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8083/readyz || exit 1"]
+      interval: 3s
+      timeout: 2s
+      retries: 30
+
+  vcs:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        SERVICE: vcs
+    environment:
+      VCS_HTTP_ADDR: ":8084"
+      VCS_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_vcs?sslmode=disable"
+      OTLP_ENDPOINT: "jaeger:4317"
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8084/readyz || exit 1"]
+      interval: 3s
+      timeout: 2s
+      retries: 30
+
+  gateway:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        SERVICE: gateway
+    environment:
+      GATEWAY_HTTP_ADDR: ":8080"
+      GATEWAY_DATABASE_URL: "postgres://lms:lms@postgres:5432/lms_gateway?sslmode=disable"
+      OTLP_ENDPOINT: "jaeger:4317"
+    ports:
+      - "8080:8080"
+    depends_on:
+      identity:
+        condition: service_healthy
+      submission:
+        condition: service_healthy
+      grading:
+        condition: service_healthy
+      vcs:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/readyz || exit 1"]
+      interval: 3s
+      timeout: 2s
+      retries: 30
 
 volumes:
   postgres-data:

@@ -46,6 +46,11 @@ func New(ctx context.Context, cfg *config.Config) (*App, error) {
 
 	a.shutdownFns = append(a.shutdownFns, obsShutdown)
 
+	if err := pg.Migrate(cfg.DatabaseURL, "./migrations"); err != nil {
+		return nil, fmt.Errorf("migrate: %w", err)
+	}
+	slog.Info("migrate: applied successfully")
+
 	pool, err := pg.Open(ctx, pg.Config{DSN: cfg.DatabaseURL, MaxConnections: 10})
 	if err != nil {
 		return nil, fmt.Errorf("open db: %w", err)

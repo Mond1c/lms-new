@@ -20,7 +20,7 @@ func NewEmail(raw string) (Email, error) {
 	if !emailRegex.MatchString(v) {
 		return Email{}, ErrInvalidEmail
 	}
-	return Email{value: raw}, nil
+	return Email{value: v}, nil
 }
 
 func EmailFromTrusted(raw string) Email {

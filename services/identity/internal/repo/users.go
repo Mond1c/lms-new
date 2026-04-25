@@ -41,8 +41,8 @@ func (r *UserRepo) Create(ctx context.Context, u *domain.User) error {
 	return nil
 }
 
-func (r *UserRepo) GetByEmail(ctx context.Context, email domain.Email) (*domain.User, error) {
-	row, err := r.q.GetUserByEmail(ctx, email.String())
+func (r *UserRepo) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
+	row, err := r.q.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrNotFound

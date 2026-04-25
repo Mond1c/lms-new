@@ -104,7 +104,11 @@ message CreateUserRequest {
 }
 
 message GetUserRequest {
-  string id = 1;
+  oneof identity {
+    string id = 1;
+    string email = 2;
+    string vcs_login = 3;
+  }
 }
 
 message ListUsersRequest {

@@ -723,8 +723,13 @@ func (x *CreateUserRequest) GetTelegramId() string {
 }
 
 type GetUserRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Identity:
+	//
+	//	*GetUserRequest_Id
+	//	*GetUserRequest_Email
+	//	*GetUserRequest_VcsLogin
+	Identity      isGetUserRequest_Identity `protobuf_oneof:"identity"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -759,12 +764,61 @@ func (*GetUserRequest) Descriptor() ([]byte, []int) {
 	return file_lms_v1_identity_proto_rawDescGZIP(), []int{7}
 }
 
+func (x *GetUserRequest) GetIdentity() isGetUserRequest_Identity {
+	if x != nil {
+		return x.Identity
+	}
+	return nil
+}
+
 func (x *GetUserRequest) GetId() string {
 	if x != nil {
-		return x.Id
+		if x, ok := x.Identity.(*GetUserRequest_Id); ok {
+			return x.Id
+		}
 	}
 	return ""
 }
+
+func (x *GetUserRequest) GetEmail() string {
+	if x != nil {
+		if x, ok := x.Identity.(*GetUserRequest_Email); ok {
+			return x.Email
+		}
+	}
+	return ""
+}
+
+func (x *GetUserRequest) GetVcsLogin() string {
+	if x != nil {
+		if x, ok := x.Identity.(*GetUserRequest_VcsLogin); ok {
+			return x.VcsLogin
+		}
+	}
+	return ""
+}
+
+type isGetUserRequest_Identity interface {
+	isGetUserRequest_Identity()
+}
+
+type GetUserRequest_Id struct {
+	Id string `protobuf:"bytes,1,opt,name=id,proto3,oneof"`
+}
+
+type GetUserRequest_Email struct {
+	Email string `protobuf:"bytes,2,opt,name=email,proto3,oneof"`
+}
+
+type GetUserRequest_VcsLogin struct {
+	VcsLogin string `protobuf:"bytes,3,opt,name=vcs_login,json=vcsLogin,proto3,oneof"`
+}
+
+func (*GetUserRequest_Id) isGetUserRequest_Identity() {}
+
+func (*GetUserRequest_Email) isGetUserRequest_Identity() {}
+
+func (*GetUserRequest_VcsLogin) isGetUserRequest_Identity() {}
 
 type ListUsersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -2261,9 +2315,13 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
 	"\vtelegram_id\x18\x03 \x01(\tR\n" +
-	"telegramId\" \n" +
-	"\x0eGetUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"X\n" +
+	"telegramId\"e\n" +
+	"\x0eGetUserRequest\x12\x10\n" +
+	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x12\x16\n" +
+	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x12\x1d\n" +
+	"\tvcs_login\x18\x03 \x01(\tH\x00R\bvcsLoginB\n" +
+	"\n" +
+	"\bidentity\"X\n" +
 	"\x10ListUsersRequest\x12'\n" +
 	"\x04page\x18\x01 \x01(\v2\x13.lms.v1.PageRequestR\x04page\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\"a\n" +
@@ -2545,6 +2603,11 @@ func file_lms_v1_identity_proto_init() {
 	}
 	file_lms_v1_common_proto_init()
 	file_lms_v1_vcs_proto_init()
+	file_lms_v1_identity_proto_msgTypes[7].OneofWrappers = []any{
+		(*GetUserRequest_Id)(nil),
+		(*GetUserRequest_Email)(nil),
+		(*GetUserRequest_VcsLogin)(nil),
+	}
 	file_lms_v1_identity_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

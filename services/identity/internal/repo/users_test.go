@@ -29,7 +29,7 @@ func TestUserRepo_CreateAndGet(t *testing.T) {
 	require.NoError(t, r.Create(ctx, u))
 
 	t.Run("GetByEmail", func(t *testing.T) {
-		got, err := r.GetByEmail(ctx, u.Email)
+		got, err := r.GetByEmail(ctx, u.Email.String())
 		require.NoError(t, err)
 		require.Equal(t, u.ID, got.ID)
 		require.Equal(t, "alice@example.com", got.Email.String())
@@ -53,7 +53,7 @@ func TestUserRepo_NotFound(t *testing.T) {
 	require.ErrorIs(t, err, ErrNotFound)
 
 	missing, _ := domain.NewEmail("nobody@example.com")
-	_, err = r.GetByEmail(ctx, missing)
+	_, err = r.GetByEmail(ctx, missing.String())
 	require.ErrorIs(t, err, ErrNotFound)
 }
 

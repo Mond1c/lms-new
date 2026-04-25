@@ -15,6 +15,8 @@ import (
 	"github.com/Mond1c/lms/pkg/pg"
 	"github.com/Mond1c/lms/services/identity/internal/config"
 	"github.com/Mond1c/lms/services/identity/internal/handler"
+	"github.com/Mond1c/lms/services/identity/internal/repo"
+	"github.com/Mond1c/lms/services/identity/service"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -68,9 +70,11 @@ func New(ctx context.Context, cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("otel interceptor: %w", err)
 	}
 
+	usersRepo := repo.NewUsersRepo(a.pool)
+	usersSvc := service.NewUsersService(usersRepo)
 	mux := http.NewServeMux()
 	path, h := lmsv1connect.NewIdentityServiceHandler(
-		handler.New(),
+		handler.New(usersSvc),
 		connect.WithInterceptors(otelInterceptor),
 	)
 	mux.Handle(path, h)

@@ -722,32 +722,27 @@ func (x *CreateUserRequest) GetTelegramId() string {
 	return ""
 }
 
-type GetUserRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Types that are valid to be assigned to Identity:
-	//
-	//	*GetUserRequest_Id
-	//	*GetUserRequest_Email
-	//	*GetUserRequest_VcsLogin
-	Identity      isGetUserRequest_Identity `protobuf_oneof:"identity"`
+type GetUserRequestById struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetUserRequest) Reset() {
-	*x = GetUserRequest{}
+func (x *GetUserRequestById) Reset() {
+	*x = GetUserRequestById{}
 	mi := &file_lms_v1_identity_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetUserRequest) String() string {
+func (x *GetUserRequestById) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetUserRequest) ProtoMessage() {}
+func (*GetUserRequestById) ProtoMessage() {}
 
-func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
+func (x *GetUserRequestById) ProtoReflect() protoreflect.Message {
 	mi := &file_lms_v1_identity_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -759,66 +754,61 @@ func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetUserRequest.ProtoReflect.Descriptor instead.
-func (*GetUserRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetUserRequestById.ProtoReflect.Descriptor instead.
+func (*GetUserRequestById) Descriptor() ([]byte, []int) {
 	return file_lms_v1_identity_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *GetUserRequest) GetIdentity() isGetUserRequest_Identity {
+func (x *GetUserRequestById) GetId() string {
 	if x != nil {
-		return x.Identity
-	}
-	return nil
-}
-
-func (x *GetUserRequest) GetId() string {
-	if x != nil {
-		if x, ok := x.Identity.(*GetUserRequest_Id); ok {
-			return x.Id
-		}
+		return x.Id
 	}
 	return ""
 }
 
-func (x *GetUserRequest) GetEmail() string {
+type GetUserRequestByEmail struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserRequestByEmail) Reset() {
+	*x = GetUserRequestByEmail{}
+	mi := &file_lms_v1_identity_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserRequestByEmail) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserRequestByEmail) ProtoMessage() {}
+
+func (x *GetUserRequestByEmail) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_identity_proto_msgTypes[8]
 	if x != nil {
-		if x, ok := x.Identity.(*GetUserRequest_Email); ok {
-			return x.Email
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
 		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserRequestByEmail.ProtoReflect.Descriptor instead.
+func (*GetUserRequestByEmail) Descriptor() ([]byte, []int) {
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetUserRequestByEmail) GetEmail() string {
+	if x != nil {
+		return x.Email
 	}
 	return ""
 }
-
-func (x *GetUserRequest) GetVcsLogin() string {
-	if x != nil {
-		if x, ok := x.Identity.(*GetUserRequest_VcsLogin); ok {
-			return x.VcsLogin
-		}
-	}
-	return ""
-}
-
-type isGetUserRequest_Identity interface {
-	isGetUserRequest_Identity()
-}
-
-type GetUserRequest_Id struct {
-	Id string `protobuf:"bytes,1,opt,name=id,proto3,oneof"`
-}
-
-type GetUserRequest_Email struct {
-	Email string `protobuf:"bytes,2,opt,name=email,proto3,oneof"`
-}
-
-type GetUserRequest_VcsLogin struct {
-	VcsLogin string `protobuf:"bytes,3,opt,name=vcs_login,json=vcsLogin,proto3,oneof"`
-}
-
-func (*GetUserRequest_Id) isGetUserRequest_Identity() {}
-
-func (*GetUserRequest_Email) isGetUserRequest_Identity() {}
-
-func (*GetUserRequest_VcsLogin) isGetUserRequest_Identity() {}
 
 type ListUsersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -830,7 +820,7 @@ type ListUsersRequest struct {
 
 func (x *ListUsersRequest) Reset() {
 	*x = ListUsersRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[8]
+	mi := &file_lms_v1_identity_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -842,7 +832,7 @@ func (x *ListUsersRequest) String() string {
 func (*ListUsersRequest) ProtoMessage() {}
 
 func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[8]
+	mi := &file_lms_v1_identity_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -855,7 +845,7 @@ func (x *ListUsersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersRequest.ProtoReflect.Descriptor instead.
 func (*ListUsersRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{8}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListUsersRequest) GetPage() *PageRequest {
@@ -882,7 +872,7 @@ type ListUsersResponse struct {
 
 func (x *ListUsersResponse) Reset() {
 	*x = ListUsersResponse{}
-	mi := &file_lms_v1_identity_proto_msgTypes[9]
+	mi := &file_lms_v1_identity_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -894,7 +884,7 @@ func (x *ListUsersResponse) String() string {
 func (*ListUsersResponse) ProtoMessage() {}
 
 func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[9]
+	mi := &file_lms_v1_identity_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -907,7 +897,7 @@ func (x *ListUsersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsersResponse.ProtoReflect.Descriptor instead.
 func (*ListUsersResponse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{9}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListUsersResponse) GetUsers() []*User {
@@ -935,7 +925,7 @@ type UpdateUserRequest struct {
 
 func (x *UpdateUserRequest) Reset() {
 	*x = UpdateUserRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[10]
+	mi := &file_lms_v1_identity_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -947,7 +937,7 @@ func (x *UpdateUserRequest) String() string {
 func (*UpdateUserRequest) ProtoMessage() {}
 
 func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[10]
+	mi := &file_lms_v1_identity_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -960,7 +950,7 @@ func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateUserRequest.ProtoReflect.Descriptor instead.
 func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{10}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateUserRequest) GetId() string {
@@ -996,7 +986,7 @@ type CreateCourseRequest struct {
 
 func (x *CreateCourseRequest) Reset() {
 	*x = CreateCourseRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[11]
+	mi := &file_lms_v1_identity_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1008,7 +998,7 @@ func (x *CreateCourseRequest) String() string {
 func (*CreateCourseRequest) ProtoMessage() {}
 
 func (x *CreateCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[11]
+	mi := &file_lms_v1_identity_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1021,7 +1011,7 @@ func (x *CreateCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCourseRequest.ProtoReflect.Descriptor instead.
 func (*CreateCourseRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{11}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CreateCourseRequest) GetCode() string {
@@ -1061,7 +1051,7 @@ type GetCourseRequest struct {
 
 func (x *GetCourseRequest) Reset() {
 	*x = GetCourseRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[12]
+	mi := &file_lms_v1_identity_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1073,7 +1063,7 @@ func (x *GetCourseRequest) String() string {
 func (*GetCourseRequest) ProtoMessage() {}
 
 func (x *GetCourseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[12]
+	mi := &file_lms_v1_identity_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1086,7 +1076,7 @@ func (x *GetCourseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCourseRequest.ProtoReflect.Descriptor instead.
 func (*GetCourseRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{12}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetCourseRequest) GetId() string {
@@ -1106,7 +1096,7 @@ type ListCoursesRequest struct {
 
 func (x *ListCoursesRequest) Reset() {
 	*x = ListCoursesRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[13]
+	mi := &file_lms_v1_identity_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1118,7 +1108,7 @@ func (x *ListCoursesRequest) String() string {
 func (*ListCoursesRequest) ProtoMessage() {}
 
 func (x *ListCoursesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[13]
+	mi := &file_lms_v1_identity_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1131,7 +1121,7 @@ func (x *ListCoursesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCoursesRequest.ProtoReflect.Descriptor instead.
 func (*ListCoursesRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{13}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListCoursesRequest) GetPage() *PageRequest {
@@ -1158,7 +1148,7 @@ type ListCoursesResponse struct {
 
 func (x *ListCoursesResponse) Reset() {
 	*x = ListCoursesResponse{}
-	mi := &file_lms_v1_identity_proto_msgTypes[14]
+	mi := &file_lms_v1_identity_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1170,7 +1160,7 @@ func (x *ListCoursesResponse) String() string {
 func (*ListCoursesResponse) ProtoMessage() {}
 
 func (x *ListCoursesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[14]
+	mi := &file_lms_v1_identity_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1183,7 +1173,7 @@ func (x *ListCoursesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCoursesResponse.ProtoReflect.Descriptor instead.
 func (*ListCoursesResponse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{14}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListCoursesResponse) GetCourses() []*Course {
@@ -1211,7 +1201,7 @@ type EnrollRequest struct {
 
 func (x *EnrollRequest) Reset() {
 	*x = EnrollRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[15]
+	mi := &file_lms_v1_identity_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1223,7 +1213,7 @@ func (x *EnrollRequest) String() string {
 func (*EnrollRequest) ProtoMessage() {}
 
 func (x *EnrollRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[15]
+	mi := &file_lms_v1_identity_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1236,7 +1226,7 @@ func (x *EnrollRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnrollRequest.ProtoReflect.Descriptor instead.
 func (*EnrollRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{15}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *EnrollRequest) GetUserId() string {
@@ -1270,7 +1260,7 @@ type UnenrollRequest struct {
 
 func (x *UnenrollRequest) Reset() {
 	*x = UnenrollRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[16]
+	mi := &file_lms_v1_identity_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1282,7 +1272,7 @@ func (x *UnenrollRequest) String() string {
 func (*UnenrollRequest) ProtoMessage() {}
 
 func (x *UnenrollRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[16]
+	mi := &file_lms_v1_identity_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1295,7 +1285,7 @@ func (x *UnenrollRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnenrollRequest.ProtoReflect.Descriptor instead.
 func (*UnenrollRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{16}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *UnenrollRequest) GetUserId() string {
@@ -1320,7 +1310,7 @@ type UnenrollResponse struct {
 
 func (x *UnenrollResponse) Reset() {
 	*x = UnenrollResponse{}
-	mi := &file_lms_v1_identity_proto_msgTypes[17]
+	mi := &file_lms_v1_identity_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1332,7 +1322,7 @@ func (x *UnenrollResponse) String() string {
 func (*UnenrollResponse) ProtoMessage() {}
 
 func (x *UnenrollResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[17]
+	mi := &file_lms_v1_identity_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1345,7 +1335,7 @@ func (x *UnenrollResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnenrollResponse.ProtoReflect.Descriptor instead.
 func (*UnenrollResponse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{17}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{18}
 }
 
 type ListEnrollmentsRequest struct {
@@ -1359,7 +1349,7 @@ type ListEnrollmentsRequest struct {
 
 func (x *ListEnrollmentsRequest) Reset() {
 	*x = ListEnrollmentsRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[18]
+	mi := &file_lms_v1_identity_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1371,7 +1361,7 @@ func (x *ListEnrollmentsRequest) String() string {
 func (*ListEnrollmentsRequest) ProtoMessage() {}
 
 func (x *ListEnrollmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[18]
+	mi := &file_lms_v1_identity_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1384,7 +1374,7 @@ func (x *ListEnrollmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEnrollmentsRequest.ProtoReflect.Descriptor instead.
 func (*ListEnrollmentsRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{18}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListEnrollmentsRequest) GetPage() *PageRequest {
@@ -1418,7 +1408,7 @@ type ListEnrollmentsResponse struct {
 
 func (x *ListEnrollmentsResponse) Reset() {
 	*x = ListEnrollmentsResponse{}
-	mi := &file_lms_v1_identity_proto_msgTypes[19]
+	mi := &file_lms_v1_identity_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1430,7 +1420,7 @@ func (x *ListEnrollmentsResponse) String() string {
 func (*ListEnrollmentsResponse) ProtoMessage() {}
 
 func (x *ListEnrollmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[19]
+	mi := &file_lms_v1_identity_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1443,7 +1433,7 @@ func (x *ListEnrollmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEnrollmentsResponse.ProtoReflect.Descriptor instead.
 func (*ListEnrollmentsResponse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{19}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListEnrollmentsResponse) GetEnrollments() []*Enrollment {
@@ -1478,7 +1468,7 @@ type CreateAssignmentRequest struct {
 
 func (x *CreateAssignmentRequest) Reset() {
 	*x = CreateAssignmentRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[20]
+	mi := &file_lms_v1_identity_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1490,7 +1480,7 @@ func (x *CreateAssignmentRequest) String() string {
 func (*CreateAssignmentRequest) ProtoMessage() {}
 
 func (x *CreateAssignmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[20]
+	mi := &file_lms_v1_identity_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1503,7 +1493,7 @@ func (x *CreateAssignmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAssignmentRequest.ProtoReflect.Descriptor instead.
 func (*CreateAssignmentRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{20}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CreateAssignmentRequest) GetCourseId() string {
@@ -1585,7 +1575,7 @@ type GetAssignmentRequest struct {
 
 func (x *GetAssignmentRequest) Reset() {
 	*x = GetAssignmentRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[21]
+	mi := &file_lms_v1_identity_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1597,7 +1587,7 @@ func (x *GetAssignmentRequest) String() string {
 func (*GetAssignmentRequest) ProtoMessage() {}
 
 func (x *GetAssignmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[21]
+	mi := &file_lms_v1_identity_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1610,7 +1600,7 @@ func (x *GetAssignmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssignmentRequest.ProtoReflect.Descriptor instead.
 func (*GetAssignmentRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{21}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GetAssignmentRequest) GetId() string {
@@ -1630,7 +1620,7 @@ type ListAssignmentsRequest struct {
 
 func (x *ListAssignmentsRequest) Reset() {
 	*x = ListAssignmentsRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[22]
+	mi := &file_lms_v1_identity_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1642,7 +1632,7 @@ func (x *ListAssignmentsRequest) String() string {
 func (*ListAssignmentsRequest) ProtoMessage() {}
 
 func (x *ListAssignmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[22]
+	mi := &file_lms_v1_identity_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1655,7 +1645,7 @@ func (x *ListAssignmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAssignmentsRequest.ProtoReflect.Descriptor instead.
 func (*ListAssignmentsRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{22}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListAssignmentsRequest) GetPage() *PageRequest {
@@ -1682,7 +1672,7 @@ type ListAssignmentsResponse struct {
 
 func (x *ListAssignmentsResponse) Reset() {
 	*x = ListAssignmentsResponse{}
-	mi := &file_lms_v1_identity_proto_msgTypes[23]
+	mi := &file_lms_v1_identity_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1694,7 +1684,7 @@ func (x *ListAssignmentsResponse) String() string {
 func (*ListAssignmentsResponse) ProtoMessage() {}
 
 func (x *ListAssignmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[23]
+	mi := &file_lms_v1_identity_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1707,7 +1697,7 @@ func (x *ListAssignmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAssignmentsResponse.ProtoReflect.Descriptor instead.
 func (*ListAssignmentsResponse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{23}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListAssignmentsResponse) GetAssignments() []*Assignment {
@@ -1739,7 +1729,7 @@ type LinkVCSIdentityRequest struct {
 
 func (x *LinkVCSIdentityRequest) Reset() {
 	*x = LinkVCSIdentityRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[24]
+	mi := &file_lms_v1_identity_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1751,7 +1741,7 @@ func (x *LinkVCSIdentityRequest) String() string {
 func (*LinkVCSIdentityRequest) ProtoMessage() {}
 
 func (x *LinkVCSIdentityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[24]
+	mi := &file_lms_v1_identity_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1764,7 +1754,7 @@ func (x *LinkVCSIdentityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkVCSIdentityRequest.ProtoReflect.Descriptor instead.
 func (*LinkVCSIdentityRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{24}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *LinkVCSIdentityRequest) GetUserId() string {
@@ -1826,7 +1816,7 @@ type UnlinkVCSIdentityRequest struct {
 
 func (x *UnlinkVCSIdentityRequest) Reset() {
 	*x = UnlinkVCSIdentityRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[25]
+	mi := &file_lms_v1_identity_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1838,7 +1828,7 @@ func (x *UnlinkVCSIdentityRequest) String() string {
 func (*UnlinkVCSIdentityRequest) ProtoMessage() {}
 
 func (x *UnlinkVCSIdentityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[25]
+	mi := &file_lms_v1_identity_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1851,7 +1841,7 @@ func (x *UnlinkVCSIdentityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnlinkVCSIdentityRequest.ProtoReflect.Descriptor instead.
 func (*UnlinkVCSIdentityRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{25}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *UnlinkVCSIdentityRequest) GetUserId() string {
@@ -1876,7 +1866,7 @@ type UnlinkVCSIdentityResponse struct {
 
 func (x *UnlinkVCSIdentityResponse) Reset() {
 	*x = UnlinkVCSIdentityResponse{}
-	mi := &file_lms_v1_identity_proto_msgTypes[26]
+	mi := &file_lms_v1_identity_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1888,7 +1878,7 @@ func (x *UnlinkVCSIdentityResponse) String() string {
 func (*UnlinkVCSIdentityResponse) ProtoMessage() {}
 
 func (x *UnlinkVCSIdentityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[26]
+	mi := &file_lms_v1_identity_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1901,7 +1891,7 @@ func (x *UnlinkVCSIdentityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnlinkVCSIdentityResponse.ProtoReflect.Descriptor instead.
 func (*UnlinkVCSIdentityResponse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{26}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{27}
 }
 
 type ListVCSIdentitiesRequest struct {
@@ -1913,7 +1903,7 @@ type ListVCSIdentitiesRequest struct {
 
 func (x *ListVCSIdentitiesRequest) Reset() {
 	*x = ListVCSIdentitiesRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[27]
+	mi := &file_lms_v1_identity_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1925,7 +1915,7 @@ func (x *ListVCSIdentitiesRequest) String() string {
 func (*ListVCSIdentitiesRequest) ProtoMessage() {}
 
 func (x *ListVCSIdentitiesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[27]
+	mi := &file_lms_v1_identity_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1938,7 +1928,7 @@ func (x *ListVCSIdentitiesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVCSIdentitiesRequest.ProtoReflect.Descriptor instead.
 func (*ListVCSIdentitiesRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{27}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListVCSIdentitiesRequest) GetUserId() string {
@@ -1957,7 +1947,7 @@ type ListVCSIdentitiesResponse struct {
 
 func (x *ListVCSIdentitiesResponse) Reset() {
 	*x = ListVCSIdentitiesResponse{}
-	mi := &file_lms_v1_identity_proto_msgTypes[28]
+	mi := &file_lms_v1_identity_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1969,7 +1959,7 @@ func (x *ListVCSIdentitiesResponse) String() string {
 func (*ListVCSIdentitiesResponse) ProtoMessage() {}
 
 func (x *ListVCSIdentitiesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[28]
+	mi := &file_lms_v1_identity_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1982,7 +1972,7 @@ func (x *ListVCSIdentitiesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVCSIdentitiesResponse.ProtoReflect.Descriptor instead.
 func (*ListVCSIdentitiesResponse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{28}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListVCSIdentitiesResponse) GetIdentities() []*VCSIdentity {
@@ -2010,7 +2000,7 @@ type StudentRepo struct {
 
 func (x *StudentRepo) Reset() {
 	*x = StudentRepo{}
-	mi := &file_lms_v1_identity_proto_msgTypes[29]
+	mi := &file_lms_v1_identity_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2022,7 +2012,7 @@ func (x *StudentRepo) String() string {
 func (*StudentRepo) ProtoMessage() {}
 
 func (x *StudentRepo) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[29]
+	mi := &file_lms_v1_identity_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2035,7 +2025,7 @@ func (x *StudentRepo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudentRepo.ProtoReflect.Descriptor instead.
 func (*StudentRepo) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{29}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *StudentRepo) GetId() string {
@@ -2123,7 +2113,7 @@ type RegisterStudentRepoRequest struct {
 
 func (x *RegisterStudentRepoRequest) Reset() {
 	*x = RegisterStudentRepoRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[30]
+	mi := &file_lms_v1_identity_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2135,7 +2125,7 @@ func (x *RegisterStudentRepoRequest) String() string {
 func (*RegisterStudentRepoRequest) ProtoMessage() {}
 
 func (x *RegisterStudentRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[30]
+	mi := &file_lms_v1_identity_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2148,7 +2138,7 @@ func (x *RegisterStudentRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterStudentRepoRequest.ProtoReflect.Descriptor instead.
 func (*RegisterStudentRepoRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{30}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *RegisterStudentRepoRequest) GetUserId() string {
@@ -2210,7 +2200,7 @@ type GetStudentRepoRequest struct {
 
 func (x *GetStudentRepoRequest) Reset() {
 	*x = GetStudentRepoRequest{}
-	mi := &file_lms_v1_identity_proto_msgTypes[31]
+	mi := &file_lms_v1_identity_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2222,7 +2212,7 @@ func (x *GetStudentRepoRequest) String() string {
 func (*GetStudentRepoRequest) ProtoMessage() {}
 
 func (x *GetStudentRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_identity_proto_msgTypes[31]
+	mi := &file_lms_v1_identity_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2235,7 +2225,7 @@ func (x *GetStudentRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStudentRepoRequest.ProtoReflect.Descriptor instead.
 func (*GetStudentRepoRequest) Descriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{31}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *GetStudentRepoRequest) GetUserId() string {
@@ -2315,13 +2305,11 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
 	"\vtelegram_id\x18\x03 \x01(\tR\n" +
-	"telegramId\"e\n" +
-	"\x0eGetUserRequest\x12\x10\n" +
-	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x12\x16\n" +
-	"\x05email\x18\x02 \x01(\tH\x00R\x05email\x12\x1d\n" +
-	"\tvcs_login\x18\x03 \x01(\tH\x00R\bvcsLoginB\n" +
-	"\n" +
-	"\bidentity\"X\n" +
+	"telegramId\"$\n" +
+	"\x12GetUserRequestById\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"-\n" +
+	"\x15GetUserRequestByEmail\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\"X\n" +
 	"\x10ListUsersRequest\x12'\n" +
 	"\x04page\x18\x01 \x01(\v2\x13.lms.v1.PageRequestR\x04page\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\"a\n" +
@@ -2437,11 +2425,13 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\x1ePROVISIONING_STATE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aPROVISIONING_STATE_PENDING\x10\x01\x12\x1c\n" +
 	"\x18PROVISIONING_STATE_READY\x10\x02\x12\x1d\n" +
-	"\x19PROVISIONING_STATE_FAILED\x10\x032\xe8\t\n" +
+	"\x19PROVISIONING_STATE_FAILED\x10\x032\xaf\n" +
+	"\n" +
 	"\x0fIdentityService\x125\n" +
 	"\n" +
-	"CreateUser\x12\x19.lms.v1.CreateUserRequest\x1a\f.lms.v1.User\x12/\n" +
-	"\aGetUser\x12\x16.lms.v1.GetUserRequest\x1a\f.lms.v1.User\x12@\n" +
+	"CreateUser\x12\x19.lms.v1.CreateUserRequest\x1a\f.lms.v1.User\x127\n" +
+	"\vGetUserById\x12\x1a.lms.v1.GetUserRequestById\x1a\f.lms.v1.User\x12=\n" +
+	"\x0eGetUserByEmail\x12\x1d.lms.v1.GetUserRequestByEmail\x1a\f.lms.v1.User\x12@\n" +
 	"\tListUsers\x12\x18.lms.v1.ListUsersRequest\x1a\x19.lms.v1.ListUsersResponse\x125\n" +
 	"\n" +
 	"UpdateUser\x12\x19.lms.v1.UpdateUserRequest\x1a\f.lms.v1.User\x12;\n" +
@@ -2475,7 +2465,7 @@ func file_lms_v1_identity_proto_rawDescGZIP() []byte {
 }
 
 var file_lms_v1_identity_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_lms_v1_identity_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_lms_v1_identity_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_lms_v1_identity_proto_goTypes = []any{
 	(Role)(0),                          // 0: lms.v1.Role
 	(ProvisioningState)(0),             // 1: lms.v1.ProvisioningState
@@ -2486,111 +2476,114 @@ var file_lms_v1_identity_proto_goTypes = []any{
 	(*Enrollment)(nil),                 // 6: lms.v1.Enrollment
 	(*Assignment)(nil),                 // 7: lms.v1.Assignment
 	(*CreateUserRequest)(nil),          // 8: lms.v1.CreateUserRequest
-	(*GetUserRequest)(nil),             // 9: lms.v1.GetUserRequest
-	(*ListUsersRequest)(nil),           // 10: lms.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),          // 11: lms.v1.ListUsersResponse
-	(*UpdateUserRequest)(nil),          // 12: lms.v1.UpdateUserRequest
-	(*CreateCourseRequest)(nil),        // 13: lms.v1.CreateCourseRequest
-	(*GetCourseRequest)(nil),           // 14: lms.v1.GetCourseRequest
-	(*ListCoursesRequest)(nil),         // 15: lms.v1.ListCoursesRequest
-	(*ListCoursesResponse)(nil),        // 16: lms.v1.ListCoursesResponse
-	(*EnrollRequest)(nil),              // 17: lms.v1.EnrollRequest
-	(*UnenrollRequest)(nil),            // 18: lms.v1.UnenrollRequest
-	(*UnenrollResponse)(nil),           // 19: lms.v1.UnenrollResponse
-	(*ListEnrollmentsRequest)(nil),     // 20: lms.v1.ListEnrollmentsRequest
-	(*ListEnrollmentsResponse)(nil),    // 21: lms.v1.ListEnrollmentsResponse
-	(*CreateAssignmentRequest)(nil),    // 22: lms.v1.CreateAssignmentRequest
-	(*GetAssignmentRequest)(nil),       // 23: lms.v1.GetAssignmentRequest
-	(*ListAssignmentsRequest)(nil),     // 24: lms.v1.ListAssignmentsRequest
-	(*ListAssignmentsResponse)(nil),    // 25: lms.v1.ListAssignmentsResponse
-	(*LinkVCSIdentityRequest)(nil),     // 26: lms.v1.LinkVCSIdentityRequest
-	(*UnlinkVCSIdentityRequest)(nil),   // 27: lms.v1.UnlinkVCSIdentityRequest
-	(*UnlinkVCSIdentityResponse)(nil),  // 28: lms.v1.UnlinkVCSIdentityResponse
-	(*ListVCSIdentitiesRequest)(nil),   // 29: lms.v1.ListVCSIdentitiesRequest
-	(*ListVCSIdentitiesResponse)(nil),  // 30: lms.v1.ListVCSIdentitiesResponse
-	(*StudentRepo)(nil),                // 31: lms.v1.StudentRepo
-	(*RegisterStudentRepoRequest)(nil), // 32: lms.v1.RegisterStudentRepoRequest
-	(*GetStudentRepoRequest)(nil),      // 33: lms.v1.GetStudentRepoRequest
-	(*AuditFields)(nil),                // 34: lms.v1.AuditFields
-	(*ProviderRef)(nil),                // 35: lms.v1.ProviderRef
-	(*timestamppb.Timestamp)(nil),      // 36: google.protobuf.Timestamp
-	(*PageRequest)(nil),                // 37: lms.v1.PageRequest
-	(*PageResponse)(nil),               // 38: lms.v1.PageResponse
+	(*GetUserRequestById)(nil),         // 9: lms.v1.GetUserRequestById
+	(*GetUserRequestByEmail)(nil),      // 10: lms.v1.GetUserRequestByEmail
+	(*ListUsersRequest)(nil),           // 11: lms.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),          // 12: lms.v1.ListUsersResponse
+	(*UpdateUserRequest)(nil),          // 13: lms.v1.UpdateUserRequest
+	(*CreateCourseRequest)(nil),        // 14: lms.v1.CreateCourseRequest
+	(*GetCourseRequest)(nil),           // 15: lms.v1.GetCourseRequest
+	(*ListCoursesRequest)(nil),         // 16: lms.v1.ListCoursesRequest
+	(*ListCoursesResponse)(nil),        // 17: lms.v1.ListCoursesResponse
+	(*EnrollRequest)(nil),              // 18: lms.v1.EnrollRequest
+	(*UnenrollRequest)(nil),            // 19: lms.v1.UnenrollRequest
+	(*UnenrollResponse)(nil),           // 20: lms.v1.UnenrollResponse
+	(*ListEnrollmentsRequest)(nil),     // 21: lms.v1.ListEnrollmentsRequest
+	(*ListEnrollmentsResponse)(nil),    // 22: lms.v1.ListEnrollmentsResponse
+	(*CreateAssignmentRequest)(nil),    // 23: lms.v1.CreateAssignmentRequest
+	(*GetAssignmentRequest)(nil),       // 24: lms.v1.GetAssignmentRequest
+	(*ListAssignmentsRequest)(nil),     // 25: lms.v1.ListAssignmentsRequest
+	(*ListAssignmentsResponse)(nil),    // 26: lms.v1.ListAssignmentsResponse
+	(*LinkVCSIdentityRequest)(nil),     // 27: lms.v1.LinkVCSIdentityRequest
+	(*UnlinkVCSIdentityRequest)(nil),   // 28: lms.v1.UnlinkVCSIdentityRequest
+	(*UnlinkVCSIdentityResponse)(nil),  // 29: lms.v1.UnlinkVCSIdentityResponse
+	(*ListVCSIdentitiesRequest)(nil),   // 30: lms.v1.ListVCSIdentitiesRequest
+	(*ListVCSIdentitiesResponse)(nil),  // 31: lms.v1.ListVCSIdentitiesResponse
+	(*StudentRepo)(nil),                // 32: lms.v1.StudentRepo
+	(*RegisterStudentRepoRequest)(nil), // 33: lms.v1.RegisterStudentRepoRequest
+	(*GetStudentRepoRequest)(nil),      // 34: lms.v1.GetStudentRepoRequest
+	(*AuditFields)(nil),                // 35: lms.v1.AuditFields
+	(*ProviderRef)(nil),                // 36: lms.v1.ProviderRef
+	(*timestamppb.Timestamp)(nil),      // 37: google.protobuf.Timestamp
+	(*PageRequest)(nil),                // 38: lms.v1.PageRequest
+	(*PageResponse)(nil),               // 39: lms.v1.PageResponse
 }
 var file_lms_v1_identity_proto_depIdxs = []int32{
 	3,  // 0: lms.v1.User.vcs_identities:type_name -> lms.v1.VCSIdentity
-	34, // 1: lms.v1.User.audit:type_name -> lms.v1.AuditFields
-	35, // 2: lms.v1.VCSIdentity.provider:type_name -> lms.v1.ProviderRef
-	36, // 3: lms.v1.VCSIdentity.linked_at:type_name -> google.protobuf.Timestamp
+	35, // 1: lms.v1.User.audit:type_name -> lms.v1.AuditFields
+	36, // 2: lms.v1.VCSIdentity.provider:type_name -> lms.v1.ProviderRef
+	37, // 3: lms.v1.VCSIdentity.linked_at:type_name -> google.protobuf.Timestamp
 	5,  // 4: lms.v1.Course.vcs:type_name -> lms.v1.VCSBinding
-	34, // 5: lms.v1.Course.audit:type_name -> lms.v1.AuditFields
-	35, // 6: lms.v1.VCSBinding.provider:type_name -> lms.v1.ProviderRef
+	35, // 5: lms.v1.Course.audit:type_name -> lms.v1.AuditFields
+	36, // 6: lms.v1.VCSBinding.provider:type_name -> lms.v1.ProviderRef
 	0,  // 7: lms.v1.Enrollment.role:type_name -> lms.v1.Role
-	36, // 8: lms.v1.Enrollment.enrolled_at:type_name -> google.protobuf.Timestamp
-	36, // 9: lms.v1.Assignment.deadline:type_name -> google.protobuf.Timestamp
-	36, // 10: lms.v1.Assignment.hard_deadline:type_name -> google.protobuf.Timestamp
-	34, // 11: lms.v1.Assignment.audit:type_name -> lms.v1.AuditFields
-	37, // 12: lms.v1.ListUsersRequest.page:type_name -> lms.v1.PageRequest
+	37, // 8: lms.v1.Enrollment.enrolled_at:type_name -> google.protobuf.Timestamp
+	37, // 9: lms.v1.Assignment.deadline:type_name -> google.protobuf.Timestamp
+	37, // 10: lms.v1.Assignment.hard_deadline:type_name -> google.protobuf.Timestamp
+	35, // 11: lms.v1.Assignment.audit:type_name -> lms.v1.AuditFields
+	38, // 12: lms.v1.ListUsersRequest.page:type_name -> lms.v1.PageRequest
 	2,  // 13: lms.v1.ListUsersResponse.users:type_name -> lms.v1.User
-	38, // 14: lms.v1.ListUsersResponse.page:type_name -> lms.v1.PageResponse
-	37, // 15: lms.v1.ListCoursesRequest.page:type_name -> lms.v1.PageRequest
+	39, // 14: lms.v1.ListUsersResponse.page:type_name -> lms.v1.PageResponse
+	38, // 15: lms.v1.ListCoursesRequest.page:type_name -> lms.v1.PageRequest
 	4,  // 16: lms.v1.ListCoursesResponse.courses:type_name -> lms.v1.Course
-	38, // 17: lms.v1.ListCoursesResponse.page:type_name -> lms.v1.PageResponse
+	39, // 17: lms.v1.ListCoursesResponse.page:type_name -> lms.v1.PageResponse
 	0,  // 18: lms.v1.EnrollRequest.role:type_name -> lms.v1.Role
-	37, // 19: lms.v1.ListEnrollmentsRequest.page:type_name -> lms.v1.PageRequest
+	38, // 19: lms.v1.ListEnrollmentsRequest.page:type_name -> lms.v1.PageRequest
 	6,  // 20: lms.v1.ListEnrollmentsResponse.enrollments:type_name -> lms.v1.Enrollment
-	38, // 21: lms.v1.ListEnrollmentsResponse.page:type_name -> lms.v1.PageResponse
-	36, // 22: lms.v1.CreateAssignmentRequest.deadline:type_name -> google.protobuf.Timestamp
-	36, // 23: lms.v1.CreateAssignmentRequest.hard_deadline:type_name -> google.protobuf.Timestamp
-	37, // 24: lms.v1.ListAssignmentsRequest.page:type_name -> lms.v1.PageRequest
+	39, // 21: lms.v1.ListEnrollmentsResponse.page:type_name -> lms.v1.PageResponse
+	37, // 22: lms.v1.CreateAssignmentRequest.deadline:type_name -> google.protobuf.Timestamp
+	37, // 23: lms.v1.CreateAssignmentRequest.hard_deadline:type_name -> google.protobuf.Timestamp
+	38, // 24: lms.v1.ListAssignmentsRequest.page:type_name -> lms.v1.PageRequest
 	7,  // 25: lms.v1.ListAssignmentsResponse.assignments:type_name -> lms.v1.Assignment
-	38, // 26: lms.v1.ListAssignmentsResponse.page:type_name -> lms.v1.PageResponse
-	35, // 27: lms.v1.LinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
-	36, // 28: lms.v1.LinkVCSIdentityRequest.expires_at:type_name -> google.protobuf.Timestamp
-	35, // 29: lms.v1.UnlinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
+	39, // 26: lms.v1.ListAssignmentsResponse.page:type_name -> lms.v1.PageResponse
+	36, // 27: lms.v1.LinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
+	37, // 28: lms.v1.LinkVCSIdentityRequest.expires_at:type_name -> google.protobuf.Timestamp
+	36, // 29: lms.v1.UnlinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
 	3,  // 30: lms.v1.ListVCSIdentitiesResponse.identities:type_name -> lms.v1.VCSIdentity
-	35, // 31: lms.v1.StudentRepo.provider:type_name -> lms.v1.ProviderRef
+	36, // 31: lms.v1.StudentRepo.provider:type_name -> lms.v1.ProviderRef
 	1,  // 32: lms.v1.StudentRepo.state:type_name -> lms.v1.ProvisioningState
-	34, // 33: lms.v1.StudentRepo.audit:type_name -> lms.v1.AuditFields
-	35, // 34: lms.v1.RegisterStudentRepoRequest.provider:type_name -> lms.v1.ProviderRef
+	35, // 33: lms.v1.StudentRepo.audit:type_name -> lms.v1.AuditFields
+	36, // 34: lms.v1.RegisterStudentRepoRequest.provider:type_name -> lms.v1.ProviderRef
 	8,  // 35: lms.v1.IdentityService.CreateUser:input_type -> lms.v1.CreateUserRequest
-	9,  // 36: lms.v1.IdentityService.GetUser:input_type -> lms.v1.GetUserRequest
-	10, // 37: lms.v1.IdentityService.ListUsers:input_type -> lms.v1.ListUsersRequest
-	12, // 38: lms.v1.IdentityService.UpdateUser:input_type -> lms.v1.UpdateUserRequest
-	13, // 39: lms.v1.IdentityService.CreateCourse:input_type -> lms.v1.CreateCourseRequest
-	14, // 40: lms.v1.IdentityService.GetCourse:input_type -> lms.v1.GetCourseRequest
-	15, // 41: lms.v1.IdentityService.ListCourses:input_type -> lms.v1.ListCoursesRequest
-	17, // 42: lms.v1.IdentityService.Enroll:input_type -> lms.v1.EnrollRequest
-	18, // 43: lms.v1.IdentityService.Unenroll:input_type -> lms.v1.UnenrollRequest
-	20, // 44: lms.v1.IdentityService.ListEnrollments:input_type -> lms.v1.ListEnrollmentsRequest
-	22, // 45: lms.v1.IdentityService.CreateAssignment:input_type -> lms.v1.CreateAssignmentRequest
-	23, // 46: lms.v1.IdentityService.GetAssignment:input_type -> lms.v1.GetAssignmentRequest
-	24, // 47: lms.v1.IdentityService.ListAssignments:input_type -> lms.v1.ListAssignmentsRequest
-	26, // 48: lms.v1.IdentityService.LinkVCSIdentity:input_type -> lms.v1.LinkVCSIdentityRequest
-	27, // 49: lms.v1.IdentityService.UnlinkVCSIdentity:input_type -> lms.v1.UnlinkVCSIdentityRequest
-	29, // 50: lms.v1.IdentityService.ListVCSIdentities:input_type -> lms.v1.ListVCSIdentitiesRequest
-	32, // 51: lms.v1.IdentityService.RegisterStudentRepo:input_type -> lms.v1.RegisterStudentRepoRequest
-	33, // 52: lms.v1.IdentityService.GetStudentRepo:input_type -> lms.v1.GetStudentRepoRequest
-	2,  // 53: lms.v1.IdentityService.CreateUser:output_type -> lms.v1.User
-	2,  // 54: lms.v1.IdentityService.GetUser:output_type -> lms.v1.User
-	11, // 55: lms.v1.IdentityService.ListUsers:output_type -> lms.v1.ListUsersResponse
-	2,  // 56: lms.v1.IdentityService.UpdateUser:output_type -> lms.v1.User
-	4,  // 57: lms.v1.IdentityService.CreateCourse:output_type -> lms.v1.Course
-	4,  // 58: lms.v1.IdentityService.GetCourse:output_type -> lms.v1.Course
-	16, // 59: lms.v1.IdentityService.ListCourses:output_type -> lms.v1.ListCoursesResponse
-	6,  // 60: lms.v1.IdentityService.Enroll:output_type -> lms.v1.Enrollment
-	19, // 61: lms.v1.IdentityService.Unenroll:output_type -> lms.v1.UnenrollResponse
-	21, // 62: lms.v1.IdentityService.ListEnrollments:output_type -> lms.v1.ListEnrollmentsResponse
-	7,  // 63: lms.v1.IdentityService.CreateAssignment:output_type -> lms.v1.Assignment
-	7,  // 64: lms.v1.IdentityService.GetAssignment:output_type -> lms.v1.Assignment
-	25, // 65: lms.v1.IdentityService.ListAssignments:output_type -> lms.v1.ListAssignmentsResponse
-	3,  // 66: lms.v1.IdentityService.LinkVCSIdentity:output_type -> lms.v1.VCSIdentity
-	28, // 67: lms.v1.IdentityService.UnlinkVCSIdentity:output_type -> lms.v1.UnlinkVCSIdentityResponse
-	30, // 68: lms.v1.IdentityService.ListVCSIdentities:output_type -> lms.v1.ListVCSIdentitiesResponse
-	31, // 69: lms.v1.IdentityService.RegisterStudentRepo:output_type -> lms.v1.StudentRepo
-	31, // 70: lms.v1.IdentityService.GetStudentRepo:output_type -> lms.v1.StudentRepo
-	53, // [53:71] is the sub-list for method output_type
-	35, // [35:53] is the sub-list for method input_type
+	9,  // 36: lms.v1.IdentityService.GetUserById:input_type -> lms.v1.GetUserRequestById
+	10, // 37: lms.v1.IdentityService.GetUserByEmail:input_type -> lms.v1.GetUserRequestByEmail
+	11, // 38: lms.v1.IdentityService.ListUsers:input_type -> lms.v1.ListUsersRequest
+	13, // 39: lms.v1.IdentityService.UpdateUser:input_type -> lms.v1.UpdateUserRequest
+	14, // 40: lms.v1.IdentityService.CreateCourse:input_type -> lms.v1.CreateCourseRequest
+	15, // 41: lms.v1.IdentityService.GetCourse:input_type -> lms.v1.GetCourseRequest
+	16, // 42: lms.v1.IdentityService.ListCourses:input_type -> lms.v1.ListCoursesRequest
+	18, // 43: lms.v1.IdentityService.Enroll:input_type -> lms.v1.EnrollRequest
+	19, // 44: lms.v1.IdentityService.Unenroll:input_type -> lms.v1.UnenrollRequest
+	21, // 45: lms.v1.IdentityService.ListEnrollments:input_type -> lms.v1.ListEnrollmentsRequest
+	23, // 46: lms.v1.IdentityService.CreateAssignment:input_type -> lms.v1.CreateAssignmentRequest
+	24, // 47: lms.v1.IdentityService.GetAssignment:input_type -> lms.v1.GetAssignmentRequest
+	25, // 48: lms.v1.IdentityService.ListAssignments:input_type -> lms.v1.ListAssignmentsRequest
+	27, // 49: lms.v1.IdentityService.LinkVCSIdentity:input_type -> lms.v1.LinkVCSIdentityRequest
+	28, // 50: lms.v1.IdentityService.UnlinkVCSIdentity:input_type -> lms.v1.UnlinkVCSIdentityRequest
+	30, // 51: lms.v1.IdentityService.ListVCSIdentities:input_type -> lms.v1.ListVCSIdentitiesRequest
+	33, // 52: lms.v1.IdentityService.RegisterStudentRepo:input_type -> lms.v1.RegisterStudentRepoRequest
+	34, // 53: lms.v1.IdentityService.GetStudentRepo:input_type -> lms.v1.GetStudentRepoRequest
+	2,  // 54: lms.v1.IdentityService.CreateUser:output_type -> lms.v1.User
+	2,  // 55: lms.v1.IdentityService.GetUserById:output_type -> lms.v1.User
+	2,  // 56: lms.v1.IdentityService.GetUserByEmail:output_type -> lms.v1.User
+	12, // 57: lms.v1.IdentityService.ListUsers:output_type -> lms.v1.ListUsersResponse
+	2,  // 58: lms.v1.IdentityService.UpdateUser:output_type -> lms.v1.User
+	4,  // 59: lms.v1.IdentityService.CreateCourse:output_type -> lms.v1.Course
+	4,  // 60: lms.v1.IdentityService.GetCourse:output_type -> lms.v1.Course
+	17, // 61: lms.v1.IdentityService.ListCourses:output_type -> lms.v1.ListCoursesResponse
+	6,  // 62: lms.v1.IdentityService.Enroll:output_type -> lms.v1.Enrollment
+	20, // 63: lms.v1.IdentityService.Unenroll:output_type -> lms.v1.UnenrollResponse
+	22, // 64: lms.v1.IdentityService.ListEnrollments:output_type -> lms.v1.ListEnrollmentsResponse
+	7,  // 65: lms.v1.IdentityService.CreateAssignment:output_type -> lms.v1.Assignment
+	7,  // 66: lms.v1.IdentityService.GetAssignment:output_type -> lms.v1.Assignment
+	26, // 67: lms.v1.IdentityService.ListAssignments:output_type -> lms.v1.ListAssignmentsResponse
+	3,  // 68: lms.v1.IdentityService.LinkVCSIdentity:output_type -> lms.v1.VCSIdentity
+	29, // 69: lms.v1.IdentityService.UnlinkVCSIdentity:output_type -> lms.v1.UnlinkVCSIdentityResponse
+	31, // 70: lms.v1.IdentityService.ListVCSIdentities:output_type -> lms.v1.ListVCSIdentitiesResponse
+	32, // 71: lms.v1.IdentityService.RegisterStudentRepo:output_type -> lms.v1.StudentRepo
+	32, // 72: lms.v1.IdentityService.GetStudentRepo:output_type -> lms.v1.StudentRepo
+	54, // [54:73] is the sub-list for method output_type
+	35, // [35:54] is the sub-list for method input_type
 	35, // [35:35] is the sub-list for extension type_name
 	35, // [35:35] is the sub-list for extension extendee
 	0,  // [0:35] is the sub-list for field type_name
@@ -2603,19 +2596,14 @@ func file_lms_v1_identity_proto_init() {
 	}
 	file_lms_v1_common_proto_init()
 	file_lms_v1_vcs_proto_init()
-	file_lms_v1_identity_proto_msgTypes[7].OneofWrappers = []any{
-		(*GetUserRequest_Id)(nil),
-		(*GetUserRequest_Email)(nil),
-		(*GetUserRequest_VcsLogin)(nil),
-	}
-	file_lms_v1_identity_proto_msgTypes[10].OneofWrappers = []any{}
+	file_lms_v1_identity_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lms_v1_identity_proto_rawDesc), len(file_lms_v1_identity_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   32,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

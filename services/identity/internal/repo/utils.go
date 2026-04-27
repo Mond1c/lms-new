@@ -8,6 +8,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+const PGDuplicateValueErrCode = "23505"
+
 func pgTextFromPasswordHash(passwordHash domain.PasswordHash) *string {
 	if passwordHash == "" {
 		return nil
@@ -24,7 +26,7 @@ func pgTextFromString(str string) *string {
 
 func isUniqueViolation(err error, constraint string) bool {
 	if pgErr, ok := errors.AsType[*pgconn.PgError](err); ok {
-		if pgErr.Code != "23505" { // TODO: move to constant
+		if pgErr.Code != PGDuplicateValueErrCode {
 			return false
 		}
 		return constraint == "" || pgErr.ConstraintName == constraint

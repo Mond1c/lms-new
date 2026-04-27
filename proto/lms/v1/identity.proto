@@ -8,7 +8,8 @@ import "lms/v1/vcs.proto";
 
 service IdentityService {
   rpc CreateUser(CreateUserRequest) returns (User);
-  rpc GetUser(GetUserRequest) returns (User);
+  rpc GetUserById(GetUserRequestById) returns (User);
+  rpc GetUserByEmail(GetUserRequestByEmail) returns (User);
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
   rpc UpdateUser(UpdateUserRequest) returns (User);
 
@@ -103,12 +104,12 @@ message CreateUserRequest {
   string telegram_id = 3;
 }
 
-message GetUserRequest {
-  oneof identity {
-    string id = 1;
-    string email = 2;
-    string vcs_login = 3;
-  }
+message GetUserRequestById {
+  string id = 1;
+}
+
+message GetUserRequestByEmail {
+  string email = 2;
 }
 
 message ListUsersRequest {

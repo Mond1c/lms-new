@@ -36,8 +36,12 @@ const (
 	// IdentityServiceCreateUserProcedure is the fully-qualified name of the IdentityService's
 	// CreateUser RPC.
 	IdentityServiceCreateUserProcedure = "/lms.v1.IdentityService/CreateUser"
-	// IdentityServiceGetUserProcedure is the fully-qualified name of the IdentityService's GetUser RPC.
-	IdentityServiceGetUserProcedure = "/lms.v1.IdentityService/GetUser"
+	// IdentityServiceGetUserByIdProcedure is the fully-qualified name of the IdentityService's
+	// GetUserById RPC.
+	IdentityServiceGetUserByIdProcedure = "/lms.v1.IdentityService/GetUserById"
+	// IdentityServiceGetUserByEmailProcedure is the fully-qualified name of the IdentityService's
+	// GetUserByEmail RPC.
+	IdentityServiceGetUserByEmailProcedure = "/lms.v1.IdentityService/GetUserByEmail"
 	// IdentityServiceListUsersProcedure is the fully-qualified name of the IdentityService's ListUsers
 	// RPC.
 	IdentityServiceListUsersProcedure = "/lms.v1.IdentityService/ListUsers"
@@ -90,7 +94,8 @@ const (
 // IdentityServiceClient is a client for the lms.v1.IdentityService service.
 type IdentityServiceClient interface {
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.User], error)
-	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error)
+	GetUserById(context.Context, *connect.Request[v1.GetUserRequestById]) (*connect.Response[v1.User], error)
+	GetUserByEmail(context.Context, *connect.Request[v1.GetUserRequestByEmail]) (*connect.Response[v1.User], error)
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1.UpdateUserRequest]) (*connect.Response[v1.User], error)
 	CreateCourse(context.Context, *connect.Request[v1.CreateCourseRequest]) (*connect.Response[v1.Course], error)
@@ -126,10 +131,16 @@ func NewIdentityServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(identityServiceMethods.ByName("CreateUser")),
 			connect.WithClientOptions(opts...),
 		),
-		getUser: connect.NewClient[v1.GetUserRequest, v1.User](
+		getUserById: connect.NewClient[v1.GetUserRequestById, v1.User](
 			httpClient,
-			baseURL+IdentityServiceGetUserProcedure,
-			connect.WithSchema(identityServiceMethods.ByName("GetUser")),
+			baseURL+IdentityServiceGetUserByIdProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("GetUserById")),
+			connect.WithClientOptions(opts...),
+		),
+		getUserByEmail: connect.NewClient[v1.GetUserRequestByEmail, v1.User](
+			httpClient,
+			baseURL+IdentityServiceGetUserByEmailProcedure,
+			connect.WithSchema(identityServiceMethods.ByName("GetUserByEmail")),
 			connect.WithClientOptions(opts...),
 		),
 		listUsers: connect.NewClient[v1.ListUsersRequest, v1.ListUsersResponse](
@@ -234,7 +245,8 @@ func NewIdentityServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 // identityServiceClient implements IdentityServiceClient.
 type identityServiceClient struct {
 	createUser          *connect.Client[v1.CreateUserRequest, v1.User]
-	getUser             *connect.Client[v1.GetUserRequest, v1.User]
+	getUserById         *connect.Client[v1.GetUserRequestById, v1.User]
+	getUserByEmail      *connect.Client[v1.GetUserRequestByEmail, v1.User]
 	listUsers           *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
 	updateUser          *connect.Client[v1.UpdateUserRequest, v1.User]
 	createCourse        *connect.Client[v1.CreateCourseRequest, v1.Course]
@@ -258,9 +270,14 @@ func (c *identityServiceClient) CreateUser(ctx context.Context, req *connect.Req
 	return c.createUser.CallUnary(ctx, req)
 }
 
-// GetUser calls lms.v1.IdentityService.GetUser.
-func (c *identityServiceClient) GetUser(ctx context.Context, req *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error) {
-	return c.getUser.CallUnary(ctx, req)
+// GetUserById calls lms.v1.IdentityService.GetUserById.
+func (c *identityServiceClient) GetUserById(ctx context.Context, req *connect.Request[v1.GetUserRequestById]) (*connect.Response[v1.User], error) {
+	return c.getUserById.CallUnary(ctx, req)
+}
+
+// GetUserByEmail calls lms.v1.IdentityService.GetUserByEmail.
+func (c *identityServiceClient) GetUserByEmail(ctx context.Context, req *connect.Request[v1.GetUserRequestByEmail]) (*connect.Response[v1.User], error) {
+	return c.getUserByEmail.CallUnary(ctx, req)
 }
 
 // ListUsers calls lms.v1.IdentityService.ListUsers.
@@ -346,7 +363,8 @@ func (c *identityServiceClient) GetStudentRepo(ctx context.Context, req *connect
 // IdentityServiceHandler is an implementation of the lms.v1.IdentityService service.
 type IdentityServiceHandler interface {
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.User], error)
-	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error)
+	GetUserById(context.Context, *connect.Request[v1.GetUserRequestById]) (*connect.Response[v1.User], error)
+	GetUserByEmail(context.Context, *connect.Request[v1.GetUserRequestByEmail]) (*connect.Response[v1.User], error)
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
 	UpdateUser(context.Context, *connect.Request[v1.UpdateUserRequest]) (*connect.Response[v1.User], error)
 	CreateCourse(context.Context, *connect.Request[v1.CreateCourseRequest]) (*connect.Response[v1.Course], error)
@@ -378,10 +396,16 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 		connect.WithSchema(identityServiceMethods.ByName("CreateUser")),
 		connect.WithHandlerOptions(opts...),
 	)
-	identityServiceGetUserHandler := connect.NewUnaryHandler(
-		IdentityServiceGetUserProcedure,
-		svc.GetUser,
-		connect.WithSchema(identityServiceMethods.ByName("GetUser")),
+	identityServiceGetUserByIdHandler := connect.NewUnaryHandler(
+		IdentityServiceGetUserByIdProcedure,
+		svc.GetUserById,
+		connect.WithSchema(identityServiceMethods.ByName("GetUserById")),
+		connect.WithHandlerOptions(opts...),
+	)
+	identityServiceGetUserByEmailHandler := connect.NewUnaryHandler(
+		IdentityServiceGetUserByEmailProcedure,
+		svc.GetUserByEmail,
+		connect.WithSchema(identityServiceMethods.ByName("GetUserByEmail")),
 		connect.WithHandlerOptions(opts...),
 	)
 	identityServiceListUsersHandler := connect.NewUnaryHandler(
@@ -484,8 +508,10 @@ func NewIdentityServiceHandler(svc IdentityServiceHandler, opts ...connect.Handl
 		switch r.URL.Path {
 		case IdentityServiceCreateUserProcedure:
 			identityServiceCreateUserHandler.ServeHTTP(w, r)
-		case IdentityServiceGetUserProcedure:
-			identityServiceGetUserHandler.ServeHTTP(w, r)
+		case IdentityServiceGetUserByIdProcedure:
+			identityServiceGetUserByIdHandler.ServeHTTP(w, r)
+		case IdentityServiceGetUserByEmailProcedure:
+			identityServiceGetUserByEmailHandler.ServeHTTP(w, r)
 		case IdentityServiceListUsersProcedure:
 			identityServiceListUsersHandler.ServeHTTP(w, r)
 		case IdentityServiceUpdateUserProcedure:
@@ -531,8 +557,12 @@ func (UnimplementedIdentityServiceHandler) CreateUser(context.Context, *connect.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.IdentityService.CreateUser is not implemented"))
 }
 
-func (UnimplementedIdentityServiceHandler) GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.IdentityService.GetUser is not implemented"))
+func (UnimplementedIdentityServiceHandler) GetUserById(context.Context, *connect.Request[v1.GetUserRequestById]) (*connect.Response[v1.User], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.IdentityService.GetUserById is not implemented"))
+}
+
+func (UnimplementedIdentityServiceHandler) GetUserByEmail(context.Context, *connect.Request[v1.GetUserRequestByEmail]) (*connect.Response[v1.User], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.IdentityService.GetUserByEmail is not implemented"))
 }
 
 func (UnimplementedIdentityServiceHandler) ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error) {

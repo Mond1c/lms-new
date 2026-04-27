@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"connectrpc.com/connect"
 	identityv1 "github.com/Mond1c/lms/gen/go/lms/v1"
@@ -41,27 +40,30 @@ func (h *Identity) CreateUser(
 	return connect.NewResponse(userToProto(user)), nil
 }
 
-// GetUser TODO: maybe make separate handlers for this
-func (h *Identity) GetUser(
+func getHelper(
 	ctx context.Context,
-	req *connect.Request[identityv1.GetUserRequest],
+	getter func(context.Context, string) (*domain.User, error),
+	key string,
 ) (*connect.Response[identityv1.User], error) {
-	var user *domain.User
-	var err error
-	switch req.Msg.GetIdentity().(type) {
-	case *identityv1.GetUserRequest_Id:
-		user, err = h.users.GetByID(ctx, req.Msg.GetId())
-	case *identityv1.GetUserRequest_Email:
-		user, err = h.users.GetByEmail(ctx, req.Msg.GetEmail())
-	case *identityv1.GetUserRequest_VcsLogin:
-		// TODO: implement me
-	default:
-		err = fmt.Errorf("unknown identity type") // TODO: make with errors.New
-	}
+	user, err := getter(ctx, key)
 	if err != nil {
 		return nil, toConnectErr(err)
 	}
 	return connect.NewResponse(userToProto(user)), nil
+}
+
+func (h *Identity) GetUserById(
+	ctx context.Context,
+	req *connect.Request[identityv1.GetUserRequestById],
+) (*connect.Response[identityv1.User], error) {
+	return getHelper(ctx, h.users.GetByID, req.Msg.GetId())
+}
+
+func (h *Identity) GetUserByEmail(
+	ctx context.Context,
+	req *connect.Request[identityv1.GetUserRequestByEmail],
+) (*connect.Response[identityv1.User], error) {
+	return getHelper(ctx, h.users.GetByEmail, req.Msg.GetEmail())
 }
 
 func userToProto(user *domain.User) *identityv1.User {

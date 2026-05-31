@@ -63,8 +63,8 @@ func (r *UserRepo) GetByID(ctx context.Context, id string) (*domain.User, error)
 	return userFromRow(row), nil
 }
 
-func (r *UserRepo) Update(ctx context.Context, u *domain.User) error {
-	_, err := r.q.UpdateUser(ctx, sqlcgen.UpdateUserParams{
+func (r *UserRepo) Update(ctx context.Context, u *domain.User) (*domain.User, error) {
+	row, err := r.q.UpdateUser(ctx, sqlcgen.UpdateUserParams{
 		ID:          u.ID,
 		DisplayName: &u.DisplayName,
 		TelegramID:  &u.TelegramID,
@@ -72,11 +72,11 @@ func (r *UserRepo) Update(ctx context.Context, u *domain.User) error {
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return ErrNotFound
+			return nil, ErrNotFound
 		}
-		return fmt.Errorf("update user: %w", err)
+		return nil, fmt.Errorf("update user: %w", err)
 	}
-	return nil
+	return userFromRow(row), nil
 }
 
 func (r *UserRepo) List(ctx context.Context, limit, offset int32) ([]*domain.User, error) {

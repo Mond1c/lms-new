@@ -15,19 +15,27 @@ type mockUsersRepo struct {
 	getByIDFn    func(ctx context.Context, id string) (*domain.User, error)
 	getByEmailFn func(ctx context.Context, email string) (*domain.User, error)
 	listFn       func(ctx context.Context, limit, offset int32) ([]*domain.User, error)
+	updateFn     func(ctx context.Context, u *domain.User) (*domain.User, error)
 }
 
 func (m *mockUsersRepo) Create(ctx context.Context, u *domain.User) error {
 	return m.createFn(ctx, u)
 }
+
 func (m *mockUsersRepo) GetByID(ctx context.Context, id string) (*domain.User, error) {
 	return m.getByIDFn(ctx, id)
 }
+
 func (m *mockUsersRepo) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
 	return m.getByEmailFn(ctx, email)
 }
+
 func (m *mockUsersRepo) List(ctx context.Context, limit, offset int32) ([]*domain.User, error) {
 	return m.listFn(ctx, limit, offset)
+}
+
+func (m *mockUsersRepo) Update(ctx context.Context, u *domain.User) (*domain.User, error) {
+	return m.updateFn(ctx, u)
 }
 
 func TestUsersService_Create(t *testing.T) {

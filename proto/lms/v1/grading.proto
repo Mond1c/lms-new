@@ -3,6 +3,7 @@ syntax = "proto3";
 package lms.v1;
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 import "lms/v1/common.proto";
 
 service GradingService {
@@ -11,6 +12,15 @@ service GradingService {
   rpc ListResults(ListResultsRequest) returns (ListResultsResponse);
   rpc IngestResult(IngestResultRequest) returns (IngestResultResponse);
   rpc ReportProgress(ReportProgressRequest) returns (ReportProgressResponse);
+
+  // Assessment: shared review queue, claiming, review/defence, final grade.
+  rpc ListReviewQueue(ListReviewQueueRequest) returns (ListReviewQueueResponse);
+  rpc ClaimReview(ClaimReviewRequest) returns (ReviewClaim);
+  rpc ReleaseReview(ReleaseReviewRequest) returns (ReleaseReviewResponse);
+  rpc SubmitReview(SubmitReviewRequest) returns (Review);
+  rpc OverrideTestScore(OverrideTestScoreRequest) returns (OverrideTestScoreResponse);
+  rpc RecordDefence(RecordDefenceRequest) returns (Defence);
+  rpc GetFinalGrade(GetFinalGradeRequest) returns (FinalGrade);
 }
 
 enum ResultStatus {
@@ -144,3 +154,136 @@ message ReportProgressRequest {
 }
 
 message ReportProgressResponse {}
+
+// ---------------------------------------------------------------------------
+// Assessment: review queue, claiming, review, defence, final grade.
+// See docs/architecture.md §4–6.
+// ---------------------------------------------------------------------------
+
+// Outcome an instructor records when submitting a code review.
+enum ReviewOutcome {
+  REVIEW_OUTCOME_UNSPECIFIED = 0;
+  REVIEW_OUTCOME_APPROVED = 1;
+  REVIEW_OUTCOME_CHANGES_REQUESTED = 2;
+}
+
+// Visible review lock so multiple instructors don't grade the same submission.
+// released_at unset means the claim is still active.
+message ReviewClaim {
+  string submission_id = 1;
+  string reviewer_id = 2;
+  google.protobuf.Timestamp claimed_at = 3;
+  google.protobuf.Timestamp released_at = 4;
+}
+
+// A human code review. quality and the optional test_override are in [0, 1].
+message Review {
+  string id = 1;
+  string submission_id = 2;
+  string reviewer_id = 3;
+  double quality = 4;
+  optional double test_override = 5;
+  ReviewOutcome outcome = 6;
+  string pr_url = 7;
+  string comment_markdown = 8;
+  AuditFields audit = 9;
+}
+
+// An oral defence record (only for requires_defense assignments). score in [0, 1].
+message Defence {
+  string id = 1;
+  string submission_id = 2;
+  string examiner_id = 3;
+  double score = 4;
+  string notes = 5;
+  google.protobuf.Timestamp defended_at = 6;
+}
+
+// The composed grade for a submission. Components and final_normalized are in
+// [0, 1]; final_points = round(final_normalized * max_score).
+message FinalGrade {
+  string submission_id = 1;
+  double tests = 2;
+  double quality = 3;
+  double defence = 4;
+  double final_normalized = 5;
+  int32 final_points = 6;
+  int32 max_score = 7;
+  bool defence_applies = 8;
+  google.protobuf.Timestamp computed_at = 9;
+}
+
+enum ReviewQueueFilter {
+  REVIEW_QUEUE_FILTER_UNSPECIFIED = 0;
+  REVIEW_QUEUE_FILTER_NEED_REVIEW = 1;
+  REVIEW_QUEUE_FILTER_UNDER_REVIEW = 2;
+  REVIEW_QUEUE_FILTER_AWAITING_DEFENCE = 3;
+}
+
+message ReviewQueueItem {
+  string submission_id = 1;
+  string user_id = 2;
+  string assignment_id = 3;
+  string course_id = 4;
+  ReviewClaim claim = 5;
+  string pr_url = 6;
+  google.protobuf.Timestamp requested_at = 7;
+}
+
+message ListReviewQueueRequest {
+  PageRequest page = 1;
+  string course_id = 2;
+  string assignment_id = 3;
+  string student_id = 4;
+  ReviewQueueFilter filter = 5;
+  string claimed_by = 6;
+}
+
+message ListReviewQueueResponse {
+  repeated ReviewQueueItem items = 1;
+  PageResponse page = 2;
+}
+
+message ClaimReviewRequest {
+  string submission_id = 1;
+  string reviewer_id = 2;
+}
+
+message ReleaseReviewRequest {
+  string submission_id = 1;
+  string reviewer_id = 2;
+}
+
+message ReleaseReviewResponse {}
+
+message SubmitReviewRequest {
+  string submission_id = 1;
+  string reviewer_id = 2;
+  double quality = 3;
+  optional double test_override = 4;
+  ReviewOutcome outcome = 5;
+  string comment_markdown = 6;
+}
+
+message OverrideTestScoreRequest {
+  string submission_id = 1;
+  string reviewer_id = 2;
+  double tests = 3;
+  string reason = 4;
+}
+
+message OverrideTestScoreResponse {
+  double tests = 1;
+  FinalGrade grade = 2;
+}
+
+message RecordDefenceRequest {
+  string submission_id = 1;
+  string examiner_id = 2;
+  double score = 3;
+  string notes = 4;
+}
+
+message GetFinalGradeRequest {
+  string submission_id = 1;
+}

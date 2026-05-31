@@ -40,6 +40,15 @@ enum Role {
   ROLE_ADMIN = 3;
 }
 
+// RunnerKind selects where an assignment's tests execute. Both kinds report
+// back through the same grading.IngestResult contract, so they are
+// interchangeable per assignment.
+enum RunnerKind {
+  RUNNER_KIND_UNSPECIFIED = 0;
+  RUNNER_KIND_EXTERNAL_CI = 1;
+  RUNNER_KIND_SELF_HOSTED = 2;
+}
+
 message User {
   string id = 1;
   string email = 2;
@@ -96,6 +105,9 @@ message Assignment {
   string repo_naming_pattern = 10;
   bool auto_request_review_on_pass = 11;
   AuditFields audit = 12;
+  bool requires_defense = 13;
+  GradingPolicy grading_policy = 14;
+  RunnerKind runner = 15;
 }
 
 message CreateUserRequest {
@@ -184,6 +196,9 @@ message CreateAssignmentRequest {
   google.protobuf.Timestamp hard_deadline = 8;
   int32 max_score = 9;
   bool auto_request_review_on_pass = 10;
+  bool requires_defense = 11;
+  GradingPolicy grading_policy = 12;
+  RunnerKind runner = 13;
 }
 
 message GetAssignmentRequest {

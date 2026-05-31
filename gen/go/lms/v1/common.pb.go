@@ -74,7 +74,7 @@ func (SortOrder) EnumDescriptor() ([]byte, []int) {
 type PageRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	PageToken     int32                  `protobuf:"varint,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -116,16 +116,16 @@ func (x *PageRequest) GetPageSize() int32 {
 	return 0
 }
 
-func (x *PageRequest) GetPageToken() string {
+func (x *PageRequest) GetPageToken() int32 {
 	if x != nil {
 		return x.PageToken
 	}
-	return ""
+	return 0
 }
 
 type PageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	NextPageToken string                 `protobuf:"bytes,1,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	NextPageToken int32                  `protobuf:"varint,1,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -160,11 +160,11 @@ func (*PageResponse) Descriptor() ([]byte, []int) {
 	return file_lms_v1_common_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PageResponse) GetNextPageToken() string {
+func (x *PageResponse) GetNextPageToken() int32 {
 	if x != nil {
 		return x.NextPageToken
 	}
-	return ""
+	return 0
 }
 
 type AuditFields struct {
@@ -271,6 +271,86 @@ func (x *ValidationError) GetMessage() string {
 	return ""
 }
 
+// GradingPolicy configures how a submission's final grade is composed from its
+// three normalized components (tests / quality / defence), each in [0, 1].
+// It is configured on the Assignment (identity) and evaluated by grading.
+//
+// Default model (matching the reference course):
+//
+//	final = (weight_tests*tests + weight_quality*quality) * defence_factor
+//	where defence_factor = defence_multiplier ? defence : 1
+//
+// If custom_formula is set, it overrides the weighted default: a safe
+// expression over the variables `tests`, `quality`, `defence` (each 0..1),
+// e.g. "min(tests, quality) * defence".
+type GradingPolicy struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	WeightTests       float64                `protobuf:"fixed64,1,opt,name=weight_tests,json=weightTests,proto3" json:"weight_tests,omitempty"`
+	WeightQuality     float64                `protobuf:"fixed64,2,opt,name=weight_quality,json=weightQuality,proto3" json:"weight_quality,omitempty"`
+	DefenceMultiplier bool                   `protobuf:"varint,3,opt,name=defence_multiplier,json=defenceMultiplier,proto3" json:"defence_multiplier,omitempty"`
+	CustomFormula     string                 `protobuf:"bytes,4,opt,name=custom_formula,json=customFormula,proto3" json:"custom_formula,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *GradingPolicy) Reset() {
+	*x = GradingPolicy{}
+	mi := &file_lms_v1_common_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GradingPolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GradingPolicy) ProtoMessage() {}
+
+func (x *GradingPolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_common_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GradingPolicy.ProtoReflect.Descriptor instead.
+func (*GradingPolicy) Descriptor() ([]byte, []int) {
+	return file_lms_v1_common_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GradingPolicy) GetWeightTests() float64 {
+	if x != nil {
+		return x.WeightTests
+	}
+	return 0
+}
+
+func (x *GradingPolicy) GetWeightQuality() float64 {
+	if x != nil {
+		return x.WeightQuality
+	}
+	return 0
+}
+
+func (x *GradingPolicy) GetDefenceMultiplier() bool {
+	if x != nil {
+		return x.DefenceMultiplier
+	}
+	return false
+}
+
+func (x *GradingPolicy) GetCustomFormula() string {
+	if x != nil {
+		return x.CustomFormula
+	}
+	return ""
+}
+
 var File_lms_v1_common_proto protoreflect.FileDescriptor
 
 const file_lms_v1_common_proto_rawDesc = "" +
@@ -279,9 +359,9 @@ const file_lms_v1_common_proto_rawDesc = "" +
 	"\vPageRequest\x12\x1b\n" +
 	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\"6\n" +
+	"page_token\x18\x02 \x01(\x05R\tpageToken\"6\n" +
 	"\fPageResponse\x12&\n" +
-	"\x0fnext_page_token\x18\x01 \x01(\tR\rnextPageToken\"\x83\x01\n" +
+	"\x0fnext_page_token\x18\x01 \x01(\x05R\rnextPageToken\"\x83\x01\n" +
 	"\vAuditFields\x129\n" +
 	"\n" +
 	"created_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
@@ -289,7 +369,12 @@ const file_lms_v1_common_proto_rawDesc = "" +
 	"updated_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"A\n" +
 	"\x0fValidationError\x12\x14\n" +
 	"\x05field\x18\x01 \x01(\tR\x05field\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage*P\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xaf\x01\n" +
+	"\rGradingPolicy\x12!\n" +
+	"\fweight_tests\x18\x01 \x01(\x01R\vweightTests\x12%\n" +
+	"\x0eweight_quality\x18\x02 \x01(\x01R\rweightQuality\x12-\n" +
+	"\x12defence_multiplier\x18\x03 \x01(\bR\x11defenceMultiplier\x12%\n" +
+	"\x0ecustom_formula\x18\x04 \x01(\tR\rcustomFormula*P\n" +
 	"\tSortOrder\x12\x1a\n" +
 	"\x16SORT_ORDER_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSORT_ORDER_ASC\x10\x01\x12\x13\n" +
@@ -310,18 +395,19 @@ func file_lms_v1_common_proto_rawDescGZIP() []byte {
 }
 
 var file_lms_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_lms_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_lms_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_lms_v1_common_proto_goTypes = []any{
 	(SortOrder)(0),                // 0: lms.v1.SortOrder
 	(*PageRequest)(nil),           // 1: lms.v1.PageRequest
 	(*PageResponse)(nil),          // 2: lms.v1.PageResponse
 	(*AuditFields)(nil),           // 3: lms.v1.AuditFields
 	(*ValidationError)(nil),       // 4: lms.v1.ValidationError
-	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(*GradingPolicy)(nil),         // 5: lms.v1.GradingPolicy
+	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
 var file_lms_v1_common_proto_depIdxs = []int32{
-	5, // 0: lms.v1.AuditFields.created_at:type_name -> google.protobuf.Timestamp
-	5, // 1: lms.v1.AuditFields.updated_at:type_name -> google.protobuf.Timestamp
+	6, // 0: lms.v1.AuditFields.created_at:type_name -> google.protobuf.Timestamp
+	6, // 1: lms.v1.AuditFields.updated_at:type_name -> google.protobuf.Timestamp
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -340,7 +426,7 @@ func file_lms_v1_common_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lms_v1_common_proto_rawDesc), len(file_lms_v1_common_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

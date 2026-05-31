@@ -22,62 +22,177 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type SubmissionState int32
+// Automated tests track (CI or self-hosted runner).
+type TestState int32
 
 const (
-	SubmissionState_SUBMISSION_STATE_UNSPECIFIED SubmissionState = 0
-	SubmissionState_SUBMISSION_STATE_PENDING     SubmissionState = 1
-	SubmissionState_SUBMISSION_STATE_GRADING     SubmissionState = 2
-	SubmissionState_SUBMISSION_STATE_GRADED      SubmissionState = 3
-	SubmissionState_SUBMISSION_STATE_FAILED      SubmissionState = 4
-	SubmissionState_SUBMISSION_STATE_REJECTED    SubmissionState = 5
+	TestState_TEST_STATE_UNSPECIFIED TestState = 0
+	TestState_TEST_STATE_PENDING     TestState = 1
+	TestState_TEST_STATE_RUNNING     TestState = 2
+	TestState_TEST_STATE_PASSED      TestState = 3
+	TestState_TEST_STATE_FAILED      TestState = 4
 )
 
-// Enum value maps for SubmissionState.
+// Enum value maps for TestState.
 var (
-	SubmissionState_name = map[int32]string{
-		0: "SUBMISSION_STATE_UNSPECIFIED",
-		1: "SUBMISSION_STATE_PENDING",
-		2: "SUBMISSION_STATE_GRADING",
-		3: "SUBMISSION_STATE_GRADED",
-		4: "SUBMISSION_STATE_FAILED",
-		5: "SUBMISSION_STATE_REJECTED",
+	TestState_name = map[int32]string{
+		0: "TEST_STATE_UNSPECIFIED",
+		1: "TEST_STATE_PENDING",
+		2: "TEST_STATE_RUNNING",
+		3: "TEST_STATE_PASSED",
+		4: "TEST_STATE_FAILED",
 	}
-	SubmissionState_value = map[string]int32{
-		"SUBMISSION_STATE_UNSPECIFIED": 0,
-		"SUBMISSION_STATE_PENDING":     1,
-		"SUBMISSION_STATE_GRADING":     2,
-		"SUBMISSION_STATE_GRADED":      3,
-		"SUBMISSION_STATE_FAILED":      4,
-		"SUBMISSION_STATE_REJECTED":    5,
+	TestState_value = map[string]int32{
+		"TEST_STATE_UNSPECIFIED": 0,
+		"TEST_STATE_PENDING":     1,
+		"TEST_STATE_RUNNING":     2,
+		"TEST_STATE_PASSED":      3,
+		"TEST_STATE_FAILED":      4,
 	}
 )
 
-func (x SubmissionState) Enum() *SubmissionState {
-	p := new(SubmissionState)
+func (x TestState) Enum() *TestState {
+	p := new(TestState)
 	*p = x
 	return p
 }
 
-func (x SubmissionState) String() string {
+func (x TestState) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (SubmissionState) Descriptor() protoreflect.EnumDescriptor {
+func (TestState) Descriptor() protoreflect.EnumDescriptor {
 	return file_lms_v1_submission_proto_enumTypes[0].Descriptor()
 }
 
-func (SubmissionState) Type() protoreflect.EnumType {
+func (TestState) Type() protoreflect.EnumType {
 	return &file_lms_v1_submission_proto_enumTypes[0]
 }
 
-func (x SubmissionState) Number() protoreflect.EnumNumber {
+func (x TestState) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use SubmissionState.Descriptor instead.
-func (SubmissionState) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use TestState.Descriptor instead.
+func (TestState) EnumDescriptor() ([]byte, []int) {
 	return file_lms_v1_submission_proto_rawDescGZIP(), []int{0}
+}
+
+// Human code-review track. REQUESTED = student asked for review (needs review);
+// CLAIMED = an instructor holds the review lock. Named ReviewTrackState to avoid
+// colliding with vcs.proto's ReviewState (provider-level review verdict).
+type ReviewTrackState int32
+
+const (
+	ReviewTrackState_REVIEW_TRACK_STATE_UNSPECIFIED       ReviewTrackState = 0
+	ReviewTrackState_REVIEW_TRACK_STATE_NOT_REQUESTED     ReviewTrackState = 1
+	ReviewTrackState_REVIEW_TRACK_STATE_REQUESTED         ReviewTrackState = 2
+	ReviewTrackState_REVIEW_TRACK_STATE_CLAIMED           ReviewTrackState = 3
+	ReviewTrackState_REVIEW_TRACK_STATE_CHANGES_REQUESTED ReviewTrackState = 4
+	ReviewTrackState_REVIEW_TRACK_STATE_APPROVED          ReviewTrackState = 5
+)
+
+// Enum value maps for ReviewTrackState.
+var (
+	ReviewTrackState_name = map[int32]string{
+		0: "REVIEW_TRACK_STATE_UNSPECIFIED",
+		1: "REVIEW_TRACK_STATE_NOT_REQUESTED",
+		2: "REVIEW_TRACK_STATE_REQUESTED",
+		3: "REVIEW_TRACK_STATE_CLAIMED",
+		4: "REVIEW_TRACK_STATE_CHANGES_REQUESTED",
+		5: "REVIEW_TRACK_STATE_APPROVED",
+	}
+	ReviewTrackState_value = map[string]int32{
+		"REVIEW_TRACK_STATE_UNSPECIFIED":       0,
+		"REVIEW_TRACK_STATE_NOT_REQUESTED":     1,
+		"REVIEW_TRACK_STATE_REQUESTED":         2,
+		"REVIEW_TRACK_STATE_CLAIMED":           3,
+		"REVIEW_TRACK_STATE_CHANGES_REQUESTED": 4,
+		"REVIEW_TRACK_STATE_APPROVED":          5,
+	}
+)
+
+func (x ReviewTrackState) Enum() *ReviewTrackState {
+	p := new(ReviewTrackState)
+	*p = x
+	return p
+}
+
+func (x ReviewTrackState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ReviewTrackState) Descriptor() protoreflect.EnumDescriptor {
+	return file_lms_v1_submission_proto_enumTypes[1].Descriptor()
+}
+
+func (ReviewTrackState) Type() protoreflect.EnumType {
+	return &file_lms_v1_submission_proto_enumTypes[1]
+}
+
+func (x ReviewTrackState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ReviewTrackState.Descriptor instead.
+func (ReviewTrackState) EnumDescriptor() ([]byte, []int) {
+	return file_lms_v1_submission_proto_rawDescGZIP(), []int{1}
+}
+
+// Oral defence track. NOT_REQUIRED when the assignment has no requires_defense.
+type DefenceState int32
+
+const (
+	DefenceState_DEFENCE_STATE_UNSPECIFIED  DefenceState = 0
+	DefenceState_DEFENCE_STATE_NOT_REQUIRED DefenceState = 1
+	DefenceState_DEFENCE_STATE_AWAITING     DefenceState = 2
+	DefenceState_DEFENCE_STATE_PASSED       DefenceState = 3
+	DefenceState_DEFENCE_STATE_FAILED       DefenceState = 4
+)
+
+// Enum value maps for DefenceState.
+var (
+	DefenceState_name = map[int32]string{
+		0: "DEFENCE_STATE_UNSPECIFIED",
+		1: "DEFENCE_STATE_NOT_REQUIRED",
+		2: "DEFENCE_STATE_AWAITING",
+		3: "DEFENCE_STATE_PASSED",
+		4: "DEFENCE_STATE_FAILED",
+	}
+	DefenceState_value = map[string]int32{
+		"DEFENCE_STATE_UNSPECIFIED":  0,
+		"DEFENCE_STATE_NOT_REQUIRED": 1,
+		"DEFENCE_STATE_AWAITING":     2,
+		"DEFENCE_STATE_PASSED":       3,
+		"DEFENCE_STATE_FAILED":       4,
+	}
+)
+
+func (x DefenceState) Enum() *DefenceState {
+	p := new(DefenceState)
+	*p = x
+	return p
+}
+
+func (x DefenceState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DefenceState) Descriptor() protoreflect.EnumDescriptor {
+	return file_lms_v1_submission_proto_enumTypes[2].Descriptor()
+}
+
+func (DefenceState) Type() protoreflect.EnumType {
+	return &file_lms_v1_submission_proto_enumTypes[2]
+}
+
+func (x DefenceState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DefenceState.Descriptor instead.
+func (DefenceState) EnumDescriptor() ([]byte, []int) {
+	return file_lms_v1_submission_proto_rawDescGZIP(), []int{2}
 }
 
 type SubmissionSource int32
@@ -122,11 +237,11 @@ func (x SubmissionSource) String() string {
 }
 
 func (SubmissionSource) Descriptor() protoreflect.EnumDescriptor {
-	return file_lms_v1_submission_proto_enumTypes[1].Descriptor()
+	return file_lms_v1_submission_proto_enumTypes[3].Descriptor()
 }
 
 func (SubmissionSource) Type() protoreflect.EnumType {
-	return &file_lms_v1_submission_proto_enumTypes[1]
+	return &file_lms_v1_submission_proto_enumTypes[3]
 }
 
 func (x SubmissionSource) Number() protoreflect.EnumNumber {
@@ -135,7 +250,7 @@ func (x SubmissionSource) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SubmissionSource.Descriptor instead.
 func (SubmissionSource) EnumDescriptor() ([]byte, []int) {
-	return file_lms_v1_submission_proto_rawDescGZIP(), []int{1}
+	return file_lms_v1_submission_proto_rawDescGZIP(), []int{3}
 }
 
 type Submission struct {
@@ -146,8 +261,10 @@ type Submission struct {
 	CourseId      string                 `protobuf:"bytes,4,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
 	Source        SubmissionSource       `protobuf:"varint,5,opt,name=source,proto3,enum=lms.v1.SubmissionSource" json:"source,omitempty"`
 	Artifact      *SubmissionArtifact    `protobuf:"bytes,6,opt,name=artifact,proto3" json:"artifact,omitempty"`
-	State         SubmissionState        `protobuf:"varint,7,opt,name=state,proto3,enum=lms.v1.SubmissionState" json:"state,omitempty"`
-	StateReason   string                 `protobuf:"bytes,8,opt,name=state_reason,json=stateReason,proto3" json:"state_reason,omitempty"`
+	TestState     TestState              `protobuf:"varint,7,opt,name=test_state,json=testState,proto3,enum=lms.v1.TestState" json:"test_state,omitempty"`
+	ReviewState   ReviewTrackState       `protobuf:"varint,8,opt,name=review_state,json=reviewState,proto3,enum=lms.v1.ReviewTrackState" json:"review_state,omitempty"`
+	DefenceState  DefenceState           `protobuf:"varint,12,opt,name=defence_state,json=defenceState,proto3,enum=lms.v1.DefenceState" json:"defence_state,omitempty"`
+	StateReason   string                 `protobuf:"bytes,13,opt,name=state_reason,json=stateReason,proto3" json:"state_reason,omitempty"`
 	Score         *int32                 `protobuf:"varint,9,opt,name=score,proto3,oneof" json:"score,omitempty"`
 	Audit         *AuditFields           `protobuf:"bytes,10,opt,name=audit,proto3" json:"audit,omitempty"`
 	Vcs           *VCSAttribution        `protobuf:"bytes,11,opt,name=vcs,proto3" json:"vcs,omitempty"`
@@ -227,11 +344,25 @@ func (x *Submission) GetArtifact() *SubmissionArtifact {
 	return nil
 }
 
-func (x *Submission) GetState() SubmissionState {
+func (x *Submission) GetTestState() TestState {
 	if x != nil {
-		return x.State
+		return x.TestState
 	}
-	return SubmissionState_SUBMISSION_STATE_UNSPECIFIED
+	return TestState_TEST_STATE_UNSPECIFIED
+}
+
+func (x *Submission) GetReviewState() ReviewTrackState {
+	if x != nil {
+		return x.ReviewState
+	}
+	return ReviewTrackState_REVIEW_TRACK_STATE_UNSPECIFIED
+}
+
+func (x *Submission) GetDefenceState() DefenceState {
+	if x != nil {
+		return x.DefenceState
+	}
+	return DefenceState_DEFENCE_STATE_UNSPECIFIED
 }
 
 func (x *Submission) GetStateReason() string {
@@ -592,7 +723,9 @@ type ListSubmissionsRequest struct {
 	CourseId       string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
 	AssignmentId   string                 `protobuf:"bytes,3,opt,name=assignment_id,json=assignmentId,proto3" json:"assignment_id,omitempty"`
 	UserId         string                 `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	States         []SubmissionState      `protobuf:"varint,5,rep,packed,name=states,proto3,enum=lms.v1.SubmissionState" json:"states,omitempty"`
+	TestStates     []TestState            `protobuf:"varint,5,rep,packed,name=test_states,json=testStates,proto3,enum=lms.v1.TestState" json:"test_states,omitempty"`
+	ReviewStates   []ReviewTrackState     `protobuf:"varint,7,rep,packed,name=review_states,json=reviewStates,proto3,enum=lms.v1.ReviewTrackState" json:"review_states,omitempty"`
+	DefenceStates  []DefenceState         `protobuf:"varint,8,rep,packed,name=defence_states,json=defenceStates,proto3,enum=lms.v1.DefenceState" json:"defence_states,omitempty"`
 	OrderByCreated SortOrder              `protobuf:"varint,6,opt,name=order_by_created,json=orderByCreated,proto3,enum=lms.v1.SortOrder" json:"order_by_created,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -656,9 +789,23 @@ func (x *ListSubmissionsRequest) GetUserId() string {
 	return ""
 }
 
-func (x *ListSubmissionsRequest) GetStates() []SubmissionState {
+func (x *ListSubmissionsRequest) GetTestStates() []TestState {
 	if x != nil {
-		return x.States
+		return x.TestStates
+	}
+	return nil
+}
+
+func (x *ListSubmissionsRequest) GetReviewStates() []ReviewTrackState {
+	if x != nil {
+		return x.ReviewStates
+	}
+	return nil
+}
+
+func (x *ListSubmissionsRequest) GetDefenceStates() []DefenceState {
+	if x != nil {
+		return x.DefenceStates
 	}
 	return nil
 }
@@ -769,7 +916,9 @@ func (x *StreamStatusRequest) GetSubmissionId() string {
 type SubmissionStatus struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
-	State         SubmissionState        `protobuf:"varint,2,opt,name=state,proto3,enum=lms.v1.SubmissionState" json:"state,omitempty"`
+	TestState     TestState              `protobuf:"varint,2,opt,name=test_state,json=testState,proto3,enum=lms.v1.TestState" json:"test_state,omitempty"`
+	ReviewState   ReviewTrackState       `protobuf:"varint,5,opt,name=review_state,json=reviewState,proto3,enum=lms.v1.ReviewTrackState" json:"review_state,omitempty"`
+	DefenceState  DefenceState           `protobuf:"varint,6,opt,name=defence_state,json=defenceState,proto3,enum=lms.v1.DefenceState" json:"defence_state,omitempty"`
 	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 	At            *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=at,proto3" json:"at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -813,11 +962,25 @@ func (x *SubmissionStatus) GetSubmissionId() string {
 	return ""
 }
 
-func (x *SubmissionStatus) GetState() SubmissionState {
+func (x *SubmissionStatus) GetTestState() TestState {
 	if x != nil {
-		return x.State
+		return x.TestState
 	}
-	return SubmissionState_SUBMISSION_STATE_UNSPECIFIED
+	return TestState_TEST_STATE_UNSPECIFIED
+}
+
+func (x *SubmissionStatus) GetReviewState() ReviewTrackState {
+	if x != nil {
+		return x.ReviewState
+	}
+	return ReviewTrackState_REVIEW_TRACK_STATE_UNSPECIFIED
+}
+
+func (x *SubmissionStatus) GetDefenceState() DefenceState {
+	if x != nil {
+		return x.DefenceState
+	}
+	return DefenceState_DEFENCE_STATE_UNSPECIFIED
 }
 
 func (x *SubmissionStatus) GetMessage() string {
@@ -837,7 +1000,9 @@ func (x *SubmissionStatus) GetAt() *timestamppb.Timestamp {
 type UpdateStateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	State         SubmissionState        `protobuf:"varint,2,opt,name=state,proto3,enum=lms.v1.SubmissionState" json:"state,omitempty"`
+	TestState     *TestState             `protobuf:"varint,2,opt,name=test_state,json=testState,proto3,enum=lms.v1.TestState,oneof" json:"test_state,omitempty"`
+	ReviewState   *ReviewTrackState      `protobuf:"varint,5,opt,name=review_state,json=reviewState,proto3,enum=lms.v1.ReviewTrackState,oneof" json:"review_state,omitempty"`
+	DefenceState  *DefenceState          `protobuf:"varint,6,opt,name=defence_state,json=defenceState,proto3,enum=lms.v1.DefenceState,oneof" json:"defence_state,omitempty"`
 	Reason        string                 `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
 	Score         *int32                 `protobuf:"varint,4,opt,name=score,proto3,oneof" json:"score,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -881,11 +1046,25 @@ func (x *UpdateStateRequest) GetId() string {
 	return ""
 }
 
-func (x *UpdateStateRequest) GetState() SubmissionState {
-	if x != nil {
-		return x.State
+func (x *UpdateStateRequest) GetTestState() TestState {
+	if x != nil && x.TestState != nil {
+		return *x.TestState
 	}
-	return SubmissionState_SUBMISSION_STATE_UNSPECIFIED
+	return TestState_TEST_STATE_UNSPECIFIED
+}
+
+func (x *UpdateStateRequest) GetReviewState() ReviewTrackState {
+	if x != nil && x.ReviewState != nil {
+		return *x.ReviewState
+	}
+	return ReviewTrackState_REVIEW_TRACK_STATE_UNSPECIFIED
+}
+
+func (x *UpdateStateRequest) GetDefenceState() DefenceState {
+	if x != nil && x.DefenceState != nil {
+		return *x.DefenceState
+	}
+	return DefenceState_DEFENCE_STATE_UNSPECIFIED
 }
 
 func (x *UpdateStateRequest) GetReason() string {
@@ -906,7 +1085,7 @@ var File_lms_v1_submission_proto protoreflect.FileDescriptor
 
 const file_lms_v1_submission_proto_rawDesc = "" +
 	"\n" +
-	"\x17lms/v1/submission.proto\x12\x06lms.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13lms/v1/common.proto\x1a\x10lms/v1/vcs.proto\"\xad\x03\n" +
+	"\x17lms/v1/submission.proto\x12\x06lms.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13lms/v1/common.proto\x1a\x10lms/v1/vcs.proto\"\xa8\x04\n" +
 	"\n" +
 	"Submission\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
@@ -914,9 +1093,12 @@ const file_lms_v1_submission_proto_rawDesc = "" +
 	"\rassignment_id\x18\x03 \x01(\tR\fassignmentId\x12\x1b\n" +
 	"\tcourse_id\x18\x04 \x01(\tR\bcourseId\x120\n" +
 	"\x06source\x18\x05 \x01(\x0e2\x18.lms.v1.SubmissionSourceR\x06source\x126\n" +
-	"\bartifact\x18\x06 \x01(\v2\x1a.lms.v1.SubmissionArtifactR\bartifact\x12-\n" +
-	"\x05state\x18\a \x01(\x0e2\x17.lms.v1.SubmissionStateR\x05state\x12!\n" +
-	"\fstate_reason\x18\b \x01(\tR\vstateReason\x12\x19\n" +
+	"\bartifact\x18\x06 \x01(\v2\x1a.lms.v1.SubmissionArtifactR\bartifact\x120\n" +
+	"\n" +
+	"test_state\x18\a \x01(\x0e2\x11.lms.v1.TestStateR\ttestState\x12;\n" +
+	"\freview_state\x18\b \x01(\x0e2\x18.lms.v1.ReviewTrackStateR\vreviewState\x129\n" +
+	"\rdefence_state\x18\f \x01(\x0e2\x14.lms.v1.DefenceStateR\fdefenceState\x12!\n" +
+	"\fstate_reason\x18\r \x01(\tR\vstateReason\x12\x19\n" +
 	"\x05score\x18\t \x01(\x05H\x00R\x05score\x88\x01\x01\x12)\n" +
 	"\x05audit\x18\n" +
 	" \x01(\v2\x13.lms.v1.AuditFieldsR\x05audit\x12(\n" +
@@ -949,37 +1131,61 @@ const file_lms_v1_submission_proto_rawDesc = "" +
 	"submission\x12'\n" +
 	"\x0falready_existed\x18\x02 \x01(\bR\x0ealreadyExisted\"&\n" +
 	"\x14GetSubmissionRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\x8a\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x89\x03\n" +
 	"\x16ListSubmissionsRequest\x12'\n" +
 	"\x04page\x18\x01 \x01(\v2\x13.lms.v1.PageRequestR\x04page\x12\x1b\n" +
 	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12#\n" +
 	"\rassignment_id\x18\x03 \x01(\tR\fassignmentId\x12\x17\n" +
-	"\auser_id\x18\x04 \x01(\tR\x06userId\x12/\n" +
-	"\x06states\x18\x05 \x03(\x0e2\x17.lms.v1.SubmissionStateR\x06states\x12;\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\x122\n" +
+	"\vtest_states\x18\x05 \x03(\x0e2\x11.lms.v1.TestStateR\n" +
+	"testStates\x12=\n" +
+	"\rreview_states\x18\a \x03(\x0e2\x18.lms.v1.ReviewTrackStateR\freviewStates\x12;\n" +
+	"\x0edefence_states\x18\b \x03(\x0e2\x14.lms.v1.DefenceStateR\rdefenceStates\x12;\n" +
 	"\x10order_by_created\x18\x06 \x01(\x0e2\x11.lms.v1.SortOrderR\x0eorderByCreated\"y\n" +
 	"\x17ListSubmissionsResponse\x124\n" +
 	"\vsubmissions\x18\x01 \x03(\v2\x12.lms.v1.SubmissionR\vsubmissions\x12(\n" +
 	"\x04page\x18\x02 \x01(\v2\x14.lms.v1.PageResponseR\x04page\":\n" +
 	"\x13StreamStatusRequest\x12#\n" +
-	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\"\xac\x01\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\"\xa7\x02\n" +
 	"\x10SubmissionStatus\x12#\n" +
-	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12-\n" +
-	"\x05state\x18\x02 \x01(\x0e2\x17.lms.v1.SubmissionStateR\x05state\x12\x18\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x120\n" +
+	"\n" +
+	"test_state\x18\x02 \x01(\x0e2\x11.lms.v1.TestStateR\ttestState\x12;\n" +
+	"\freview_state\x18\x05 \x01(\x0e2\x18.lms.v1.ReviewTrackStateR\vreviewState\x129\n" +
+	"\rdefence_state\x18\x06 \x01(\x0e2\x14.lms.v1.DefenceStateR\fdefenceState\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12*\n" +
-	"\x02at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\"\x90\x01\n" +
+	"\x02at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x02at\"\xcc\x02\n" +
 	"\x12UpdateStateRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12-\n" +
-	"\x05state\x18\x02 \x01(\x0e2\x17.lms.v1.SubmissionStateR\x05state\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x125\n" +
+	"\n" +
+	"test_state\x18\x02 \x01(\x0e2\x11.lms.v1.TestStateH\x00R\ttestState\x88\x01\x01\x12@\n" +
+	"\freview_state\x18\x05 \x01(\x0e2\x18.lms.v1.ReviewTrackStateH\x01R\vreviewState\x88\x01\x01\x12>\n" +
+	"\rdefence_state\x18\x06 \x01(\x0e2\x14.lms.v1.DefenceStateH\x02R\fdefenceState\x88\x01\x01\x12\x16\n" +
 	"\x06reason\x18\x03 \x01(\tR\x06reason\x12\x19\n" +
-	"\x05score\x18\x04 \x01(\x05H\x00R\x05score\x88\x01\x01B\b\n" +
-	"\x06_score*\xc8\x01\n" +
-	"\x0fSubmissionState\x12 \n" +
-	"\x1cSUBMISSION_STATE_UNSPECIFIED\x10\x00\x12\x1c\n" +
-	"\x18SUBMISSION_STATE_PENDING\x10\x01\x12\x1c\n" +
-	"\x18SUBMISSION_STATE_GRADING\x10\x02\x12\x1b\n" +
-	"\x17SUBMISSION_STATE_GRADED\x10\x03\x12\x1b\n" +
-	"\x17SUBMISSION_STATE_FAILED\x10\x04\x12\x1d\n" +
-	"\x19SUBMISSION_STATE_REJECTED\x10\x05*\xda\x01\n" +
+	"\x05score\x18\x04 \x01(\x05H\x03R\x05score\x88\x01\x01B\r\n" +
+	"\v_test_stateB\x0f\n" +
+	"\r_review_stateB\x10\n" +
+	"\x0e_defence_stateB\b\n" +
+	"\x06_score*\x85\x01\n" +
+	"\tTestState\x12\x1a\n" +
+	"\x16TEST_STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12TEST_STATE_PENDING\x10\x01\x12\x16\n" +
+	"\x12TEST_STATE_RUNNING\x10\x02\x12\x15\n" +
+	"\x11TEST_STATE_PASSED\x10\x03\x12\x15\n" +
+	"\x11TEST_STATE_FAILED\x10\x04*\xe9\x01\n" +
+	"\x10ReviewTrackState\x12\"\n" +
+	"\x1eREVIEW_TRACK_STATE_UNSPECIFIED\x10\x00\x12$\n" +
+	" REVIEW_TRACK_STATE_NOT_REQUESTED\x10\x01\x12 \n" +
+	"\x1cREVIEW_TRACK_STATE_REQUESTED\x10\x02\x12\x1e\n" +
+	"\x1aREVIEW_TRACK_STATE_CLAIMED\x10\x03\x12(\n" +
+	"$REVIEW_TRACK_STATE_CHANGES_REQUESTED\x10\x04\x12\x1f\n" +
+	"\x1bREVIEW_TRACK_STATE_APPROVED\x10\x05*\x9d\x01\n" +
+	"\fDefenceState\x12\x1d\n" +
+	"\x19DEFENCE_STATE_UNSPECIFIED\x10\x00\x12\x1e\n" +
+	"\x1aDEFENCE_STATE_NOT_REQUIRED\x10\x01\x12\x1a\n" +
+	"\x16DEFENCE_STATE_AWAITING\x10\x02\x12\x18\n" +
+	"\x14DEFENCE_STATE_PASSED\x10\x03\x12\x18\n" +
+	"\x14DEFENCE_STATE_FAILED\x10\x04*\xda\x01\n" +
 	"\x10SubmissionSource\x12!\n" +
 	"\x1dSUBMISSION_SOURCE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aSUBMISSION_SOURCE_VCS_PUSH\x10\x01\x12\x1c\n" +
@@ -1008,63 +1214,73 @@ func file_lms_v1_submission_proto_rawDescGZIP() []byte {
 	return file_lms_v1_submission_proto_rawDescData
 }
 
-var file_lms_v1_submission_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_lms_v1_submission_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
 var file_lms_v1_submission_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_lms_v1_submission_proto_goTypes = []any{
-	(SubmissionState)(0),            // 0: lms.v1.SubmissionState
-	(SubmissionSource)(0),           // 1: lms.v1.SubmissionSource
-	(*Submission)(nil),              // 2: lms.v1.Submission
-	(*SubmissionArtifact)(nil),      // 3: lms.v1.SubmissionArtifact
-	(*VCSAttribution)(nil),          // 4: lms.v1.VCSAttribution
-	(*SubmitRequest)(nil),           // 5: lms.v1.SubmitRequest
-	(*SubmitResponse)(nil),          // 6: lms.v1.SubmitResponse
-	(*GetSubmissionRequest)(nil),    // 7: lms.v1.GetSubmissionRequest
-	(*ListSubmissionsRequest)(nil),  // 8: lms.v1.ListSubmissionsRequest
-	(*ListSubmissionsResponse)(nil), // 9: lms.v1.ListSubmissionsResponse
-	(*StreamStatusRequest)(nil),     // 10: lms.v1.StreamStatusRequest
-	(*SubmissionStatus)(nil),        // 11: lms.v1.SubmissionStatus
-	(*UpdateStateRequest)(nil),      // 12: lms.v1.UpdateStateRequest
-	(*AuditFields)(nil),             // 13: lms.v1.AuditFields
-	(*ProviderRef)(nil),             // 14: lms.v1.ProviderRef
-	(*PageRequest)(nil),             // 15: lms.v1.PageRequest
-	(SortOrder)(0),                  // 16: lms.v1.SortOrder
-	(*PageResponse)(nil),            // 17: lms.v1.PageResponse
-	(*timestamppb.Timestamp)(nil),   // 18: google.protobuf.Timestamp
+	(TestState)(0),                  // 0: lms.v1.TestState
+	(ReviewTrackState)(0),           // 1: lms.v1.ReviewTrackState
+	(DefenceState)(0),               // 2: lms.v1.DefenceState
+	(SubmissionSource)(0),           // 3: lms.v1.SubmissionSource
+	(*Submission)(nil),              // 4: lms.v1.Submission
+	(*SubmissionArtifact)(nil),      // 5: lms.v1.SubmissionArtifact
+	(*VCSAttribution)(nil),          // 6: lms.v1.VCSAttribution
+	(*SubmitRequest)(nil),           // 7: lms.v1.SubmitRequest
+	(*SubmitResponse)(nil),          // 8: lms.v1.SubmitResponse
+	(*GetSubmissionRequest)(nil),    // 9: lms.v1.GetSubmissionRequest
+	(*ListSubmissionsRequest)(nil),  // 10: lms.v1.ListSubmissionsRequest
+	(*ListSubmissionsResponse)(nil), // 11: lms.v1.ListSubmissionsResponse
+	(*StreamStatusRequest)(nil),     // 12: lms.v1.StreamStatusRequest
+	(*SubmissionStatus)(nil),        // 13: lms.v1.SubmissionStatus
+	(*UpdateStateRequest)(nil),      // 14: lms.v1.UpdateStateRequest
+	(*AuditFields)(nil),             // 15: lms.v1.AuditFields
+	(*ProviderRef)(nil),             // 16: lms.v1.ProviderRef
+	(*PageRequest)(nil),             // 17: lms.v1.PageRequest
+	(SortOrder)(0),                  // 18: lms.v1.SortOrder
+	(*PageResponse)(nil),            // 19: lms.v1.PageResponse
+	(*timestamppb.Timestamp)(nil),   // 20: google.protobuf.Timestamp
 }
 var file_lms_v1_submission_proto_depIdxs = []int32{
-	1,  // 0: lms.v1.Submission.source:type_name -> lms.v1.SubmissionSource
-	3,  // 1: lms.v1.Submission.artifact:type_name -> lms.v1.SubmissionArtifact
-	0,  // 2: lms.v1.Submission.state:type_name -> lms.v1.SubmissionState
-	13, // 3: lms.v1.Submission.audit:type_name -> lms.v1.AuditFields
-	4,  // 4: lms.v1.Submission.vcs:type_name -> lms.v1.VCSAttribution
-	14, // 5: lms.v1.VCSAttribution.provider:type_name -> lms.v1.ProviderRef
-	1,  // 6: lms.v1.SubmitRequest.source:type_name -> lms.v1.SubmissionSource
-	3,  // 7: lms.v1.SubmitRequest.artifact:type_name -> lms.v1.SubmissionArtifact
-	4,  // 8: lms.v1.SubmitRequest.vcs:type_name -> lms.v1.VCSAttribution
-	2,  // 9: lms.v1.SubmitResponse.submission:type_name -> lms.v1.Submission
-	15, // 10: lms.v1.ListSubmissionsRequest.page:type_name -> lms.v1.PageRequest
-	0,  // 11: lms.v1.ListSubmissionsRequest.states:type_name -> lms.v1.SubmissionState
-	16, // 12: lms.v1.ListSubmissionsRequest.order_by_created:type_name -> lms.v1.SortOrder
-	2,  // 13: lms.v1.ListSubmissionsResponse.submissions:type_name -> lms.v1.Submission
-	17, // 14: lms.v1.ListSubmissionsResponse.page:type_name -> lms.v1.PageResponse
-	0,  // 15: lms.v1.SubmissionStatus.state:type_name -> lms.v1.SubmissionState
-	18, // 16: lms.v1.SubmissionStatus.at:type_name -> google.protobuf.Timestamp
-	0,  // 17: lms.v1.UpdateStateRequest.state:type_name -> lms.v1.SubmissionState
-	5,  // 18: lms.v1.SubmissionService.Submit:input_type -> lms.v1.SubmitRequest
-	7,  // 19: lms.v1.SubmissionService.Get:input_type -> lms.v1.GetSubmissionRequest
-	8,  // 20: lms.v1.SubmissionService.List:input_type -> lms.v1.ListSubmissionsRequest
-	10, // 21: lms.v1.SubmissionService.StreamStatus:input_type -> lms.v1.StreamStatusRequest
-	12, // 22: lms.v1.SubmissionService.UpdateState:input_type -> lms.v1.UpdateStateRequest
-	6,  // 23: lms.v1.SubmissionService.Submit:output_type -> lms.v1.SubmitResponse
-	2,  // 24: lms.v1.SubmissionService.Get:output_type -> lms.v1.Submission
-	9,  // 25: lms.v1.SubmissionService.List:output_type -> lms.v1.ListSubmissionsResponse
-	11, // 26: lms.v1.SubmissionService.StreamStatus:output_type -> lms.v1.SubmissionStatus
-	2,  // 27: lms.v1.SubmissionService.UpdateState:output_type -> lms.v1.Submission
-	23, // [23:28] is the sub-list for method output_type
-	18, // [18:23] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	3,  // 0: lms.v1.Submission.source:type_name -> lms.v1.SubmissionSource
+	5,  // 1: lms.v1.Submission.artifact:type_name -> lms.v1.SubmissionArtifact
+	0,  // 2: lms.v1.Submission.test_state:type_name -> lms.v1.TestState
+	1,  // 3: lms.v1.Submission.review_state:type_name -> lms.v1.ReviewTrackState
+	2,  // 4: lms.v1.Submission.defence_state:type_name -> lms.v1.DefenceState
+	15, // 5: lms.v1.Submission.audit:type_name -> lms.v1.AuditFields
+	6,  // 6: lms.v1.Submission.vcs:type_name -> lms.v1.VCSAttribution
+	16, // 7: lms.v1.VCSAttribution.provider:type_name -> lms.v1.ProviderRef
+	3,  // 8: lms.v1.SubmitRequest.source:type_name -> lms.v1.SubmissionSource
+	5,  // 9: lms.v1.SubmitRequest.artifact:type_name -> lms.v1.SubmissionArtifact
+	6,  // 10: lms.v1.SubmitRequest.vcs:type_name -> lms.v1.VCSAttribution
+	4,  // 11: lms.v1.SubmitResponse.submission:type_name -> lms.v1.Submission
+	17, // 12: lms.v1.ListSubmissionsRequest.page:type_name -> lms.v1.PageRequest
+	0,  // 13: lms.v1.ListSubmissionsRequest.test_states:type_name -> lms.v1.TestState
+	1,  // 14: lms.v1.ListSubmissionsRequest.review_states:type_name -> lms.v1.ReviewTrackState
+	2,  // 15: lms.v1.ListSubmissionsRequest.defence_states:type_name -> lms.v1.DefenceState
+	18, // 16: lms.v1.ListSubmissionsRequest.order_by_created:type_name -> lms.v1.SortOrder
+	4,  // 17: lms.v1.ListSubmissionsResponse.submissions:type_name -> lms.v1.Submission
+	19, // 18: lms.v1.ListSubmissionsResponse.page:type_name -> lms.v1.PageResponse
+	0,  // 19: lms.v1.SubmissionStatus.test_state:type_name -> lms.v1.TestState
+	1,  // 20: lms.v1.SubmissionStatus.review_state:type_name -> lms.v1.ReviewTrackState
+	2,  // 21: lms.v1.SubmissionStatus.defence_state:type_name -> lms.v1.DefenceState
+	20, // 22: lms.v1.SubmissionStatus.at:type_name -> google.protobuf.Timestamp
+	0,  // 23: lms.v1.UpdateStateRequest.test_state:type_name -> lms.v1.TestState
+	1,  // 24: lms.v1.UpdateStateRequest.review_state:type_name -> lms.v1.ReviewTrackState
+	2,  // 25: lms.v1.UpdateStateRequest.defence_state:type_name -> lms.v1.DefenceState
+	7,  // 26: lms.v1.SubmissionService.Submit:input_type -> lms.v1.SubmitRequest
+	9,  // 27: lms.v1.SubmissionService.Get:input_type -> lms.v1.GetSubmissionRequest
+	10, // 28: lms.v1.SubmissionService.List:input_type -> lms.v1.ListSubmissionsRequest
+	12, // 29: lms.v1.SubmissionService.StreamStatus:input_type -> lms.v1.StreamStatusRequest
+	14, // 30: lms.v1.SubmissionService.UpdateState:input_type -> lms.v1.UpdateStateRequest
+	8,  // 31: lms.v1.SubmissionService.Submit:output_type -> lms.v1.SubmitResponse
+	4,  // 32: lms.v1.SubmissionService.Get:output_type -> lms.v1.Submission
+	11, // 33: lms.v1.SubmissionService.List:output_type -> lms.v1.ListSubmissionsResponse
+	13, // 34: lms.v1.SubmissionService.StreamStatus:output_type -> lms.v1.SubmissionStatus
+	4,  // 35: lms.v1.SubmissionService.UpdateState:output_type -> lms.v1.Submission
+	31, // [31:36] is the sub-list for method output_type
+	26, // [26:31] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_lms_v1_submission_proto_init() }
@@ -1081,7 +1297,7 @@ func file_lms_v1_submission_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lms_v1_submission_proto_rawDesc), len(file_lms_v1_submission_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      4,
 			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,

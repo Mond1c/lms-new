@@ -74,6 +74,58 @@ func (Role) EnumDescriptor() ([]byte, []int) {
 	return file_lms_v1_identity_proto_rawDescGZIP(), []int{0}
 }
 
+// RunnerKind selects where an assignment's tests execute. Both kinds report
+// back through the same grading.IngestResult contract, so they are
+// interchangeable per assignment.
+type RunnerKind int32
+
+const (
+	RunnerKind_RUNNER_KIND_UNSPECIFIED RunnerKind = 0
+	RunnerKind_RUNNER_KIND_EXTERNAL_CI RunnerKind = 1
+	RunnerKind_RUNNER_KIND_SELF_HOSTED RunnerKind = 2
+)
+
+// Enum value maps for RunnerKind.
+var (
+	RunnerKind_name = map[int32]string{
+		0: "RUNNER_KIND_UNSPECIFIED",
+		1: "RUNNER_KIND_EXTERNAL_CI",
+		2: "RUNNER_KIND_SELF_HOSTED",
+	}
+	RunnerKind_value = map[string]int32{
+		"RUNNER_KIND_UNSPECIFIED": 0,
+		"RUNNER_KIND_EXTERNAL_CI": 1,
+		"RUNNER_KIND_SELF_HOSTED": 2,
+	}
+)
+
+func (x RunnerKind) Enum() *RunnerKind {
+	p := new(RunnerKind)
+	*p = x
+	return p
+}
+
+func (x RunnerKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RunnerKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_lms_v1_identity_proto_enumTypes[1].Descriptor()
+}
+
+func (RunnerKind) Type() protoreflect.EnumType {
+	return &file_lms_v1_identity_proto_enumTypes[1]
+}
+
+func (x RunnerKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RunnerKind.Descriptor instead.
+func (RunnerKind) EnumDescriptor() ([]byte, []int) {
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{1}
+}
+
 type ProvisioningState int32
 
 const (
@@ -110,11 +162,11 @@ func (x ProvisioningState) String() string {
 }
 
 func (ProvisioningState) Descriptor() protoreflect.EnumDescriptor {
-	return file_lms_v1_identity_proto_enumTypes[1].Descriptor()
+	return file_lms_v1_identity_proto_enumTypes[2].Descriptor()
 }
 
 func (ProvisioningState) Type() protoreflect.EnumType {
-	return &file_lms_v1_identity_proto_enumTypes[1]
+	return &file_lms_v1_identity_proto_enumTypes[2]
 }
 
 func (x ProvisioningState) Number() protoreflect.EnumNumber {
@@ -123,7 +175,7 @@ func (x ProvisioningState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ProvisioningState.Descriptor instead.
 func (ProvisioningState) EnumDescriptor() ([]byte, []int) {
-	return file_lms_v1_identity_proto_rawDescGZIP(), []int{1}
+	return file_lms_v1_identity_proto_rawDescGZIP(), []int{2}
 }
 
 type User struct {
@@ -544,6 +596,9 @@ type Assignment struct {
 	RepoNamingPattern       string                 `protobuf:"bytes,10,opt,name=repo_naming_pattern,json=repoNamingPattern,proto3" json:"repo_naming_pattern,omitempty"`
 	AutoRequestReviewOnPass bool                   `protobuf:"varint,11,opt,name=auto_request_review_on_pass,json=autoRequestReviewOnPass,proto3" json:"auto_request_review_on_pass,omitempty"`
 	Audit                   *AuditFields           `protobuf:"bytes,12,opt,name=audit,proto3" json:"audit,omitempty"`
+	RequiresDefense         bool                   `protobuf:"varint,13,opt,name=requires_defense,json=requiresDefense,proto3" json:"requires_defense,omitempty"`
+	GradingPolicy           *GradingPolicy         `protobuf:"bytes,14,opt,name=grading_policy,json=gradingPolicy,proto3" json:"grading_policy,omitempty"`
+	Runner                  RunnerKind             `protobuf:"varint,15,opt,name=runner,proto3,enum=lms.v1.RunnerKind" json:"runner,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -660,6 +715,27 @@ func (x *Assignment) GetAudit() *AuditFields {
 		return x.Audit
 	}
 	return nil
+}
+
+func (x *Assignment) GetRequiresDefense() bool {
+	if x != nil {
+		return x.RequiresDefense
+	}
+	return false
+}
+
+func (x *Assignment) GetGradingPolicy() *GradingPolicy {
+	if x != nil {
+		return x.GradingPolicy
+	}
+	return nil
+}
+
+func (x *Assignment) GetRunner() RunnerKind {
+	if x != nil {
+		return x.Runner
+	}
+	return RunnerKind_RUNNER_KIND_UNSPECIFIED
 }
 
 type CreateUserRequest struct {
@@ -1462,6 +1538,9 @@ type CreateAssignmentRequest struct {
 	HardDeadline            *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=hard_deadline,json=hardDeadline,proto3" json:"hard_deadline,omitempty"`
 	MaxScore                int32                  `protobuf:"varint,9,opt,name=max_score,json=maxScore,proto3" json:"max_score,omitempty"`
 	AutoRequestReviewOnPass bool                   `protobuf:"varint,10,opt,name=auto_request_review_on_pass,json=autoRequestReviewOnPass,proto3" json:"auto_request_review_on_pass,omitempty"`
+	RequiresDefense         bool                   `protobuf:"varint,11,opt,name=requires_defense,json=requiresDefense,proto3" json:"requires_defense,omitempty"`
+	GradingPolicy           *GradingPolicy         `protobuf:"bytes,12,opt,name=grading_policy,json=gradingPolicy,proto3" json:"grading_policy,omitempty"`
+	Runner                  RunnerKind             `protobuf:"varint,13,opt,name=runner,proto3,enum=lms.v1.RunnerKind" json:"runner,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -1564,6 +1643,27 @@ func (x *CreateAssignmentRequest) GetAutoRequestReviewOnPass() bool {
 		return x.AutoRequestReviewOnPass
 	}
 	return false
+}
+
+func (x *CreateAssignmentRequest) GetRequiresDefense() bool {
+	if x != nil {
+		return x.RequiresDefense
+	}
+	return false
+}
+
+func (x *CreateAssignmentRequest) GetGradingPolicy() *GradingPolicy {
+	if x != nil {
+		return x.GradingPolicy
+	}
+	return nil
+}
+
+func (x *CreateAssignmentRequest) GetRunner() RunnerKind {
+	if x != nil {
+		return x.Runner
+	}
+	return RunnerKind_RUNNER_KIND_UNSPECIFIED
 }
 
 type GetAssignmentRequest struct {
@@ -2285,7 +2385,7 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\tcourse_id\x18\x03 \x01(\tR\bcourseId\x12 \n" +
 	"\x04role\x18\x04 \x01(\x0e2\f.lms.v1.RoleR\x04role\x12;\n" +
 	"\venrolled_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"enrolledAt\"\xea\x03\n" +
+	"enrolledAt\"\xff\x04\n" +
 	"\n" +
 	"Assignment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
@@ -2300,7 +2400,10 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\x13repo_naming_pattern\x18\n" +
 	" \x01(\tR\x11repoNamingPattern\x12<\n" +
 	"\x1bauto_request_review_on_pass\x18\v \x01(\bR\x17autoRequestReviewOnPass\x12)\n" +
-	"\x05audit\x18\f \x01(\v2\x13.lms.v1.AuditFieldsR\x05audit\"m\n" +
+	"\x05audit\x18\f \x01(\v2\x13.lms.v1.AuditFieldsR\x05audit\x12)\n" +
+	"\x10requires_defense\x18\r \x01(\bR\x0frequiresDefense\x12<\n" +
+	"\x0egrading_policy\x18\x0e \x01(\v2\x15.lms.v1.GradingPolicyR\rgradingPolicy\x12*\n" +
+	"\x06runner\x18\x0f \x01(\x0e2\x12.lms.v1.RunnerKindR\x06runner\"m\n" +
 	"\x11CreateUserRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1f\n" +
@@ -2350,7 +2453,7 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\auser_id\x18\x03 \x01(\tR\x06userId\"y\n" +
 	"\x17ListEnrollmentsResponse\x124\n" +
 	"\venrollments\x18\x01 \x03(\v2\x12.lms.v1.EnrollmentR\venrollments\x12(\n" +
-	"\x04page\x18\x02 \x01(\v2\x14.lms.v1.PageResponseR\x04page\"\xbc\x03\n" +
+	"\x04page\x18\x02 \x01(\v2\x14.lms.v1.PageResponseR\x04page\"\xd1\x04\n" +
 	"\x17CreateAssignmentRequest\x12\x1b\n" +
 	"\tcourse_id\x18\x01 \x01(\tR\bcourseId\x12\x12\n" +
 	"\x04slug\x18\x02 \x01(\tR\x04slug\x12\x14\n" +
@@ -2362,7 +2465,10 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\rhard_deadline\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\fhardDeadline\x12\x1b\n" +
 	"\tmax_score\x18\t \x01(\x05R\bmaxScore\x12<\n" +
 	"\x1bauto_request_review_on_pass\x18\n" +
-	" \x01(\bR\x17autoRequestReviewOnPass\"&\n" +
+	" \x01(\bR\x17autoRequestReviewOnPass\x12)\n" +
+	"\x10requires_defense\x18\v \x01(\bR\x0frequiresDefense\x12<\n" +
+	"\x0egrading_policy\x18\f \x01(\v2\x15.lms.v1.GradingPolicyR\rgradingPolicy\x12*\n" +
+	"\x06runner\x18\r \x01(\x0e2\x12.lms.v1.RunnerKindR\x06runner\"&\n" +
 	"\x14GetAssignmentRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"^\n" +
 	"\x16ListAssignmentsRequest\x12'\n" +
@@ -2420,7 +2526,12 @@ const file_lms_v1_identity_proto_rawDesc = "" +
 	"\fROLE_STUDENT\x10\x01\x12\x13\n" +
 	"\x0fROLE_INSTRUCTOR\x10\x02\x12\x0e\n" +
 	"\n" +
-	"ROLE_ADMIN\x10\x03*\x94\x01\n" +
+	"ROLE_ADMIN\x10\x03*c\n" +
+	"\n" +
+	"RunnerKind\x12\x1b\n" +
+	"\x17RUNNER_KIND_UNSPECIFIED\x10\x00\x12\x1b\n" +
+	"\x17RUNNER_KIND_EXTERNAL_CI\x10\x01\x12\x1b\n" +
+	"\x17RUNNER_KIND_SELF_HOSTED\x10\x02*\x94\x01\n" +
 	"\x11ProvisioningState\x12\"\n" +
 	"\x1ePROVISIONING_STATE_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aPROVISIONING_STATE_PENDING\x10\x01\x12\x1c\n" +
@@ -2464,129 +2575,135 @@ func file_lms_v1_identity_proto_rawDescGZIP() []byte {
 	return file_lms_v1_identity_proto_rawDescData
 }
 
-var file_lms_v1_identity_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_lms_v1_identity_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_lms_v1_identity_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_lms_v1_identity_proto_goTypes = []any{
 	(Role)(0),                          // 0: lms.v1.Role
-	(ProvisioningState)(0),             // 1: lms.v1.ProvisioningState
-	(*User)(nil),                       // 2: lms.v1.User
-	(*VCSIdentity)(nil),                // 3: lms.v1.VCSIdentity
-	(*Course)(nil),                     // 4: lms.v1.Course
-	(*VCSBinding)(nil),                 // 5: lms.v1.VCSBinding
-	(*Enrollment)(nil),                 // 6: lms.v1.Enrollment
-	(*Assignment)(nil),                 // 7: lms.v1.Assignment
-	(*CreateUserRequest)(nil),          // 8: lms.v1.CreateUserRequest
-	(*GetUserRequestById)(nil),         // 9: lms.v1.GetUserRequestById
-	(*GetUserRequestByEmail)(nil),      // 10: lms.v1.GetUserRequestByEmail
-	(*ListUsersRequest)(nil),           // 11: lms.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),          // 12: lms.v1.ListUsersResponse
-	(*UpdateUserRequest)(nil),          // 13: lms.v1.UpdateUserRequest
-	(*CreateCourseRequest)(nil),        // 14: lms.v1.CreateCourseRequest
-	(*GetCourseRequest)(nil),           // 15: lms.v1.GetCourseRequest
-	(*ListCoursesRequest)(nil),         // 16: lms.v1.ListCoursesRequest
-	(*ListCoursesResponse)(nil),        // 17: lms.v1.ListCoursesResponse
-	(*EnrollRequest)(nil),              // 18: lms.v1.EnrollRequest
-	(*UnenrollRequest)(nil),            // 19: lms.v1.UnenrollRequest
-	(*UnenrollResponse)(nil),           // 20: lms.v1.UnenrollResponse
-	(*ListEnrollmentsRequest)(nil),     // 21: lms.v1.ListEnrollmentsRequest
-	(*ListEnrollmentsResponse)(nil),    // 22: lms.v1.ListEnrollmentsResponse
-	(*CreateAssignmentRequest)(nil),    // 23: lms.v1.CreateAssignmentRequest
-	(*GetAssignmentRequest)(nil),       // 24: lms.v1.GetAssignmentRequest
-	(*ListAssignmentsRequest)(nil),     // 25: lms.v1.ListAssignmentsRequest
-	(*ListAssignmentsResponse)(nil),    // 26: lms.v1.ListAssignmentsResponse
-	(*LinkVCSIdentityRequest)(nil),     // 27: lms.v1.LinkVCSIdentityRequest
-	(*UnlinkVCSIdentityRequest)(nil),   // 28: lms.v1.UnlinkVCSIdentityRequest
-	(*UnlinkVCSIdentityResponse)(nil),  // 29: lms.v1.UnlinkVCSIdentityResponse
-	(*ListVCSIdentitiesRequest)(nil),   // 30: lms.v1.ListVCSIdentitiesRequest
-	(*ListVCSIdentitiesResponse)(nil),  // 31: lms.v1.ListVCSIdentitiesResponse
-	(*StudentRepo)(nil),                // 32: lms.v1.StudentRepo
-	(*RegisterStudentRepoRequest)(nil), // 33: lms.v1.RegisterStudentRepoRequest
-	(*GetStudentRepoRequest)(nil),      // 34: lms.v1.GetStudentRepoRequest
-	(*AuditFields)(nil),                // 35: lms.v1.AuditFields
-	(*ProviderRef)(nil),                // 36: lms.v1.ProviderRef
-	(*timestamppb.Timestamp)(nil),      // 37: google.protobuf.Timestamp
-	(*PageRequest)(nil),                // 38: lms.v1.PageRequest
-	(*PageResponse)(nil),               // 39: lms.v1.PageResponse
+	(RunnerKind)(0),                    // 1: lms.v1.RunnerKind
+	(ProvisioningState)(0),             // 2: lms.v1.ProvisioningState
+	(*User)(nil),                       // 3: lms.v1.User
+	(*VCSIdentity)(nil),                // 4: lms.v1.VCSIdentity
+	(*Course)(nil),                     // 5: lms.v1.Course
+	(*VCSBinding)(nil),                 // 6: lms.v1.VCSBinding
+	(*Enrollment)(nil),                 // 7: lms.v1.Enrollment
+	(*Assignment)(nil),                 // 8: lms.v1.Assignment
+	(*CreateUserRequest)(nil),          // 9: lms.v1.CreateUserRequest
+	(*GetUserRequestById)(nil),         // 10: lms.v1.GetUserRequestById
+	(*GetUserRequestByEmail)(nil),      // 11: lms.v1.GetUserRequestByEmail
+	(*ListUsersRequest)(nil),           // 12: lms.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),          // 13: lms.v1.ListUsersResponse
+	(*UpdateUserRequest)(nil),          // 14: lms.v1.UpdateUserRequest
+	(*CreateCourseRequest)(nil),        // 15: lms.v1.CreateCourseRequest
+	(*GetCourseRequest)(nil),           // 16: lms.v1.GetCourseRequest
+	(*ListCoursesRequest)(nil),         // 17: lms.v1.ListCoursesRequest
+	(*ListCoursesResponse)(nil),        // 18: lms.v1.ListCoursesResponse
+	(*EnrollRequest)(nil),              // 19: lms.v1.EnrollRequest
+	(*UnenrollRequest)(nil),            // 20: lms.v1.UnenrollRequest
+	(*UnenrollResponse)(nil),           // 21: lms.v1.UnenrollResponse
+	(*ListEnrollmentsRequest)(nil),     // 22: lms.v1.ListEnrollmentsRequest
+	(*ListEnrollmentsResponse)(nil),    // 23: lms.v1.ListEnrollmentsResponse
+	(*CreateAssignmentRequest)(nil),    // 24: lms.v1.CreateAssignmentRequest
+	(*GetAssignmentRequest)(nil),       // 25: lms.v1.GetAssignmentRequest
+	(*ListAssignmentsRequest)(nil),     // 26: lms.v1.ListAssignmentsRequest
+	(*ListAssignmentsResponse)(nil),    // 27: lms.v1.ListAssignmentsResponse
+	(*LinkVCSIdentityRequest)(nil),     // 28: lms.v1.LinkVCSIdentityRequest
+	(*UnlinkVCSIdentityRequest)(nil),   // 29: lms.v1.UnlinkVCSIdentityRequest
+	(*UnlinkVCSIdentityResponse)(nil),  // 30: lms.v1.UnlinkVCSIdentityResponse
+	(*ListVCSIdentitiesRequest)(nil),   // 31: lms.v1.ListVCSIdentitiesRequest
+	(*ListVCSIdentitiesResponse)(nil),  // 32: lms.v1.ListVCSIdentitiesResponse
+	(*StudentRepo)(nil),                // 33: lms.v1.StudentRepo
+	(*RegisterStudentRepoRequest)(nil), // 34: lms.v1.RegisterStudentRepoRequest
+	(*GetStudentRepoRequest)(nil),      // 35: lms.v1.GetStudentRepoRequest
+	(*AuditFields)(nil),                // 36: lms.v1.AuditFields
+	(*ProviderRef)(nil),                // 37: lms.v1.ProviderRef
+	(*timestamppb.Timestamp)(nil),      // 38: google.protobuf.Timestamp
+	(*GradingPolicy)(nil),              // 39: lms.v1.GradingPolicy
+	(*PageRequest)(nil),                // 40: lms.v1.PageRequest
+	(*PageResponse)(nil),               // 41: lms.v1.PageResponse
 }
 var file_lms_v1_identity_proto_depIdxs = []int32{
-	3,  // 0: lms.v1.User.vcs_identities:type_name -> lms.v1.VCSIdentity
-	35, // 1: lms.v1.User.audit:type_name -> lms.v1.AuditFields
-	36, // 2: lms.v1.VCSIdentity.provider:type_name -> lms.v1.ProviderRef
-	37, // 3: lms.v1.VCSIdentity.linked_at:type_name -> google.protobuf.Timestamp
-	5,  // 4: lms.v1.Course.vcs:type_name -> lms.v1.VCSBinding
-	35, // 5: lms.v1.Course.audit:type_name -> lms.v1.AuditFields
-	36, // 6: lms.v1.VCSBinding.provider:type_name -> lms.v1.ProviderRef
+	4,  // 0: lms.v1.User.vcs_identities:type_name -> lms.v1.VCSIdentity
+	36, // 1: lms.v1.User.audit:type_name -> lms.v1.AuditFields
+	37, // 2: lms.v1.VCSIdentity.provider:type_name -> lms.v1.ProviderRef
+	38, // 3: lms.v1.VCSIdentity.linked_at:type_name -> google.protobuf.Timestamp
+	6,  // 4: lms.v1.Course.vcs:type_name -> lms.v1.VCSBinding
+	36, // 5: lms.v1.Course.audit:type_name -> lms.v1.AuditFields
+	37, // 6: lms.v1.VCSBinding.provider:type_name -> lms.v1.ProviderRef
 	0,  // 7: lms.v1.Enrollment.role:type_name -> lms.v1.Role
-	37, // 8: lms.v1.Enrollment.enrolled_at:type_name -> google.protobuf.Timestamp
-	37, // 9: lms.v1.Assignment.deadline:type_name -> google.protobuf.Timestamp
-	37, // 10: lms.v1.Assignment.hard_deadline:type_name -> google.protobuf.Timestamp
-	35, // 11: lms.v1.Assignment.audit:type_name -> lms.v1.AuditFields
-	38, // 12: lms.v1.ListUsersRequest.page:type_name -> lms.v1.PageRequest
-	2,  // 13: lms.v1.ListUsersResponse.users:type_name -> lms.v1.User
-	39, // 14: lms.v1.ListUsersResponse.page:type_name -> lms.v1.PageResponse
-	38, // 15: lms.v1.ListCoursesRequest.page:type_name -> lms.v1.PageRequest
-	4,  // 16: lms.v1.ListCoursesResponse.courses:type_name -> lms.v1.Course
-	39, // 17: lms.v1.ListCoursesResponse.page:type_name -> lms.v1.PageResponse
-	0,  // 18: lms.v1.EnrollRequest.role:type_name -> lms.v1.Role
-	38, // 19: lms.v1.ListEnrollmentsRequest.page:type_name -> lms.v1.PageRequest
-	6,  // 20: lms.v1.ListEnrollmentsResponse.enrollments:type_name -> lms.v1.Enrollment
-	39, // 21: lms.v1.ListEnrollmentsResponse.page:type_name -> lms.v1.PageResponse
-	37, // 22: lms.v1.CreateAssignmentRequest.deadline:type_name -> google.protobuf.Timestamp
-	37, // 23: lms.v1.CreateAssignmentRequest.hard_deadline:type_name -> google.protobuf.Timestamp
-	38, // 24: lms.v1.ListAssignmentsRequest.page:type_name -> lms.v1.PageRequest
-	7,  // 25: lms.v1.ListAssignmentsResponse.assignments:type_name -> lms.v1.Assignment
-	39, // 26: lms.v1.ListAssignmentsResponse.page:type_name -> lms.v1.PageResponse
-	36, // 27: lms.v1.LinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
-	37, // 28: lms.v1.LinkVCSIdentityRequest.expires_at:type_name -> google.protobuf.Timestamp
-	36, // 29: lms.v1.UnlinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
-	3,  // 30: lms.v1.ListVCSIdentitiesResponse.identities:type_name -> lms.v1.VCSIdentity
-	36, // 31: lms.v1.StudentRepo.provider:type_name -> lms.v1.ProviderRef
-	1,  // 32: lms.v1.StudentRepo.state:type_name -> lms.v1.ProvisioningState
-	35, // 33: lms.v1.StudentRepo.audit:type_name -> lms.v1.AuditFields
-	36, // 34: lms.v1.RegisterStudentRepoRequest.provider:type_name -> lms.v1.ProviderRef
-	8,  // 35: lms.v1.IdentityService.CreateUser:input_type -> lms.v1.CreateUserRequest
-	9,  // 36: lms.v1.IdentityService.GetUserById:input_type -> lms.v1.GetUserRequestById
-	10, // 37: lms.v1.IdentityService.GetUserByEmail:input_type -> lms.v1.GetUserRequestByEmail
-	11, // 38: lms.v1.IdentityService.ListUsers:input_type -> lms.v1.ListUsersRequest
-	13, // 39: lms.v1.IdentityService.UpdateUser:input_type -> lms.v1.UpdateUserRequest
-	14, // 40: lms.v1.IdentityService.CreateCourse:input_type -> lms.v1.CreateCourseRequest
-	15, // 41: lms.v1.IdentityService.GetCourse:input_type -> lms.v1.GetCourseRequest
-	16, // 42: lms.v1.IdentityService.ListCourses:input_type -> lms.v1.ListCoursesRequest
-	18, // 43: lms.v1.IdentityService.Enroll:input_type -> lms.v1.EnrollRequest
-	19, // 44: lms.v1.IdentityService.Unenroll:input_type -> lms.v1.UnenrollRequest
-	21, // 45: lms.v1.IdentityService.ListEnrollments:input_type -> lms.v1.ListEnrollmentsRequest
-	23, // 46: lms.v1.IdentityService.CreateAssignment:input_type -> lms.v1.CreateAssignmentRequest
-	24, // 47: lms.v1.IdentityService.GetAssignment:input_type -> lms.v1.GetAssignmentRequest
-	25, // 48: lms.v1.IdentityService.ListAssignments:input_type -> lms.v1.ListAssignmentsRequest
-	27, // 49: lms.v1.IdentityService.LinkVCSIdentity:input_type -> lms.v1.LinkVCSIdentityRequest
-	28, // 50: lms.v1.IdentityService.UnlinkVCSIdentity:input_type -> lms.v1.UnlinkVCSIdentityRequest
-	30, // 51: lms.v1.IdentityService.ListVCSIdentities:input_type -> lms.v1.ListVCSIdentitiesRequest
-	33, // 52: lms.v1.IdentityService.RegisterStudentRepo:input_type -> lms.v1.RegisterStudentRepoRequest
-	34, // 53: lms.v1.IdentityService.GetStudentRepo:input_type -> lms.v1.GetStudentRepoRequest
-	2,  // 54: lms.v1.IdentityService.CreateUser:output_type -> lms.v1.User
-	2,  // 55: lms.v1.IdentityService.GetUserById:output_type -> lms.v1.User
-	2,  // 56: lms.v1.IdentityService.GetUserByEmail:output_type -> lms.v1.User
-	12, // 57: lms.v1.IdentityService.ListUsers:output_type -> lms.v1.ListUsersResponse
-	2,  // 58: lms.v1.IdentityService.UpdateUser:output_type -> lms.v1.User
-	4,  // 59: lms.v1.IdentityService.CreateCourse:output_type -> lms.v1.Course
-	4,  // 60: lms.v1.IdentityService.GetCourse:output_type -> lms.v1.Course
-	17, // 61: lms.v1.IdentityService.ListCourses:output_type -> lms.v1.ListCoursesResponse
-	6,  // 62: lms.v1.IdentityService.Enroll:output_type -> lms.v1.Enrollment
-	20, // 63: lms.v1.IdentityService.Unenroll:output_type -> lms.v1.UnenrollResponse
-	22, // 64: lms.v1.IdentityService.ListEnrollments:output_type -> lms.v1.ListEnrollmentsResponse
-	7,  // 65: lms.v1.IdentityService.CreateAssignment:output_type -> lms.v1.Assignment
-	7,  // 66: lms.v1.IdentityService.GetAssignment:output_type -> lms.v1.Assignment
-	26, // 67: lms.v1.IdentityService.ListAssignments:output_type -> lms.v1.ListAssignmentsResponse
-	3,  // 68: lms.v1.IdentityService.LinkVCSIdentity:output_type -> lms.v1.VCSIdentity
-	29, // 69: lms.v1.IdentityService.UnlinkVCSIdentity:output_type -> lms.v1.UnlinkVCSIdentityResponse
-	31, // 70: lms.v1.IdentityService.ListVCSIdentities:output_type -> lms.v1.ListVCSIdentitiesResponse
-	32, // 71: lms.v1.IdentityService.RegisterStudentRepo:output_type -> lms.v1.StudentRepo
-	32, // 72: lms.v1.IdentityService.GetStudentRepo:output_type -> lms.v1.StudentRepo
-	54, // [54:73] is the sub-list for method output_type
-	35, // [35:54] is the sub-list for method input_type
-	35, // [35:35] is the sub-list for extension type_name
-	35, // [35:35] is the sub-list for extension extendee
-	0,  // [0:35] is the sub-list for field type_name
+	38, // 8: lms.v1.Enrollment.enrolled_at:type_name -> google.protobuf.Timestamp
+	38, // 9: lms.v1.Assignment.deadline:type_name -> google.protobuf.Timestamp
+	38, // 10: lms.v1.Assignment.hard_deadline:type_name -> google.protobuf.Timestamp
+	36, // 11: lms.v1.Assignment.audit:type_name -> lms.v1.AuditFields
+	39, // 12: lms.v1.Assignment.grading_policy:type_name -> lms.v1.GradingPolicy
+	1,  // 13: lms.v1.Assignment.runner:type_name -> lms.v1.RunnerKind
+	40, // 14: lms.v1.ListUsersRequest.page:type_name -> lms.v1.PageRequest
+	3,  // 15: lms.v1.ListUsersResponse.users:type_name -> lms.v1.User
+	41, // 16: lms.v1.ListUsersResponse.page:type_name -> lms.v1.PageResponse
+	40, // 17: lms.v1.ListCoursesRequest.page:type_name -> lms.v1.PageRequest
+	5,  // 18: lms.v1.ListCoursesResponse.courses:type_name -> lms.v1.Course
+	41, // 19: lms.v1.ListCoursesResponse.page:type_name -> lms.v1.PageResponse
+	0,  // 20: lms.v1.EnrollRequest.role:type_name -> lms.v1.Role
+	40, // 21: lms.v1.ListEnrollmentsRequest.page:type_name -> lms.v1.PageRequest
+	7,  // 22: lms.v1.ListEnrollmentsResponse.enrollments:type_name -> lms.v1.Enrollment
+	41, // 23: lms.v1.ListEnrollmentsResponse.page:type_name -> lms.v1.PageResponse
+	38, // 24: lms.v1.CreateAssignmentRequest.deadline:type_name -> google.protobuf.Timestamp
+	38, // 25: lms.v1.CreateAssignmentRequest.hard_deadline:type_name -> google.protobuf.Timestamp
+	39, // 26: lms.v1.CreateAssignmentRequest.grading_policy:type_name -> lms.v1.GradingPolicy
+	1,  // 27: lms.v1.CreateAssignmentRequest.runner:type_name -> lms.v1.RunnerKind
+	40, // 28: lms.v1.ListAssignmentsRequest.page:type_name -> lms.v1.PageRequest
+	8,  // 29: lms.v1.ListAssignmentsResponse.assignments:type_name -> lms.v1.Assignment
+	41, // 30: lms.v1.ListAssignmentsResponse.page:type_name -> lms.v1.PageResponse
+	37, // 31: lms.v1.LinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
+	38, // 32: lms.v1.LinkVCSIdentityRequest.expires_at:type_name -> google.protobuf.Timestamp
+	37, // 33: lms.v1.UnlinkVCSIdentityRequest.provider:type_name -> lms.v1.ProviderRef
+	4,  // 34: lms.v1.ListVCSIdentitiesResponse.identities:type_name -> lms.v1.VCSIdentity
+	37, // 35: lms.v1.StudentRepo.provider:type_name -> lms.v1.ProviderRef
+	2,  // 36: lms.v1.StudentRepo.state:type_name -> lms.v1.ProvisioningState
+	36, // 37: lms.v1.StudentRepo.audit:type_name -> lms.v1.AuditFields
+	37, // 38: lms.v1.RegisterStudentRepoRequest.provider:type_name -> lms.v1.ProviderRef
+	9,  // 39: lms.v1.IdentityService.CreateUser:input_type -> lms.v1.CreateUserRequest
+	10, // 40: lms.v1.IdentityService.GetUserById:input_type -> lms.v1.GetUserRequestById
+	11, // 41: lms.v1.IdentityService.GetUserByEmail:input_type -> lms.v1.GetUserRequestByEmail
+	12, // 42: lms.v1.IdentityService.ListUsers:input_type -> lms.v1.ListUsersRequest
+	14, // 43: lms.v1.IdentityService.UpdateUser:input_type -> lms.v1.UpdateUserRequest
+	15, // 44: lms.v1.IdentityService.CreateCourse:input_type -> lms.v1.CreateCourseRequest
+	16, // 45: lms.v1.IdentityService.GetCourse:input_type -> lms.v1.GetCourseRequest
+	17, // 46: lms.v1.IdentityService.ListCourses:input_type -> lms.v1.ListCoursesRequest
+	19, // 47: lms.v1.IdentityService.Enroll:input_type -> lms.v1.EnrollRequest
+	20, // 48: lms.v1.IdentityService.Unenroll:input_type -> lms.v1.UnenrollRequest
+	22, // 49: lms.v1.IdentityService.ListEnrollments:input_type -> lms.v1.ListEnrollmentsRequest
+	24, // 50: lms.v1.IdentityService.CreateAssignment:input_type -> lms.v1.CreateAssignmentRequest
+	25, // 51: lms.v1.IdentityService.GetAssignment:input_type -> lms.v1.GetAssignmentRequest
+	26, // 52: lms.v1.IdentityService.ListAssignments:input_type -> lms.v1.ListAssignmentsRequest
+	28, // 53: lms.v1.IdentityService.LinkVCSIdentity:input_type -> lms.v1.LinkVCSIdentityRequest
+	29, // 54: lms.v1.IdentityService.UnlinkVCSIdentity:input_type -> lms.v1.UnlinkVCSIdentityRequest
+	31, // 55: lms.v1.IdentityService.ListVCSIdentities:input_type -> lms.v1.ListVCSIdentitiesRequest
+	34, // 56: lms.v1.IdentityService.RegisterStudentRepo:input_type -> lms.v1.RegisterStudentRepoRequest
+	35, // 57: lms.v1.IdentityService.GetStudentRepo:input_type -> lms.v1.GetStudentRepoRequest
+	3,  // 58: lms.v1.IdentityService.CreateUser:output_type -> lms.v1.User
+	3,  // 59: lms.v1.IdentityService.GetUserById:output_type -> lms.v1.User
+	3,  // 60: lms.v1.IdentityService.GetUserByEmail:output_type -> lms.v1.User
+	13, // 61: lms.v1.IdentityService.ListUsers:output_type -> lms.v1.ListUsersResponse
+	3,  // 62: lms.v1.IdentityService.UpdateUser:output_type -> lms.v1.User
+	5,  // 63: lms.v1.IdentityService.CreateCourse:output_type -> lms.v1.Course
+	5,  // 64: lms.v1.IdentityService.GetCourse:output_type -> lms.v1.Course
+	18, // 65: lms.v1.IdentityService.ListCourses:output_type -> lms.v1.ListCoursesResponse
+	7,  // 66: lms.v1.IdentityService.Enroll:output_type -> lms.v1.Enrollment
+	21, // 67: lms.v1.IdentityService.Unenroll:output_type -> lms.v1.UnenrollResponse
+	23, // 68: lms.v1.IdentityService.ListEnrollments:output_type -> lms.v1.ListEnrollmentsResponse
+	8,  // 69: lms.v1.IdentityService.CreateAssignment:output_type -> lms.v1.Assignment
+	8,  // 70: lms.v1.IdentityService.GetAssignment:output_type -> lms.v1.Assignment
+	27, // 71: lms.v1.IdentityService.ListAssignments:output_type -> lms.v1.ListAssignmentsResponse
+	4,  // 72: lms.v1.IdentityService.LinkVCSIdentity:output_type -> lms.v1.VCSIdentity
+	30, // 73: lms.v1.IdentityService.UnlinkVCSIdentity:output_type -> lms.v1.UnlinkVCSIdentityResponse
+	32, // 74: lms.v1.IdentityService.ListVCSIdentities:output_type -> lms.v1.ListVCSIdentitiesResponse
+	33, // 75: lms.v1.IdentityService.RegisterStudentRepo:output_type -> lms.v1.StudentRepo
+	33, // 76: lms.v1.IdentityService.GetStudentRepo:output_type -> lms.v1.StudentRepo
+	58, // [58:77] is the sub-list for method output_type
+	39, // [39:58] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_lms_v1_identity_proto_init() }
@@ -2602,7 +2719,7 @@ func file_lms_v1_identity_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lms_v1_identity_proto_rawDesc), len(file_lms_v1_identity_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      3,
 			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,

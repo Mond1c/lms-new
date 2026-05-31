@@ -14,13 +14,38 @@ service SubmissionService {
   rpc UpdateState(UpdateStateRequest) returns (Submission);
 }
 
-enum SubmissionState {
-  SUBMISSION_STATE_UNSPECIFIED = 0;
-  SUBMISSION_STATE_PENDING = 1;
-  SUBMISSION_STATE_GRADING = 2;
-  SUBMISSION_STATE_GRADED = 3;
-  SUBMISSION_STATE_FAILED = 4;
-  SUBMISSION_STATE_REJECTED = 5;
+// A submission carries three independent (orthogonal) tracks instead of one
+// giant lifecycle enum. The UI derives an overall status and queue filters from
+// the combination. See docs/architecture.md §9.
+
+// Automated tests track (CI or self-hosted runner).
+enum TestState {
+  TEST_STATE_UNSPECIFIED = 0;
+  TEST_STATE_PENDING = 1;
+  TEST_STATE_RUNNING = 2;
+  TEST_STATE_PASSED = 3;
+  TEST_STATE_FAILED = 4;
+}
+
+// Human code-review track. REQUESTED = student asked for review (needs review);
+// CLAIMED = an instructor holds the review lock. Named ReviewTrackState to avoid
+// colliding with vcs.proto's ReviewState (provider-level review verdict).
+enum ReviewTrackState {
+  REVIEW_TRACK_STATE_UNSPECIFIED = 0;
+  REVIEW_TRACK_STATE_NOT_REQUESTED = 1;
+  REVIEW_TRACK_STATE_REQUESTED = 2;
+  REVIEW_TRACK_STATE_CLAIMED = 3;
+  REVIEW_TRACK_STATE_CHANGES_REQUESTED = 4;
+  REVIEW_TRACK_STATE_APPROVED = 5;
+}
+
+// Oral defence track. NOT_REQUIRED when the assignment has no requires_defense.
+enum DefenceState {
+  DEFENCE_STATE_UNSPECIFIED = 0;
+  DEFENCE_STATE_NOT_REQUIRED = 1;
+  DEFENCE_STATE_AWAITING = 2;
+  DEFENCE_STATE_PASSED = 3;
+  DEFENCE_STATE_FAILED = 4;
 }
 
 enum SubmissionSource {
@@ -39,8 +64,10 @@ message Submission {
   string course_id = 4;
   SubmissionSource source = 5;
   SubmissionArtifact artifact = 6;
-  SubmissionState state = 7;
-  string state_reason = 8;
+  TestState test_state = 7;
+  ReviewTrackState review_state = 8;
+  DefenceState defence_state = 12;
+  string state_reason = 13;
   optional int32 score = 9;
   AuditFields audit = 10;
   VCSAttribution vcs = 11;
@@ -84,7 +111,9 @@ message ListSubmissionsRequest {
   string course_id = 2;
   string assignment_id = 3;
   string user_id = 4;
-  repeated SubmissionState states = 5;
+  repeated TestState test_states = 5;
+  repeated ReviewTrackState review_states = 7;
+  repeated DefenceState defence_states = 8;
   SortOrder order_by_created = 6;
 }
 
@@ -99,14 +128,18 @@ message StreamStatusRequest {
 
 message SubmissionStatus {
   string submission_id = 1;
-  SubmissionState state = 2;
+  TestState test_state = 2;
+  ReviewTrackState review_state = 5;
+  DefenceState defence_state = 6;
   string message = 3;
   google.protobuf.Timestamp at = 4;
 }
 
 message UpdateStateRequest {
   string id = 1;
-  SubmissionState state = 2;
+  optional TestState test_state = 2;
+  optional ReviewTrackState review_state = 5;
+  optional DefenceState defence_state = 6;
   string reason = 3;
   optional int32 score = 4;
 }

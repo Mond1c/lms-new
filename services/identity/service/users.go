@@ -14,6 +14,7 @@ type UserRepo interface {
 	GetByID(ctx context.Context, id string) (*domain.User, error)
 	GetByEmail(ctx context.Context, email string) (*domain.User, error)
 	List(ctx context.Context, limit, offset int32) ([]*domain.User, error)
+	Update(ctx context.Context, u *domain.User) (*domain.User, error)
 }
 
 type UsersService struct {
@@ -83,6 +84,22 @@ func (s *UsersService) GetByEmail(ctx context.Context, email string) (*domain.Us
 	user, err := s.repo.GetByEmail(ctx, email)
 	if err != nil {
 		return nil, fmt.Errorf("get by email: %w", err)
+	}
+	return user, nil
+}
+
+func (s *UsersService) List(ctx context.Context, limit, offset int32) ([]*domain.User, error) {
+	users, err := s.repo.List(ctx, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("list: %w", err)
+	}
+	return users, nil
+}
+
+func (s *UsersService) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
+	user, err := s.repo.Update(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("update: %w", err)
 	}
 	return user, nil
 }

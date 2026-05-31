@@ -52,6 +52,27 @@ const (
 	// GatewayServiceSubmitFromWebProcedure is the fully-qualified name of the GatewayService's
 	// SubmitFromWeb RPC.
 	GatewayServiceSubmitFromWebProcedure = "/lms.v1.GatewayService/SubmitFromWeb"
+	// GatewayServiceListCourseSubmissionsProcedure is the fully-qualified name of the GatewayService's
+	// ListCourseSubmissions RPC.
+	GatewayServiceListCourseSubmissionsProcedure = "/lms.v1.GatewayService/ListCourseSubmissions"
+	// GatewayServiceClaimSubmissionProcedure is the fully-qualified name of the GatewayService's
+	// ClaimSubmission RPC.
+	GatewayServiceClaimSubmissionProcedure = "/lms.v1.GatewayService/ClaimSubmission"
+	// GatewayServiceReleaseClaimProcedure is the fully-qualified name of the GatewayService's
+	// ReleaseClaim RPC.
+	GatewayServiceReleaseClaimProcedure = "/lms.v1.GatewayService/ReleaseClaim"
+	// GatewayServiceSubmitReviewProcedure is the fully-qualified name of the GatewayService's
+	// SubmitReview RPC.
+	GatewayServiceSubmitReviewProcedure = "/lms.v1.GatewayService/SubmitReview"
+	// GatewayServiceOverrideTestScoreProcedure is the fully-qualified name of the GatewayService's
+	// OverrideTestScore RPC.
+	GatewayServiceOverrideTestScoreProcedure = "/lms.v1.GatewayService/OverrideTestScore"
+	// GatewayServiceRecordDefenceProcedure is the fully-qualified name of the GatewayService's
+	// RecordDefence RPC.
+	GatewayServiceRecordDefenceProcedure = "/lms.v1.GatewayService/RecordDefence"
+	// GatewayServiceCourseGradeOverviewProcedure is the fully-qualified name of the GatewayService's
+	// CourseGradeOverview RPC.
+	GatewayServiceCourseGradeOverviewProcedure = "/lms.v1.GatewayService/CourseGradeOverview"
 )
 
 // GatewayServiceClient is a client for the lms.v1.GatewayService service.
@@ -59,10 +80,20 @@ type GatewayServiceClient interface {
 	Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error)
 	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 	Whoami(context.Context, *connect.Request[v1.WhoamiRequest]) (*connect.Response[v1.WhoamiResponse], error)
+	// Student-facing aggregations.
 	MyDashboard(context.Context, *connect.Request[v1.MyDashboardRequest]) (*connect.Response[v1.MyDashboardResponse], error)
 	MySubmission(context.Context, *connect.Request[v1.MySubmissionRequest]) (*connect.Response[v1.MySubmissionResponse], error)
 	ResolveSubmission(context.Context, *connect.Request[v1.ResolveSubmissionRequest]) (*connect.Response[v1.ResolveSubmissionResponse], error)
 	SubmitFromWeb(context.Context, *connect.Request[v1.SubmitFromWebRequest]) (*connect.Response[v1.SubmitResponse], error)
+	// Instructor-facing aggregations (review queue, claiming, grading).
+	// The acting reviewer/examiner is taken from the auth context, not the request.
+	ListCourseSubmissions(context.Context, *connect.Request[v1.ListCourseSubmissionsRequest]) (*connect.Response[v1.ListCourseSubmissionsResponse], error)
+	ClaimSubmission(context.Context, *connect.Request[v1.ClaimSubmissionRequest]) (*connect.Response[v1.ClaimSubmissionResponse], error)
+	ReleaseClaim(context.Context, *connect.Request[v1.ReleaseClaimRequest]) (*connect.Response[v1.ReleaseClaimResponse], error)
+	SubmitReview(context.Context, *connect.Request[v1.WebSubmitReviewRequest]) (*connect.Response[v1.Review], error)
+	OverrideTestScore(context.Context, *connect.Request[v1.WebOverrideTestScoreRequest]) (*connect.Response[v1.FinalGrade], error)
+	RecordDefence(context.Context, *connect.Request[v1.WebRecordDefenceRequest]) (*connect.Response[v1.Defence], error)
+	CourseGradeOverview(context.Context, *connect.Request[v1.CourseGradeOverviewRequest]) (*connect.Response[v1.CourseGradeOverviewResponse], error)
 }
 
 // NewGatewayServiceClient constructs a client for the lms.v1.GatewayService service. By default, it
@@ -118,18 +149,67 @@ func NewGatewayServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(gatewayServiceMethods.ByName("SubmitFromWeb")),
 			connect.WithClientOptions(opts...),
 		),
+		listCourseSubmissions: connect.NewClient[v1.ListCourseSubmissionsRequest, v1.ListCourseSubmissionsResponse](
+			httpClient,
+			baseURL+GatewayServiceListCourseSubmissionsProcedure,
+			connect.WithSchema(gatewayServiceMethods.ByName("ListCourseSubmissions")),
+			connect.WithClientOptions(opts...),
+		),
+		claimSubmission: connect.NewClient[v1.ClaimSubmissionRequest, v1.ClaimSubmissionResponse](
+			httpClient,
+			baseURL+GatewayServiceClaimSubmissionProcedure,
+			connect.WithSchema(gatewayServiceMethods.ByName("ClaimSubmission")),
+			connect.WithClientOptions(opts...),
+		),
+		releaseClaim: connect.NewClient[v1.ReleaseClaimRequest, v1.ReleaseClaimResponse](
+			httpClient,
+			baseURL+GatewayServiceReleaseClaimProcedure,
+			connect.WithSchema(gatewayServiceMethods.ByName("ReleaseClaim")),
+			connect.WithClientOptions(opts...),
+		),
+		submitReview: connect.NewClient[v1.WebSubmitReviewRequest, v1.Review](
+			httpClient,
+			baseURL+GatewayServiceSubmitReviewProcedure,
+			connect.WithSchema(gatewayServiceMethods.ByName("SubmitReview")),
+			connect.WithClientOptions(opts...),
+		),
+		overrideTestScore: connect.NewClient[v1.WebOverrideTestScoreRequest, v1.FinalGrade](
+			httpClient,
+			baseURL+GatewayServiceOverrideTestScoreProcedure,
+			connect.WithSchema(gatewayServiceMethods.ByName("OverrideTestScore")),
+			connect.WithClientOptions(opts...),
+		),
+		recordDefence: connect.NewClient[v1.WebRecordDefenceRequest, v1.Defence](
+			httpClient,
+			baseURL+GatewayServiceRecordDefenceProcedure,
+			connect.WithSchema(gatewayServiceMethods.ByName("RecordDefence")),
+			connect.WithClientOptions(opts...),
+		),
+		courseGradeOverview: connect.NewClient[v1.CourseGradeOverviewRequest, v1.CourseGradeOverviewResponse](
+			httpClient,
+			baseURL+GatewayServiceCourseGradeOverviewProcedure,
+			connect.WithSchema(gatewayServiceMethods.ByName("CourseGradeOverview")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // gatewayServiceClient implements GatewayServiceClient.
 type gatewayServiceClient struct {
-	login             *connect.Client[v1.LoginRequest, v1.LoginResponse]
-	refreshToken      *connect.Client[v1.RefreshTokenRequest, v1.RefreshTokenResponse]
-	whoami            *connect.Client[v1.WhoamiRequest, v1.WhoamiResponse]
-	myDashboard       *connect.Client[v1.MyDashboardRequest, v1.MyDashboardResponse]
-	mySubmission      *connect.Client[v1.MySubmissionRequest, v1.MySubmissionResponse]
-	resolveSubmission *connect.Client[v1.ResolveSubmissionRequest, v1.ResolveSubmissionResponse]
-	submitFromWeb     *connect.Client[v1.SubmitFromWebRequest, v1.SubmitResponse]
+	login                 *connect.Client[v1.LoginRequest, v1.LoginResponse]
+	refreshToken          *connect.Client[v1.RefreshTokenRequest, v1.RefreshTokenResponse]
+	whoami                *connect.Client[v1.WhoamiRequest, v1.WhoamiResponse]
+	myDashboard           *connect.Client[v1.MyDashboardRequest, v1.MyDashboardResponse]
+	mySubmission          *connect.Client[v1.MySubmissionRequest, v1.MySubmissionResponse]
+	resolveSubmission     *connect.Client[v1.ResolveSubmissionRequest, v1.ResolveSubmissionResponse]
+	submitFromWeb         *connect.Client[v1.SubmitFromWebRequest, v1.SubmitResponse]
+	listCourseSubmissions *connect.Client[v1.ListCourseSubmissionsRequest, v1.ListCourseSubmissionsResponse]
+	claimSubmission       *connect.Client[v1.ClaimSubmissionRequest, v1.ClaimSubmissionResponse]
+	releaseClaim          *connect.Client[v1.ReleaseClaimRequest, v1.ReleaseClaimResponse]
+	submitReview          *connect.Client[v1.WebSubmitReviewRequest, v1.Review]
+	overrideTestScore     *connect.Client[v1.WebOverrideTestScoreRequest, v1.FinalGrade]
+	recordDefence         *connect.Client[v1.WebRecordDefenceRequest, v1.Defence]
+	courseGradeOverview   *connect.Client[v1.CourseGradeOverviewRequest, v1.CourseGradeOverviewResponse]
 }
 
 // Login calls lms.v1.GatewayService.Login.
@@ -167,15 +247,60 @@ func (c *gatewayServiceClient) SubmitFromWeb(ctx context.Context, req *connect.R
 	return c.submitFromWeb.CallUnary(ctx, req)
 }
 
+// ListCourseSubmissions calls lms.v1.GatewayService.ListCourseSubmissions.
+func (c *gatewayServiceClient) ListCourseSubmissions(ctx context.Context, req *connect.Request[v1.ListCourseSubmissionsRequest]) (*connect.Response[v1.ListCourseSubmissionsResponse], error) {
+	return c.listCourseSubmissions.CallUnary(ctx, req)
+}
+
+// ClaimSubmission calls lms.v1.GatewayService.ClaimSubmission.
+func (c *gatewayServiceClient) ClaimSubmission(ctx context.Context, req *connect.Request[v1.ClaimSubmissionRequest]) (*connect.Response[v1.ClaimSubmissionResponse], error) {
+	return c.claimSubmission.CallUnary(ctx, req)
+}
+
+// ReleaseClaim calls lms.v1.GatewayService.ReleaseClaim.
+func (c *gatewayServiceClient) ReleaseClaim(ctx context.Context, req *connect.Request[v1.ReleaseClaimRequest]) (*connect.Response[v1.ReleaseClaimResponse], error) {
+	return c.releaseClaim.CallUnary(ctx, req)
+}
+
+// SubmitReview calls lms.v1.GatewayService.SubmitReview.
+func (c *gatewayServiceClient) SubmitReview(ctx context.Context, req *connect.Request[v1.WebSubmitReviewRequest]) (*connect.Response[v1.Review], error) {
+	return c.submitReview.CallUnary(ctx, req)
+}
+
+// OverrideTestScore calls lms.v1.GatewayService.OverrideTestScore.
+func (c *gatewayServiceClient) OverrideTestScore(ctx context.Context, req *connect.Request[v1.WebOverrideTestScoreRequest]) (*connect.Response[v1.FinalGrade], error) {
+	return c.overrideTestScore.CallUnary(ctx, req)
+}
+
+// RecordDefence calls lms.v1.GatewayService.RecordDefence.
+func (c *gatewayServiceClient) RecordDefence(ctx context.Context, req *connect.Request[v1.WebRecordDefenceRequest]) (*connect.Response[v1.Defence], error) {
+	return c.recordDefence.CallUnary(ctx, req)
+}
+
+// CourseGradeOverview calls lms.v1.GatewayService.CourseGradeOverview.
+func (c *gatewayServiceClient) CourseGradeOverview(ctx context.Context, req *connect.Request[v1.CourseGradeOverviewRequest]) (*connect.Response[v1.CourseGradeOverviewResponse], error) {
+	return c.courseGradeOverview.CallUnary(ctx, req)
+}
+
 // GatewayServiceHandler is an implementation of the lms.v1.GatewayService service.
 type GatewayServiceHandler interface {
 	Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error)
 	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 	Whoami(context.Context, *connect.Request[v1.WhoamiRequest]) (*connect.Response[v1.WhoamiResponse], error)
+	// Student-facing aggregations.
 	MyDashboard(context.Context, *connect.Request[v1.MyDashboardRequest]) (*connect.Response[v1.MyDashboardResponse], error)
 	MySubmission(context.Context, *connect.Request[v1.MySubmissionRequest]) (*connect.Response[v1.MySubmissionResponse], error)
 	ResolveSubmission(context.Context, *connect.Request[v1.ResolveSubmissionRequest]) (*connect.Response[v1.ResolveSubmissionResponse], error)
 	SubmitFromWeb(context.Context, *connect.Request[v1.SubmitFromWebRequest]) (*connect.Response[v1.SubmitResponse], error)
+	// Instructor-facing aggregations (review queue, claiming, grading).
+	// The acting reviewer/examiner is taken from the auth context, not the request.
+	ListCourseSubmissions(context.Context, *connect.Request[v1.ListCourseSubmissionsRequest]) (*connect.Response[v1.ListCourseSubmissionsResponse], error)
+	ClaimSubmission(context.Context, *connect.Request[v1.ClaimSubmissionRequest]) (*connect.Response[v1.ClaimSubmissionResponse], error)
+	ReleaseClaim(context.Context, *connect.Request[v1.ReleaseClaimRequest]) (*connect.Response[v1.ReleaseClaimResponse], error)
+	SubmitReview(context.Context, *connect.Request[v1.WebSubmitReviewRequest]) (*connect.Response[v1.Review], error)
+	OverrideTestScore(context.Context, *connect.Request[v1.WebOverrideTestScoreRequest]) (*connect.Response[v1.FinalGrade], error)
+	RecordDefence(context.Context, *connect.Request[v1.WebRecordDefenceRequest]) (*connect.Response[v1.Defence], error)
+	CourseGradeOverview(context.Context, *connect.Request[v1.CourseGradeOverviewRequest]) (*connect.Response[v1.CourseGradeOverviewResponse], error)
 }
 
 // NewGatewayServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -227,6 +352,48 @@ func NewGatewayServiceHandler(svc GatewayServiceHandler, opts ...connect.Handler
 		connect.WithSchema(gatewayServiceMethods.ByName("SubmitFromWeb")),
 		connect.WithHandlerOptions(opts...),
 	)
+	gatewayServiceListCourseSubmissionsHandler := connect.NewUnaryHandler(
+		GatewayServiceListCourseSubmissionsProcedure,
+		svc.ListCourseSubmissions,
+		connect.WithSchema(gatewayServiceMethods.ByName("ListCourseSubmissions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gatewayServiceClaimSubmissionHandler := connect.NewUnaryHandler(
+		GatewayServiceClaimSubmissionProcedure,
+		svc.ClaimSubmission,
+		connect.WithSchema(gatewayServiceMethods.ByName("ClaimSubmission")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gatewayServiceReleaseClaimHandler := connect.NewUnaryHandler(
+		GatewayServiceReleaseClaimProcedure,
+		svc.ReleaseClaim,
+		connect.WithSchema(gatewayServiceMethods.ByName("ReleaseClaim")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gatewayServiceSubmitReviewHandler := connect.NewUnaryHandler(
+		GatewayServiceSubmitReviewProcedure,
+		svc.SubmitReview,
+		connect.WithSchema(gatewayServiceMethods.ByName("SubmitReview")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gatewayServiceOverrideTestScoreHandler := connect.NewUnaryHandler(
+		GatewayServiceOverrideTestScoreProcedure,
+		svc.OverrideTestScore,
+		connect.WithSchema(gatewayServiceMethods.ByName("OverrideTestScore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gatewayServiceRecordDefenceHandler := connect.NewUnaryHandler(
+		GatewayServiceRecordDefenceProcedure,
+		svc.RecordDefence,
+		connect.WithSchema(gatewayServiceMethods.ByName("RecordDefence")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gatewayServiceCourseGradeOverviewHandler := connect.NewUnaryHandler(
+		GatewayServiceCourseGradeOverviewProcedure,
+		svc.CourseGradeOverview,
+		connect.WithSchema(gatewayServiceMethods.ByName("CourseGradeOverview")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/lms.v1.GatewayService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case GatewayServiceLoginProcedure:
@@ -243,6 +410,20 @@ func NewGatewayServiceHandler(svc GatewayServiceHandler, opts ...connect.Handler
 			gatewayServiceResolveSubmissionHandler.ServeHTTP(w, r)
 		case GatewayServiceSubmitFromWebProcedure:
 			gatewayServiceSubmitFromWebHandler.ServeHTTP(w, r)
+		case GatewayServiceListCourseSubmissionsProcedure:
+			gatewayServiceListCourseSubmissionsHandler.ServeHTTP(w, r)
+		case GatewayServiceClaimSubmissionProcedure:
+			gatewayServiceClaimSubmissionHandler.ServeHTTP(w, r)
+		case GatewayServiceReleaseClaimProcedure:
+			gatewayServiceReleaseClaimHandler.ServeHTTP(w, r)
+		case GatewayServiceSubmitReviewProcedure:
+			gatewayServiceSubmitReviewHandler.ServeHTTP(w, r)
+		case GatewayServiceOverrideTestScoreProcedure:
+			gatewayServiceOverrideTestScoreHandler.ServeHTTP(w, r)
+		case GatewayServiceRecordDefenceProcedure:
+			gatewayServiceRecordDefenceHandler.ServeHTTP(w, r)
+		case GatewayServiceCourseGradeOverviewProcedure:
+			gatewayServiceCourseGradeOverviewHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -278,4 +459,32 @@ func (UnimplementedGatewayServiceHandler) ResolveSubmission(context.Context, *co
 
 func (UnimplementedGatewayServiceHandler) SubmitFromWeb(context.Context, *connect.Request[v1.SubmitFromWebRequest]) (*connect.Response[v1.SubmitResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.SubmitFromWeb is not implemented"))
+}
+
+func (UnimplementedGatewayServiceHandler) ListCourseSubmissions(context.Context, *connect.Request[v1.ListCourseSubmissionsRequest]) (*connect.Response[v1.ListCourseSubmissionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.ListCourseSubmissions is not implemented"))
+}
+
+func (UnimplementedGatewayServiceHandler) ClaimSubmission(context.Context, *connect.Request[v1.ClaimSubmissionRequest]) (*connect.Response[v1.ClaimSubmissionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.ClaimSubmission is not implemented"))
+}
+
+func (UnimplementedGatewayServiceHandler) ReleaseClaim(context.Context, *connect.Request[v1.ReleaseClaimRequest]) (*connect.Response[v1.ReleaseClaimResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.ReleaseClaim is not implemented"))
+}
+
+func (UnimplementedGatewayServiceHandler) SubmitReview(context.Context, *connect.Request[v1.WebSubmitReviewRequest]) (*connect.Response[v1.Review], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.SubmitReview is not implemented"))
+}
+
+func (UnimplementedGatewayServiceHandler) OverrideTestScore(context.Context, *connect.Request[v1.WebOverrideTestScoreRequest]) (*connect.Response[v1.FinalGrade], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.OverrideTestScore is not implemented"))
+}
+
+func (UnimplementedGatewayServiceHandler) RecordDefence(context.Context, *connect.Request[v1.WebRecordDefenceRequest]) (*connect.Response[v1.Defence], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.RecordDefence is not implemented"))
+}
+
+func (UnimplementedGatewayServiceHandler) CourseGradeOverview(context.Context, *connect.Request[v1.CourseGradeOverviewRequest]) (*connect.Response[v1.CourseGradeOverviewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GatewayService.CourseGradeOverview is not implemented"))
 }

@@ -52,8 +52,8 @@ flowchart LR
 | vcs | 🚧 | skeleton + `// Temp` domain stub |
 | gateway | 🚧 | skeleton (Unimplemented) |
 | Eventing (Kafka wiring) | ⬜ | constructors exist, no producers/consumers |
-| Human review + claiming | ⬜ | design agreed; not in proto yet (see architecture §6, §11) |
-| Defence + grading policy | ⬜ | design agreed; not in proto yet |
+| Human review + claiming | 🚧 | **proto landed (Phase 0)** in `grading`/`gateway`; no impl yet (see architecture §6) |
+| Defence + grading policy | 🚧 | **proto landed (Phase 0)** (`GradingPolicy`, `Defence`, assignment `requires_defense`); no impl yet |
 | Self-hosted test runner | ⬜ | `workers/` empty; pluggable with external CI |
 | Web frontend | ⬜ | greenfield — see `.claude/design-prompt.md` |
 | CI/CD | ⬜ | no pipeline; `make lint` exists locally |
@@ -69,20 +69,25 @@ flowchart LR
 
 ## 3. Roadmap (phased)
 
-### Phase 0 — Contract changes for review/defence/runner  ·  _do first_
+### Phase 0 — Contract changes for review/defence/runner  ·  ✅ _done_
 Proto-first: encode the agreed product model before building it (architecture §11).
-- [ ] `identity.proto` · Assignment: add `requires_defense`, `GradingPolicy`
+- [x] `identity.proto` · Assignment: add `requires_defense`, `GradingPolicy`
       (`weight_tests`, `weight_quality`, `defence_multiplier`, `custom_formula`),
-      `RunnerKind` (`EXTERNAL_CI` / `SELF_HOSTED`).
-- [ ] `grading.proto`: `ListReviewQueue`, `ClaimReview`/`ReleaseReview`,
+      `RunnerKind` (`EXTERNAL_CI` / `SELF_HOSTED`). `GradingPolicy` landed in
+      `common.proto` (shared by identity + grading); `RunnerKind` in `identity.proto`.
+- [x] `grading.proto`: `ListReviewQueue`, `ClaimReview`/`ReleaseReview`,
       `SubmitReview`, `OverrideTestScore`, `RecordDefence`, `GetFinalGrade` +
-      messages `ReviewClaim`, `Review`, `Defence`, `FinalGrade`, `GradingPolicy`.
-- [ ] `submission.proto`: orthogonal test/review/defence tracks (replace single
-      `SubmissionState`).
-- [ ] `gateway.proto`: instructor BFF — `ListCourseSubmissions`,
+      messages `ReviewClaim`, `Review`, `Defence`, `FinalGrade` (+ `ReviewOutcome`,
+      `ReviewQueueFilter`, `ReviewQueueItem`).
+- [x] `submission.proto`: orthogonal test/review/defence tracks (replaced single
+      `SubmissionState` with `TestState` / `ReviewTrackState` / `DefenceState`;
+      `ReviewTrackState` is named to avoid colliding with vcs `ReviewState`).
+- [x] `gateway.proto`: instructor BFF — `ListCourseSubmissions`,
       `ClaimSubmission`/`ReleaseClaim`, `SubmitReview`, `RecordDefence`,
-      `OverrideTestScore`, course-grade overview.
-- [ ] `make proto` + `make proto-lint`.
+      `OverrideTestScore`, `CourseGradeOverview` (acting reviewer comes from auth ctx).
+- [x] `make proto` + `make proto-lint` (buf lint clean; gen builds).
+- [ ] _Deferred to Phase 2/3:_ `vcs.proto` `EnqueueTestJob` / test-job topic for
+      the self-hosted runner (lands with the runner, not part of Phase 0).
 
 ### Phase 1 — Identity, complete & hardened  ·  _now_
 - [ ] Implement Course: `CreateCourse`, `GetCourse`, `ListCourses` (+ migration, sqlc).

@@ -3,6 +3,7 @@ syntax = "proto3";
 package lms.v1;
 
 import "google/protobuf/timestamp.proto";
+import "lms/v1/common.proto";
 import "lms/v1/identity.proto";
 import "lms/v1/submission.proto";
 import "lms/v1/grading.proto";
@@ -13,12 +14,23 @@ service GatewayService {
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
   rpc Whoami(WhoamiRequest) returns (WhoamiResponse);
 
+  // Student-facing aggregations.
   rpc MyDashboard(MyDashboardRequest) returns (MyDashboardResponse);
   rpc MySubmission(MySubmissionRequest) returns (MySubmissionResponse);
 
   rpc ResolveSubmission(ResolveSubmissionRequest) returns (ResolveSubmissionResponse);
 
   rpc SubmitFromWeb(SubmitFromWebRequest) returns (SubmitResponse);
+
+  // Instructor-facing aggregations (review queue, claiming, grading).
+  // The acting reviewer/examiner is taken from the auth context, not the request.
+  rpc ListCourseSubmissions(ListCourseSubmissionsRequest) returns (ListCourseSubmissionsResponse);
+  rpc ClaimSubmission(ClaimSubmissionRequest) returns (ClaimSubmissionResponse);
+  rpc ReleaseClaim(ReleaseClaimRequest) returns (ReleaseClaimResponse);
+  rpc SubmitReview(WebSubmitReviewRequest) returns (Review);
+  rpc OverrideTestScore(WebOverrideTestScoreRequest) returns (FinalGrade);
+  rpc RecordDefence(WebRecordDefenceRequest) returns (Defence);
+  rpc CourseGradeOverview(CourseGradeOverviewRequest) returns (CourseGradeOverviewResponse);
 }
 
 
@@ -85,7 +97,9 @@ message AssignmentCard {
   string slug = 4;
   google.protobuf.Timestamp deadline = 5;
   google.protobuf.Timestamp hard_deadline = 6;
-  SubmissionState latest_state = 7;
+  TestState latest_test_state = 7;
+  ReviewTrackState latest_review_state = 11;
+  DefenceState latest_defence_state = 12;
   optional int32 latest_score = 8;
   int32 max_score = 9;
   int32 attempt_count = 10;
@@ -116,4 +130,93 @@ message ResolveSubmissionResponse {
   string user_id = 2;
   string assignment_id = 3;
   string course_id = 4;
+}
+
+// --- Instructor BFF: review queue, claiming, grading ----------------------
+
+message ListCourseSubmissionsRequest {
+  string course_id = 1;
+  string assignment_id = 2;
+  string student_id = 3;
+  ReviewQueueFilter filter = 4;
+  string claimed_by = 5;
+  PageRequest page = 6;
+}
+
+message ListCourseSubmissionsResponse {
+  repeated CourseSubmissionCard items = 1;
+  PageResponse page = 2;
+}
+
+message CourseSubmissionCard {
+  string submission_id = 1;
+  string user_id = 2;
+  string student_display_name = 3;
+  string assignment_id = 4;
+  string assignment_title = 5;
+  TestState test_state = 6;
+  ReviewTrackState review_state = 7;
+  DefenceState defence_state = 8;
+  ReviewClaim claim = 9;
+  string pr_url = 10;
+  optional int32 final_points = 11;
+  google.protobuf.Timestamp requested_at = 12;
+}
+
+message ClaimSubmissionRequest {
+  string submission_id = 1;
+}
+
+message ClaimSubmissionResponse {
+  ReviewClaim claim = 1;
+}
+
+message ReleaseClaimRequest {
+  string submission_id = 1;
+}
+
+message ReleaseClaimResponse {}
+
+message WebSubmitReviewRequest {
+  string submission_id = 1;
+  double quality = 2;
+  optional double test_override = 3;
+  ReviewOutcome outcome = 4;
+  string comment_markdown = 5;
+}
+
+message WebOverrideTestScoreRequest {
+  string submission_id = 1;
+  double tests = 2;
+  string reason = 3;
+}
+
+message WebRecordDefenceRequest {
+  string submission_id = 1;
+  double score = 2;
+  string notes = 3;
+}
+
+message CourseGradeOverviewRequest {
+  string course_id = 1;
+  string assignment_id = 2;
+  PageRequest page = 3;
+}
+
+message CourseGradeOverviewResponse {
+  repeated StudentGradeRow rows = 1;
+  PageResponse page = 2;
+}
+
+message StudentGradeRow {
+  string user_id = 1;
+  string display_name = 2;
+  repeated AssignmentGradeCell cells = 3;
+}
+
+message AssignmentGradeCell {
+  string assignment_id = 1;
+  optional double final_normalized = 2;
+  optional int32 final_points = 3;
+  int32 max_score = 4;
 }

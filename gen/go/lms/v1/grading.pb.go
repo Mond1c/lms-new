@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -139,6 +140,108 @@ func (x ProviderKindLite) Number() protoreflect.EnumNumber {
 // Deprecated: Use ProviderKindLite.Descriptor instead.
 func (ProviderKindLite) EnumDescriptor() ([]byte, []int) {
 	return file_lms_v1_grading_proto_rawDescGZIP(), []int{1}
+}
+
+// Outcome an instructor records when submitting a code review.
+type ReviewOutcome int32
+
+const (
+	ReviewOutcome_REVIEW_OUTCOME_UNSPECIFIED       ReviewOutcome = 0
+	ReviewOutcome_REVIEW_OUTCOME_APPROVED          ReviewOutcome = 1
+	ReviewOutcome_REVIEW_OUTCOME_CHANGES_REQUESTED ReviewOutcome = 2
+)
+
+// Enum value maps for ReviewOutcome.
+var (
+	ReviewOutcome_name = map[int32]string{
+		0: "REVIEW_OUTCOME_UNSPECIFIED",
+		1: "REVIEW_OUTCOME_APPROVED",
+		2: "REVIEW_OUTCOME_CHANGES_REQUESTED",
+	}
+	ReviewOutcome_value = map[string]int32{
+		"REVIEW_OUTCOME_UNSPECIFIED":       0,
+		"REVIEW_OUTCOME_APPROVED":          1,
+		"REVIEW_OUTCOME_CHANGES_REQUESTED": 2,
+	}
+)
+
+func (x ReviewOutcome) Enum() *ReviewOutcome {
+	p := new(ReviewOutcome)
+	*p = x
+	return p
+}
+
+func (x ReviewOutcome) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ReviewOutcome) Descriptor() protoreflect.EnumDescriptor {
+	return file_lms_v1_grading_proto_enumTypes[2].Descriptor()
+}
+
+func (ReviewOutcome) Type() protoreflect.EnumType {
+	return &file_lms_v1_grading_proto_enumTypes[2]
+}
+
+func (x ReviewOutcome) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ReviewOutcome.Descriptor instead.
+func (ReviewOutcome) EnumDescriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{2}
+}
+
+type ReviewQueueFilter int32
+
+const (
+	ReviewQueueFilter_REVIEW_QUEUE_FILTER_UNSPECIFIED      ReviewQueueFilter = 0
+	ReviewQueueFilter_REVIEW_QUEUE_FILTER_NEED_REVIEW      ReviewQueueFilter = 1
+	ReviewQueueFilter_REVIEW_QUEUE_FILTER_UNDER_REVIEW     ReviewQueueFilter = 2
+	ReviewQueueFilter_REVIEW_QUEUE_FILTER_AWAITING_DEFENCE ReviewQueueFilter = 3
+)
+
+// Enum value maps for ReviewQueueFilter.
+var (
+	ReviewQueueFilter_name = map[int32]string{
+		0: "REVIEW_QUEUE_FILTER_UNSPECIFIED",
+		1: "REVIEW_QUEUE_FILTER_NEED_REVIEW",
+		2: "REVIEW_QUEUE_FILTER_UNDER_REVIEW",
+		3: "REVIEW_QUEUE_FILTER_AWAITING_DEFENCE",
+	}
+	ReviewQueueFilter_value = map[string]int32{
+		"REVIEW_QUEUE_FILTER_UNSPECIFIED":      0,
+		"REVIEW_QUEUE_FILTER_NEED_REVIEW":      1,
+		"REVIEW_QUEUE_FILTER_UNDER_REVIEW":     2,
+		"REVIEW_QUEUE_FILTER_AWAITING_DEFENCE": 3,
+	}
+)
+
+func (x ReviewQueueFilter) Enum() *ReviewQueueFilter {
+	p := new(ReviewQueueFilter)
+	*p = x
+	return p
+}
+
+func (x ReviewQueueFilter) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ReviewQueueFilter) Descriptor() protoreflect.EnumDescriptor {
+	return file_lms_v1_grading_proto_enumTypes[3].Descriptor()
+}
+
+func (ReviewQueueFilter) Type() protoreflect.EnumType {
+	return &file_lms_v1_grading_proto_enumTypes[3]
+}
+
+func (x ReviewQueueFilter) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ReviewQueueFilter.Descriptor instead.
+func (ReviewQueueFilter) EnumDescriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{3}
 }
 
 type GradingResult struct {
@@ -1241,11 +1344,1069 @@ func (*ReportProgressResponse) Descriptor() ([]byte, []int) {
 	return file_lms_v1_grading_proto_rawDescGZIP(), []int{13}
 }
 
+// Visible review lock so multiple instructors don't grade the same submission.
+// released_at unset means the claim is still active.
+type ReviewClaim struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ReviewerId    string                 `protobuf:"bytes,2,opt,name=reviewer_id,json=reviewerId,proto3" json:"reviewer_id,omitempty"`
+	ClaimedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=claimed_at,json=claimedAt,proto3" json:"claimed_at,omitempty"`
+	ReleasedAt    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=released_at,json=releasedAt,proto3" json:"released_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewClaim) Reset() {
+	*x = ReviewClaim{}
+	mi := &file_lms_v1_grading_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewClaim) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewClaim) ProtoMessage() {}
+
+func (x *ReviewClaim) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewClaim.ProtoReflect.Descriptor instead.
+func (*ReviewClaim) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ReviewClaim) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *ReviewClaim) GetReviewerId() string {
+	if x != nil {
+		return x.ReviewerId
+	}
+	return ""
+}
+
+func (x *ReviewClaim) GetClaimedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ClaimedAt
+	}
+	return nil
+}
+
+func (x *ReviewClaim) GetReleasedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ReleasedAt
+	}
+	return nil
+}
+
+// A human code review. quality and the optional test_override are in [0, 1].
+type Review struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	SubmissionId    string                 `protobuf:"bytes,2,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ReviewerId      string                 `protobuf:"bytes,3,opt,name=reviewer_id,json=reviewerId,proto3" json:"reviewer_id,omitempty"`
+	Quality         float64                `protobuf:"fixed64,4,opt,name=quality,proto3" json:"quality,omitempty"`
+	TestOverride    *float64               `protobuf:"fixed64,5,opt,name=test_override,json=testOverride,proto3,oneof" json:"test_override,omitempty"`
+	Outcome         ReviewOutcome          `protobuf:"varint,6,opt,name=outcome,proto3,enum=lms.v1.ReviewOutcome" json:"outcome,omitempty"`
+	PrUrl           string                 `protobuf:"bytes,7,opt,name=pr_url,json=prUrl,proto3" json:"pr_url,omitempty"`
+	CommentMarkdown string                 `protobuf:"bytes,8,opt,name=comment_markdown,json=commentMarkdown,proto3" json:"comment_markdown,omitempty"`
+	Audit           *AuditFields           `protobuf:"bytes,9,opt,name=audit,proto3" json:"audit,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Review) Reset() {
+	*x = Review{}
+	mi := &file_lms_v1_grading_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Review) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Review) ProtoMessage() {}
+
+func (x *Review) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Review.ProtoReflect.Descriptor instead.
+func (*Review) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *Review) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Review) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *Review) GetReviewerId() string {
+	if x != nil {
+		return x.ReviewerId
+	}
+	return ""
+}
+
+func (x *Review) GetQuality() float64 {
+	if x != nil {
+		return x.Quality
+	}
+	return 0
+}
+
+func (x *Review) GetTestOverride() float64 {
+	if x != nil && x.TestOverride != nil {
+		return *x.TestOverride
+	}
+	return 0
+}
+
+func (x *Review) GetOutcome() ReviewOutcome {
+	if x != nil {
+		return x.Outcome
+	}
+	return ReviewOutcome_REVIEW_OUTCOME_UNSPECIFIED
+}
+
+func (x *Review) GetPrUrl() string {
+	if x != nil {
+		return x.PrUrl
+	}
+	return ""
+}
+
+func (x *Review) GetCommentMarkdown() string {
+	if x != nil {
+		return x.CommentMarkdown
+	}
+	return ""
+}
+
+func (x *Review) GetAudit() *AuditFields {
+	if x != nil {
+		return x.Audit
+	}
+	return nil
+}
+
+// An oral defence record (only for requires_defense assignments). score in [0, 1].
+type Defence struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	SubmissionId  string                 `protobuf:"bytes,2,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ExaminerId    string                 `protobuf:"bytes,3,opt,name=examiner_id,json=examinerId,proto3" json:"examiner_id,omitempty"`
+	Score         float64                `protobuf:"fixed64,4,opt,name=score,proto3" json:"score,omitempty"`
+	Notes         string                 `protobuf:"bytes,5,opt,name=notes,proto3" json:"notes,omitempty"`
+	DefendedAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=defended_at,json=defendedAt,proto3" json:"defended_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Defence) Reset() {
+	*x = Defence{}
+	mi := &file_lms_v1_grading_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Defence) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Defence) ProtoMessage() {}
+
+func (x *Defence) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Defence.ProtoReflect.Descriptor instead.
+func (*Defence) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *Defence) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Defence) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *Defence) GetExaminerId() string {
+	if x != nil {
+		return x.ExaminerId
+	}
+	return ""
+}
+
+func (x *Defence) GetScore() float64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *Defence) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *Defence) GetDefendedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DefendedAt
+	}
+	return nil
+}
+
+// The composed grade for a submission. Components and final_normalized are in
+// [0, 1]; final_points = round(final_normalized * max_score).
+type FinalGrade struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId    string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	Tests           float64                `protobuf:"fixed64,2,opt,name=tests,proto3" json:"tests,omitempty"`
+	Quality         float64                `protobuf:"fixed64,3,opt,name=quality,proto3" json:"quality,omitempty"`
+	Defence         float64                `protobuf:"fixed64,4,opt,name=defence,proto3" json:"defence,omitempty"`
+	FinalNormalized float64                `protobuf:"fixed64,5,opt,name=final_normalized,json=finalNormalized,proto3" json:"final_normalized,omitempty"`
+	FinalPoints     int32                  `protobuf:"varint,6,opt,name=final_points,json=finalPoints,proto3" json:"final_points,omitempty"`
+	MaxScore        int32                  `protobuf:"varint,7,opt,name=max_score,json=maxScore,proto3" json:"max_score,omitempty"`
+	DefenceApplies  bool                   `protobuf:"varint,8,opt,name=defence_applies,json=defenceApplies,proto3" json:"defence_applies,omitempty"`
+	ComputedAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=computed_at,json=computedAt,proto3" json:"computed_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *FinalGrade) Reset() {
+	*x = FinalGrade{}
+	mi := &file_lms_v1_grading_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FinalGrade) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FinalGrade) ProtoMessage() {}
+
+func (x *FinalGrade) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FinalGrade.ProtoReflect.Descriptor instead.
+func (*FinalGrade) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *FinalGrade) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *FinalGrade) GetTests() float64 {
+	if x != nil {
+		return x.Tests
+	}
+	return 0
+}
+
+func (x *FinalGrade) GetQuality() float64 {
+	if x != nil {
+		return x.Quality
+	}
+	return 0
+}
+
+func (x *FinalGrade) GetDefence() float64 {
+	if x != nil {
+		return x.Defence
+	}
+	return 0
+}
+
+func (x *FinalGrade) GetFinalNormalized() float64 {
+	if x != nil {
+		return x.FinalNormalized
+	}
+	return 0
+}
+
+func (x *FinalGrade) GetFinalPoints() int32 {
+	if x != nil {
+		return x.FinalPoints
+	}
+	return 0
+}
+
+func (x *FinalGrade) GetMaxScore() int32 {
+	if x != nil {
+		return x.MaxScore
+	}
+	return 0
+}
+
+func (x *FinalGrade) GetDefenceApplies() bool {
+	if x != nil {
+		return x.DefenceApplies
+	}
+	return false
+}
+
+func (x *FinalGrade) GetComputedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ComputedAt
+	}
+	return nil
+}
+
+type ReviewQueueItem struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	AssignmentId  string                 `protobuf:"bytes,3,opt,name=assignment_id,json=assignmentId,proto3" json:"assignment_id,omitempty"`
+	CourseId      string                 `protobuf:"bytes,4,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	Claim         *ReviewClaim           `protobuf:"bytes,5,opt,name=claim,proto3" json:"claim,omitempty"`
+	PrUrl         string                 `protobuf:"bytes,6,opt,name=pr_url,json=prUrl,proto3" json:"pr_url,omitempty"`
+	RequestedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=requested_at,json=requestedAt,proto3" json:"requested_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewQueueItem) Reset() {
+	*x = ReviewQueueItem{}
+	mi := &file_lms_v1_grading_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewQueueItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewQueueItem) ProtoMessage() {}
+
+func (x *ReviewQueueItem) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewQueueItem.ProtoReflect.Descriptor instead.
+func (*ReviewQueueItem) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *ReviewQueueItem) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *ReviewQueueItem) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *ReviewQueueItem) GetAssignmentId() string {
+	if x != nil {
+		return x.AssignmentId
+	}
+	return ""
+}
+
+func (x *ReviewQueueItem) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *ReviewQueueItem) GetClaim() *ReviewClaim {
+	if x != nil {
+		return x.Claim
+	}
+	return nil
+}
+
+func (x *ReviewQueueItem) GetPrUrl() string {
+	if x != nil {
+		return x.PrUrl
+	}
+	return ""
+}
+
+func (x *ReviewQueueItem) GetRequestedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RequestedAt
+	}
+	return nil
+}
+
+type ListReviewQueueRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          *PageRequest           `protobuf:"bytes,1,opt,name=page,proto3" json:"page,omitempty"`
+	CourseId      string                 `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	AssignmentId  string                 `protobuf:"bytes,3,opt,name=assignment_id,json=assignmentId,proto3" json:"assignment_id,omitempty"`
+	StudentId     string                 `protobuf:"bytes,4,opt,name=student_id,json=studentId,proto3" json:"student_id,omitempty"`
+	Filter        ReviewQueueFilter      `protobuf:"varint,5,opt,name=filter,proto3,enum=lms.v1.ReviewQueueFilter" json:"filter,omitempty"`
+	ClaimedBy     string                 `protobuf:"bytes,6,opt,name=claimed_by,json=claimedBy,proto3" json:"claimed_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListReviewQueueRequest) Reset() {
+	*x = ListReviewQueueRequest{}
+	mi := &file_lms_v1_grading_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListReviewQueueRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListReviewQueueRequest) ProtoMessage() {}
+
+func (x *ListReviewQueueRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListReviewQueueRequest.ProtoReflect.Descriptor instead.
+func (*ListReviewQueueRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ListReviewQueueRequest) GetPage() *PageRequest {
+	if x != nil {
+		return x.Page
+	}
+	return nil
+}
+
+func (x *ListReviewQueueRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+func (x *ListReviewQueueRequest) GetAssignmentId() string {
+	if x != nil {
+		return x.AssignmentId
+	}
+	return ""
+}
+
+func (x *ListReviewQueueRequest) GetStudentId() string {
+	if x != nil {
+		return x.StudentId
+	}
+	return ""
+}
+
+func (x *ListReviewQueueRequest) GetFilter() ReviewQueueFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return ReviewQueueFilter_REVIEW_QUEUE_FILTER_UNSPECIFIED
+}
+
+func (x *ListReviewQueueRequest) GetClaimedBy() string {
+	if x != nil {
+		return x.ClaimedBy
+	}
+	return ""
+}
+
+type ListReviewQueueResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*ReviewQueueItem     `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Page          *PageResponse          `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListReviewQueueResponse) Reset() {
+	*x = ListReviewQueueResponse{}
+	mi := &file_lms_v1_grading_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListReviewQueueResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListReviewQueueResponse) ProtoMessage() {}
+
+func (x *ListReviewQueueResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListReviewQueueResponse.ProtoReflect.Descriptor instead.
+func (*ListReviewQueueResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ListReviewQueueResponse) GetItems() []*ReviewQueueItem {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListReviewQueueResponse) GetPage() *PageResponse {
+	if x != nil {
+		return x.Page
+	}
+	return nil
+}
+
+type ClaimReviewRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ReviewerId    string                 `protobuf:"bytes,2,opt,name=reviewer_id,json=reviewerId,proto3" json:"reviewer_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClaimReviewRequest) Reset() {
+	*x = ClaimReviewRequest{}
+	mi := &file_lms_v1_grading_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClaimReviewRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClaimReviewRequest) ProtoMessage() {}
+
+func (x *ClaimReviewRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClaimReviewRequest.ProtoReflect.Descriptor instead.
+func (*ClaimReviewRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ClaimReviewRequest) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *ClaimReviewRequest) GetReviewerId() string {
+	if x != nil {
+		return x.ReviewerId
+	}
+	return ""
+}
+
+type ReleaseReviewRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ReviewerId    string                 `protobuf:"bytes,2,opt,name=reviewer_id,json=reviewerId,proto3" json:"reviewer_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseReviewRequest) Reset() {
+	*x = ReleaseReviewRequest{}
+	mi := &file_lms_v1_grading_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseReviewRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseReviewRequest) ProtoMessage() {}
+
+func (x *ReleaseReviewRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseReviewRequest.ProtoReflect.Descriptor instead.
+func (*ReleaseReviewRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ReleaseReviewRequest) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *ReleaseReviewRequest) GetReviewerId() string {
+	if x != nil {
+		return x.ReviewerId
+	}
+	return ""
+}
+
+type ReleaseReviewResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseReviewResponse) Reset() {
+	*x = ReleaseReviewResponse{}
+	mi := &file_lms_v1_grading_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseReviewResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseReviewResponse) ProtoMessage() {}
+
+func (x *ReleaseReviewResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseReviewResponse.ProtoReflect.Descriptor instead.
+func (*ReleaseReviewResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{23}
+}
+
+type SubmitReviewRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId    string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ReviewerId      string                 `protobuf:"bytes,2,opt,name=reviewer_id,json=reviewerId,proto3" json:"reviewer_id,omitempty"`
+	Quality         float64                `protobuf:"fixed64,3,opt,name=quality,proto3" json:"quality,omitempty"`
+	TestOverride    *float64               `protobuf:"fixed64,4,opt,name=test_override,json=testOverride,proto3,oneof" json:"test_override,omitempty"`
+	Outcome         ReviewOutcome          `protobuf:"varint,5,opt,name=outcome,proto3,enum=lms.v1.ReviewOutcome" json:"outcome,omitempty"`
+	CommentMarkdown string                 `protobuf:"bytes,6,opt,name=comment_markdown,json=commentMarkdown,proto3" json:"comment_markdown,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *SubmitReviewRequest) Reset() {
+	*x = SubmitReviewRequest{}
+	mi := &file_lms_v1_grading_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SubmitReviewRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SubmitReviewRequest) ProtoMessage() {}
+
+func (x *SubmitReviewRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SubmitReviewRequest.ProtoReflect.Descriptor instead.
+func (*SubmitReviewRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *SubmitReviewRequest) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *SubmitReviewRequest) GetReviewerId() string {
+	if x != nil {
+		return x.ReviewerId
+	}
+	return ""
+}
+
+func (x *SubmitReviewRequest) GetQuality() float64 {
+	if x != nil {
+		return x.Quality
+	}
+	return 0
+}
+
+func (x *SubmitReviewRequest) GetTestOverride() float64 {
+	if x != nil && x.TestOverride != nil {
+		return *x.TestOverride
+	}
+	return 0
+}
+
+func (x *SubmitReviewRequest) GetOutcome() ReviewOutcome {
+	if x != nil {
+		return x.Outcome
+	}
+	return ReviewOutcome_REVIEW_OUTCOME_UNSPECIFIED
+}
+
+func (x *SubmitReviewRequest) GetCommentMarkdown() string {
+	if x != nil {
+		return x.CommentMarkdown
+	}
+	return ""
+}
+
+type OverrideTestScoreRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ReviewerId    string                 `protobuf:"bytes,2,opt,name=reviewer_id,json=reviewerId,proto3" json:"reviewer_id,omitempty"`
+	Tests         float64                `protobuf:"fixed64,3,opt,name=tests,proto3" json:"tests,omitempty"`
+	Reason        string                 `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OverrideTestScoreRequest) Reset() {
+	*x = OverrideTestScoreRequest{}
+	mi := &file_lms_v1_grading_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OverrideTestScoreRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OverrideTestScoreRequest) ProtoMessage() {}
+
+func (x *OverrideTestScoreRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OverrideTestScoreRequest.ProtoReflect.Descriptor instead.
+func (*OverrideTestScoreRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *OverrideTestScoreRequest) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *OverrideTestScoreRequest) GetReviewerId() string {
+	if x != nil {
+		return x.ReviewerId
+	}
+	return ""
+}
+
+func (x *OverrideTestScoreRequest) GetTests() float64 {
+	if x != nil {
+		return x.Tests
+	}
+	return 0
+}
+
+func (x *OverrideTestScoreRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type OverrideTestScoreResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tests         float64                `protobuf:"fixed64,1,opt,name=tests,proto3" json:"tests,omitempty"`
+	Grade         *FinalGrade            `protobuf:"bytes,2,opt,name=grade,proto3" json:"grade,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OverrideTestScoreResponse) Reset() {
+	*x = OverrideTestScoreResponse{}
+	mi := &file_lms_v1_grading_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OverrideTestScoreResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OverrideTestScoreResponse) ProtoMessage() {}
+
+func (x *OverrideTestScoreResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OverrideTestScoreResponse.ProtoReflect.Descriptor instead.
+func (*OverrideTestScoreResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *OverrideTestScoreResponse) GetTests() float64 {
+	if x != nil {
+		return x.Tests
+	}
+	return 0
+}
+
+func (x *OverrideTestScoreResponse) GetGrade() *FinalGrade {
+	if x != nil {
+		return x.Grade
+	}
+	return nil
+}
+
+type RecordDefenceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	ExaminerId    string                 `protobuf:"bytes,2,opt,name=examiner_id,json=examinerId,proto3" json:"examiner_id,omitempty"`
+	Score         float64                `protobuf:"fixed64,3,opt,name=score,proto3" json:"score,omitempty"`
+	Notes         string                 `protobuf:"bytes,4,opt,name=notes,proto3" json:"notes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RecordDefenceRequest) Reset() {
+	*x = RecordDefenceRequest{}
+	mi := &file_lms_v1_grading_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RecordDefenceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RecordDefenceRequest) ProtoMessage() {}
+
+func (x *RecordDefenceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RecordDefenceRequest.ProtoReflect.Descriptor instead.
+func (*RecordDefenceRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *RecordDefenceRequest) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
+func (x *RecordDefenceRequest) GetExaminerId() string {
+	if x != nil {
+		return x.ExaminerId
+	}
+	return ""
+}
+
+func (x *RecordDefenceRequest) GetScore() float64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *RecordDefenceRequest) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+type GetFinalGradeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SubmissionId  string                 `protobuf:"bytes,1,opt,name=submission_id,json=submissionId,proto3" json:"submission_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetFinalGradeRequest) Reset() {
+	*x = GetFinalGradeRequest{}
+	mi := &file_lms_v1_grading_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetFinalGradeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetFinalGradeRequest) ProtoMessage() {}
+
+func (x *GetFinalGradeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_grading_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetFinalGradeRequest.ProtoReflect.Descriptor instead.
+func (*GetFinalGradeRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_grading_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *GetFinalGradeRequest) GetSubmissionId() string {
+	if x != nil {
+		return x.SubmissionId
+	}
+	return ""
+}
+
 var File_lms_v1_grading_proto protoreflect.FileDescriptor
 
 const file_lms_v1_grading_proto_rawDesc = "" +
 	"\n" +
-	"\x14lms/v1/grading.proto\x12\x06lms.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x13lms/v1/common.proto\"\xa9\x04\n" +
+	"\x14lms/v1/grading.proto\x12\x06lms.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13lms/v1/common.proto\"\xa9\x04\n" +
 	"\rGradingResult\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
 	"\rsubmission_id\x18\x02 \x01(\tR\fsubmissionId\x12%\n" +
@@ -1335,7 +2496,103 @@ const file_lms_v1_grading_proto_rawDesc = "" +
 	"\tcompleted\x18\x04 \x01(\x05R\tcompleted\x12\x14\n" +
 	"\x05total\x18\x05 \x01(\x05R\x05totalB\b\n" +
 	"\x06target\"\x18\n" +
-	"\x16ReportProgressResponse*\x9b\x02\n" +
+	"\x16ReportProgressResponse\"\xcb\x01\n" +
+	"\vReviewClaim\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vreviewer_id\x18\x02 \x01(\tR\n" +
+	"reviewerId\x129\n" +
+	"\n" +
+	"claimed_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tclaimedAt\x12;\n" +
+	"\vreleased_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"releasedAt\"\xd2\x02\n" +
+	"\x06Review\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
+	"\rsubmission_id\x18\x02 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vreviewer_id\x18\x03 \x01(\tR\n" +
+	"reviewerId\x12\x18\n" +
+	"\aquality\x18\x04 \x01(\x01R\aquality\x12(\n" +
+	"\rtest_override\x18\x05 \x01(\x01H\x00R\ftestOverride\x88\x01\x01\x12/\n" +
+	"\aoutcome\x18\x06 \x01(\x0e2\x15.lms.v1.ReviewOutcomeR\aoutcome\x12\x15\n" +
+	"\x06pr_url\x18\a \x01(\tR\x05prUrl\x12)\n" +
+	"\x10comment_markdown\x18\b \x01(\tR\x0fcommentMarkdown\x12)\n" +
+	"\x05audit\x18\t \x01(\v2\x13.lms.v1.AuditFieldsR\x05auditB\x10\n" +
+	"\x0e_test_override\"\xc8\x01\n" +
+	"\aDefence\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
+	"\rsubmission_id\x18\x02 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vexaminer_id\x18\x03 \x01(\tR\n" +
+	"examinerId\x12\x14\n" +
+	"\x05score\x18\x04 \x01(\x01R\x05score\x12\x14\n" +
+	"\x05notes\x18\x05 \x01(\tR\x05notes\x12;\n" +
+	"\vdefended_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"defendedAt\"\xcc\x02\n" +
+	"\n" +
+	"FinalGrade\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x14\n" +
+	"\x05tests\x18\x02 \x01(\x01R\x05tests\x12\x18\n" +
+	"\aquality\x18\x03 \x01(\x01R\aquality\x12\x18\n" +
+	"\adefence\x18\x04 \x01(\x01R\adefence\x12)\n" +
+	"\x10final_normalized\x18\x05 \x01(\x01R\x0ffinalNormalized\x12!\n" +
+	"\ffinal_points\x18\x06 \x01(\x05R\vfinalPoints\x12\x1b\n" +
+	"\tmax_score\x18\a \x01(\x05R\bmaxScore\x12'\n" +
+	"\x0fdefence_applies\x18\b \x01(\bR\x0edefenceApplies\x12;\n" +
+	"\vcomputed_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"computedAt\"\x92\x02\n" +
+	"\x0fReviewQueueItem\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12#\n" +
+	"\rassignment_id\x18\x03 \x01(\tR\fassignmentId\x12\x1b\n" +
+	"\tcourse_id\x18\x04 \x01(\tR\bcourseId\x12)\n" +
+	"\x05claim\x18\x05 \x01(\v2\x13.lms.v1.ReviewClaimR\x05claim\x12\x15\n" +
+	"\x06pr_url\x18\x06 \x01(\tR\x05prUrl\x12=\n" +
+	"\frequested_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\vrequestedAt\"\xf4\x01\n" +
+	"\x16ListReviewQueueRequest\x12'\n" +
+	"\x04page\x18\x01 \x01(\v2\x13.lms.v1.PageRequestR\x04page\x12\x1b\n" +
+	"\tcourse_id\x18\x02 \x01(\tR\bcourseId\x12#\n" +
+	"\rassignment_id\x18\x03 \x01(\tR\fassignmentId\x12\x1d\n" +
+	"\n" +
+	"student_id\x18\x04 \x01(\tR\tstudentId\x121\n" +
+	"\x06filter\x18\x05 \x01(\x0e2\x19.lms.v1.ReviewQueueFilterR\x06filter\x12\x1d\n" +
+	"\n" +
+	"claimed_by\x18\x06 \x01(\tR\tclaimedBy\"r\n" +
+	"\x17ListReviewQueueResponse\x12-\n" +
+	"\x05items\x18\x01 \x03(\v2\x17.lms.v1.ReviewQueueItemR\x05items\x12(\n" +
+	"\x04page\x18\x02 \x01(\v2\x14.lms.v1.PageResponseR\x04page\"Z\n" +
+	"\x12ClaimReviewRequest\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vreviewer_id\x18\x02 \x01(\tR\n" +
+	"reviewerId\"\\\n" +
+	"\x14ReleaseReviewRequest\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vreviewer_id\x18\x02 \x01(\tR\n" +
+	"reviewerId\"\x17\n" +
+	"\x15ReleaseReviewResponse\"\x8d\x02\n" +
+	"\x13SubmitReviewRequest\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vreviewer_id\x18\x02 \x01(\tR\n" +
+	"reviewerId\x12\x18\n" +
+	"\aquality\x18\x03 \x01(\x01R\aquality\x12(\n" +
+	"\rtest_override\x18\x04 \x01(\x01H\x00R\ftestOverride\x88\x01\x01\x12/\n" +
+	"\aoutcome\x18\x05 \x01(\x0e2\x15.lms.v1.ReviewOutcomeR\aoutcome\x12)\n" +
+	"\x10comment_markdown\x18\x06 \x01(\tR\x0fcommentMarkdownB\x10\n" +
+	"\x0e_test_override\"\x8e\x01\n" +
+	"\x18OverrideTestScoreRequest\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vreviewer_id\x18\x02 \x01(\tR\n" +
+	"reviewerId\x12\x14\n" +
+	"\x05tests\x18\x03 \x01(\x01R\x05tests\x12\x16\n" +
+	"\x06reason\x18\x04 \x01(\tR\x06reason\"[\n" +
+	"\x19OverrideTestScoreResponse\x12\x14\n" +
+	"\x05tests\x18\x01 \x01(\x01R\x05tests\x12(\n" +
+	"\x05grade\x18\x02 \x01(\v2\x12.lms.v1.FinalGradeR\x05grade\"\x88\x01\n" +
+	"\x14RecordDefenceRequest\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId\x12\x1f\n" +
+	"\vexaminer_id\x18\x02 \x01(\tR\n" +
+	"examinerId\x12\x14\n" +
+	"\x05score\x18\x03 \x01(\x01R\x05score\x12\x14\n" +
+	"\x05notes\x18\x04 \x01(\tR\x05notes\";\n" +
+	"\x14GetFinalGradeRequest\x12#\n" +
+	"\rsubmission_id\x18\x01 \x01(\tR\fsubmissionId*\x9b\x02\n" +
 	"\fResultStatus\x12\x1d\n" +
 	"\x19RESULT_STATUS_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10RESULT_STATUS_OK\x10\x01\x12\x19\n" +
@@ -1350,13 +2607,29 @@ const file_lms_v1_grading_proto_rawDesc = "" +
 	"\x1ePROVIDER_KIND_LITE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PROVIDER_KIND_LITE_GITEA\x10\x01\x12\x1d\n" +
 	"\x19PROVIDER_KIND_LITE_GITHUB\x10\x02\x12\x1d\n" +
-	"\x19PROVIDER_KIND_LITE_GITLAB\x10\x032\xa1\x03\n" +
+	"\x19PROVIDER_KIND_LITE_GITLAB\x10\x03*r\n" +
+	"\rReviewOutcome\x12\x1e\n" +
+	"\x1aREVIEW_OUTCOME_UNSPECIFIED\x10\x00\x12\x1b\n" +
+	"\x17REVIEW_OUTCOME_APPROVED\x10\x01\x12$\n" +
+	" REVIEW_OUTCOME_CHANGES_REQUESTED\x10\x02*\xad\x01\n" +
+	"\x11ReviewQueueFilter\x12#\n" +
+	"\x1fREVIEW_QUEUE_FILTER_UNSPECIFIED\x10\x00\x12#\n" +
+	"\x1fREVIEW_QUEUE_FILTER_NEED_REVIEW\x10\x01\x12$\n" +
+	" REVIEW_QUEUE_FILTER_UNDER_REVIEW\x10\x02\x12(\n" +
+	"$REVIEW_QUEUE_FILTER_AWAITING_DEFENCE\x10\x032\x9d\a\n" +
 	"\x0eGradingService\x12<\n" +
 	"\tGetResult\x12\x18.lms.v1.GetResultRequest\x1a\x15.lms.v1.GradingResult\x12m\n" +
 	"\x18ListResultsForSubmission\x12'.lms.v1.ListResultsForSubmissionRequest\x1a(.lms.v1.ListResultsForSubmissionResponse\x12F\n" +
 	"\vListResults\x12\x1a.lms.v1.ListResultsRequest\x1a\x1b.lms.v1.ListResultsResponse\x12I\n" +
 	"\fIngestResult\x12\x1b.lms.v1.IngestResultRequest\x1a\x1c.lms.v1.IngestResultResponse\x12O\n" +
-	"\x0eReportProgress\x12\x1d.lms.v1.ReportProgressRequest\x1a\x1e.lms.v1.ReportProgressResponseB~\n" +
+	"\x0eReportProgress\x12\x1d.lms.v1.ReportProgressRequest\x1a\x1e.lms.v1.ReportProgressResponse\x12R\n" +
+	"\x0fListReviewQueue\x12\x1e.lms.v1.ListReviewQueueRequest\x1a\x1f.lms.v1.ListReviewQueueResponse\x12>\n" +
+	"\vClaimReview\x12\x1a.lms.v1.ClaimReviewRequest\x1a\x13.lms.v1.ReviewClaim\x12L\n" +
+	"\rReleaseReview\x12\x1c.lms.v1.ReleaseReviewRequest\x1a\x1d.lms.v1.ReleaseReviewResponse\x12;\n" +
+	"\fSubmitReview\x12\x1b.lms.v1.SubmitReviewRequest\x1a\x0e.lms.v1.Review\x12X\n" +
+	"\x11OverrideTestScore\x12 .lms.v1.OverrideTestScoreRequest\x1a!.lms.v1.OverrideTestScoreResponse\x12>\n" +
+	"\rRecordDefence\x12\x1c.lms.v1.RecordDefenceRequest\x1a\x0f.lms.v1.Defence\x12A\n" +
+	"\rGetFinalGrade\x12\x1c.lms.v1.GetFinalGradeRequest\x1a\x12.lms.v1.FinalGradeB~\n" +
 	"\n" +
 	"com.lms.v1B\fGradingProtoP\x01Z)github.com/Mond1c/lms/gen/go/lms/v1;lmsv1\xa2\x02\x03LXX\xaa\x02\x06Lms.V1\xca\x02\x06Lms\\V1\xe2\x02\x12Lms\\V1\\GPBMetadata\xea\x02\aLms::V1b\x06proto3"
 
@@ -1372,71 +2645,117 @@ func file_lms_v1_grading_proto_rawDescGZIP() []byte {
 	return file_lms_v1_grading_proto_rawDescData
 }
 
-var file_lms_v1_grading_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_lms_v1_grading_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_lms_v1_grading_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_lms_v1_grading_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_lms_v1_grading_proto_goTypes = []any{
 	(ResultStatus)(0),                        // 0: lms.v1.ResultStatus
 	(ProviderKindLite)(0),                    // 1: lms.v1.ProviderKindLite
-	(*GradingResult)(nil),                    // 2: lms.v1.GradingResult
-	(*CategoryScore)(nil),                    // 3: lms.v1.CategoryScore
-	(*TestCaseResult)(nil),                   // 4: lms.v1.TestCaseResult
-	(*CIRunRef)(nil),                         // 5: lms.v1.CIRunRef
-	(*GetResultRequest)(nil),                 // 6: lms.v1.GetResultRequest
-	(*ListResultsForSubmissionRequest)(nil),  // 7: lms.v1.ListResultsForSubmissionRequest
-	(*ListResultsForSubmissionResponse)(nil), // 8: lms.v1.ListResultsForSubmissionResponse
-	(*ListResultsRequest)(nil),               // 9: lms.v1.ListResultsRequest
-	(*ListResultsResponse)(nil),              // 10: lms.v1.ListResultsResponse
-	(*IngestResultRequest)(nil),              // 11: lms.v1.IngestResultRequest
-	(*CommitRef)(nil),                        // 12: lms.v1.CommitRef
-	(*IngestResultResponse)(nil),             // 13: lms.v1.IngestResultResponse
-	(*ReportProgressRequest)(nil),            // 14: lms.v1.ReportProgressRequest
-	(*ReportProgressResponse)(nil),           // 15: lms.v1.ReportProgressResponse
-	(*durationpb.Duration)(nil),              // 16: google.protobuf.Duration
-	(*AuditFields)(nil),                      // 17: lms.v1.AuditFields
-	(*PageRequest)(nil),                      // 18: lms.v1.PageRequest
-	(*PageResponse)(nil),                     // 19: lms.v1.PageResponse
-	(SortOrder)(0),                           // 20: lms.v1.SortOrder
+	(ReviewOutcome)(0),                       // 2: lms.v1.ReviewOutcome
+	(ReviewQueueFilter)(0),                   // 3: lms.v1.ReviewQueueFilter
+	(*GradingResult)(nil),                    // 4: lms.v1.GradingResult
+	(*CategoryScore)(nil),                    // 5: lms.v1.CategoryScore
+	(*TestCaseResult)(nil),                   // 6: lms.v1.TestCaseResult
+	(*CIRunRef)(nil),                         // 7: lms.v1.CIRunRef
+	(*GetResultRequest)(nil),                 // 8: lms.v1.GetResultRequest
+	(*ListResultsForSubmissionRequest)(nil),  // 9: lms.v1.ListResultsForSubmissionRequest
+	(*ListResultsForSubmissionResponse)(nil), // 10: lms.v1.ListResultsForSubmissionResponse
+	(*ListResultsRequest)(nil),               // 11: lms.v1.ListResultsRequest
+	(*ListResultsResponse)(nil),              // 12: lms.v1.ListResultsResponse
+	(*IngestResultRequest)(nil),              // 13: lms.v1.IngestResultRequest
+	(*CommitRef)(nil),                        // 14: lms.v1.CommitRef
+	(*IngestResultResponse)(nil),             // 15: lms.v1.IngestResultResponse
+	(*ReportProgressRequest)(nil),            // 16: lms.v1.ReportProgressRequest
+	(*ReportProgressResponse)(nil),           // 17: lms.v1.ReportProgressResponse
+	(*ReviewClaim)(nil),                      // 18: lms.v1.ReviewClaim
+	(*Review)(nil),                           // 19: lms.v1.Review
+	(*Defence)(nil),                          // 20: lms.v1.Defence
+	(*FinalGrade)(nil),                       // 21: lms.v1.FinalGrade
+	(*ReviewQueueItem)(nil),                  // 22: lms.v1.ReviewQueueItem
+	(*ListReviewQueueRequest)(nil),           // 23: lms.v1.ListReviewQueueRequest
+	(*ListReviewQueueResponse)(nil),          // 24: lms.v1.ListReviewQueueResponse
+	(*ClaimReviewRequest)(nil),               // 25: lms.v1.ClaimReviewRequest
+	(*ReleaseReviewRequest)(nil),             // 26: lms.v1.ReleaseReviewRequest
+	(*ReleaseReviewResponse)(nil),            // 27: lms.v1.ReleaseReviewResponse
+	(*SubmitReviewRequest)(nil),              // 28: lms.v1.SubmitReviewRequest
+	(*OverrideTestScoreRequest)(nil),         // 29: lms.v1.OverrideTestScoreRequest
+	(*OverrideTestScoreResponse)(nil),        // 30: lms.v1.OverrideTestScoreResponse
+	(*RecordDefenceRequest)(nil),             // 31: lms.v1.RecordDefenceRequest
+	(*GetFinalGradeRequest)(nil),             // 32: lms.v1.GetFinalGradeRequest
+	(*durationpb.Duration)(nil),              // 33: google.protobuf.Duration
+	(*AuditFields)(nil),                      // 34: lms.v1.AuditFields
+	(*PageRequest)(nil),                      // 35: lms.v1.PageRequest
+	(*PageResponse)(nil),                     // 36: lms.v1.PageResponse
+	(SortOrder)(0),                           // 37: lms.v1.SortOrder
+	(*timestamppb.Timestamp)(nil),            // 38: google.protobuf.Timestamp
 }
 var file_lms_v1_grading_proto_depIdxs = []int32{
-	5,  // 0: lms.v1.GradingResult.ci_run:type_name -> lms.v1.CIRunRef
+	7,  // 0: lms.v1.GradingResult.ci_run:type_name -> lms.v1.CIRunRef
 	0,  // 1: lms.v1.GradingResult.status:type_name -> lms.v1.ResultStatus
-	4,  // 2: lms.v1.GradingResult.tests:type_name -> lms.v1.TestCaseResult
-	3,  // 3: lms.v1.GradingResult.category_scores:type_name -> lms.v1.CategoryScore
-	16, // 4: lms.v1.GradingResult.total_duration:type_name -> google.protobuf.Duration
-	17, // 5: lms.v1.GradingResult.audit:type_name -> lms.v1.AuditFields
-	16, // 6: lms.v1.TestCaseResult.duration:type_name -> google.protobuf.Duration
+	6,  // 2: lms.v1.GradingResult.tests:type_name -> lms.v1.TestCaseResult
+	5,  // 3: lms.v1.GradingResult.category_scores:type_name -> lms.v1.CategoryScore
+	33, // 4: lms.v1.GradingResult.total_duration:type_name -> google.protobuf.Duration
+	34, // 5: lms.v1.GradingResult.audit:type_name -> lms.v1.AuditFields
+	33, // 6: lms.v1.TestCaseResult.duration:type_name -> google.protobuf.Duration
 	1,  // 7: lms.v1.CIRunRef.provider:type_name -> lms.v1.ProviderKindLite
-	18, // 8: lms.v1.ListResultsForSubmissionRequest.page:type_name -> lms.v1.PageRequest
-	2,  // 9: lms.v1.ListResultsForSubmissionResponse.results:type_name -> lms.v1.GradingResult
-	19, // 10: lms.v1.ListResultsForSubmissionResponse.page:type_name -> lms.v1.PageResponse
-	18, // 11: lms.v1.ListResultsRequest.page:type_name -> lms.v1.PageRequest
+	35, // 8: lms.v1.ListResultsForSubmissionRequest.page:type_name -> lms.v1.PageRequest
+	4,  // 9: lms.v1.ListResultsForSubmissionResponse.results:type_name -> lms.v1.GradingResult
+	36, // 10: lms.v1.ListResultsForSubmissionResponse.page:type_name -> lms.v1.PageResponse
+	35, // 11: lms.v1.ListResultsRequest.page:type_name -> lms.v1.PageRequest
 	0,  // 12: lms.v1.ListResultsRequest.statuses:type_name -> lms.v1.ResultStatus
-	20, // 13: lms.v1.ListResultsRequest.order_by_created:type_name -> lms.v1.SortOrder
-	2,  // 14: lms.v1.ListResultsResponse.results:type_name -> lms.v1.GradingResult
-	19, // 15: lms.v1.ListResultsResponse.page:type_name -> lms.v1.PageResponse
-	12, // 16: lms.v1.IngestResultRequest.commit:type_name -> lms.v1.CommitRef
-	5,  // 17: lms.v1.IngestResultRequest.ci_run:type_name -> lms.v1.CIRunRef
+	37, // 13: lms.v1.ListResultsRequest.order_by_created:type_name -> lms.v1.SortOrder
+	4,  // 14: lms.v1.ListResultsResponse.results:type_name -> lms.v1.GradingResult
+	36, // 15: lms.v1.ListResultsResponse.page:type_name -> lms.v1.PageResponse
+	14, // 16: lms.v1.IngestResultRequest.commit:type_name -> lms.v1.CommitRef
+	7,  // 17: lms.v1.IngestResultRequest.ci_run:type_name -> lms.v1.CIRunRef
 	0,  // 18: lms.v1.IngestResultRequest.status:type_name -> lms.v1.ResultStatus
-	4,  // 19: lms.v1.IngestResultRequest.tests:type_name -> lms.v1.TestCaseResult
-	3,  // 20: lms.v1.IngestResultRequest.category_scores:type_name -> lms.v1.CategoryScore
-	16, // 21: lms.v1.IngestResultRequest.total_duration:type_name -> google.protobuf.Duration
-	2,  // 22: lms.v1.IngestResultResponse.result:type_name -> lms.v1.GradingResult
-	12, // 23: lms.v1.ReportProgressRequest.commit:type_name -> lms.v1.CommitRef
-	6,  // 24: lms.v1.GradingService.GetResult:input_type -> lms.v1.GetResultRequest
-	7,  // 25: lms.v1.GradingService.ListResultsForSubmission:input_type -> lms.v1.ListResultsForSubmissionRequest
-	9,  // 26: lms.v1.GradingService.ListResults:input_type -> lms.v1.ListResultsRequest
-	11, // 27: lms.v1.GradingService.IngestResult:input_type -> lms.v1.IngestResultRequest
-	14, // 28: lms.v1.GradingService.ReportProgress:input_type -> lms.v1.ReportProgressRequest
-	2,  // 29: lms.v1.GradingService.GetResult:output_type -> lms.v1.GradingResult
-	8,  // 30: lms.v1.GradingService.ListResultsForSubmission:output_type -> lms.v1.ListResultsForSubmissionResponse
-	10, // 31: lms.v1.GradingService.ListResults:output_type -> lms.v1.ListResultsResponse
-	13, // 32: lms.v1.GradingService.IngestResult:output_type -> lms.v1.IngestResultResponse
-	15, // 33: lms.v1.GradingService.ReportProgress:output_type -> lms.v1.ReportProgressResponse
-	29, // [29:34] is the sub-list for method output_type
-	24, // [24:29] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	6,  // 19: lms.v1.IngestResultRequest.tests:type_name -> lms.v1.TestCaseResult
+	5,  // 20: lms.v1.IngestResultRequest.category_scores:type_name -> lms.v1.CategoryScore
+	33, // 21: lms.v1.IngestResultRequest.total_duration:type_name -> google.protobuf.Duration
+	4,  // 22: lms.v1.IngestResultResponse.result:type_name -> lms.v1.GradingResult
+	14, // 23: lms.v1.ReportProgressRequest.commit:type_name -> lms.v1.CommitRef
+	38, // 24: lms.v1.ReviewClaim.claimed_at:type_name -> google.protobuf.Timestamp
+	38, // 25: lms.v1.ReviewClaim.released_at:type_name -> google.protobuf.Timestamp
+	2,  // 26: lms.v1.Review.outcome:type_name -> lms.v1.ReviewOutcome
+	34, // 27: lms.v1.Review.audit:type_name -> lms.v1.AuditFields
+	38, // 28: lms.v1.Defence.defended_at:type_name -> google.protobuf.Timestamp
+	38, // 29: lms.v1.FinalGrade.computed_at:type_name -> google.protobuf.Timestamp
+	18, // 30: lms.v1.ReviewQueueItem.claim:type_name -> lms.v1.ReviewClaim
+	38, // 31: lms.v1.ReviewQueueItem.requested_at:type_name -> google.protobuf.Timestamp
+	35, // 32: lms.v1.ListReviewQueueRequest.page:type_name -> lms.v1.PageRequest
+	3,  // 33: lms.v1.ListReviewQueueRequest.filter:type_name -> lms.v1.ReviewQueueFilter
+	22, // 34: lms.v1.ListReviewQueueResponse.items:type_name -> lms.v1.ReviewQueueItem
+	36, // 35: lms.v1.ListReviewQueueResponse.page:type_name -> lms.v1.PageResponse
+	2,  // 36: lms.v1.SubmitReviewRequest.outcome:type_name -> lms.v1.ReviewOutcome
+	21, // 37: lms.v1.OverrideTestScoreResponse.grade:type_name -> lms.v1.FinalGrade
+	8,  // 38: lms.v1.GradingService.GetResult:input_type -> lms.v1.GetResultRequest
+	9,  // 39: lms.v1.GradingService.ListResultsForSubmission:input_type -> lms.v1.ListResultsForSubmissionRequest
+	11, // 40: lms.v1.GradingService.ListResults:input_type -> lms.v1.ListResultsRequest
+	13, // 41: lms.v1.GradingService.IngestResult:input_type -> lms.v1.IngestResultRequest
+	16, // 42: lms.v1.GradingService.ReportProgress:input_type -> lms.v1.ReportProgressRequest
+	23, // 43: lms.v1.GradingService.ListReviewQueue:input_type -> lms.v1.ListReviewQueueRequest
+	25, // 44: lms.v1.GradingService.ClaimReview:input_type -> lms.v1.ClaimReviewRequest
+	26, // 45: lms.v1.GradingService.ReleaseReview:input_type -> lms.v1.ReleaseReviewRequest
+	28, // 46: lms.v1.GradingService.SubmitReview:input_type -> lms.v1.SubmitReviewRequest
+	29, // 47: lms.v1.GradingService.OverrideTestScore:input_type -> lms.v1.OverrideTestScoreRequest
+	31, // 48: lms.v1.GradingService.RecordDefence:input_type -> lms.v1.RecordDefenceRequest
+	32, // 49: lms.v1.GradingService.GetFinalGrade:input_type -> lms.v1.GetFinalGradeRequest
+	4,  // 50: lms.v1.GradingService.GetResult:output_type -> lms.v1.GradingResult
+	10, // 51: lms.v1.GradingService.ListResultsForSubmission:output_type -> lms.v1.ListResultsForSubmissionResponse
+	12, // 52: lms.v1.GradingService.ListResults:output_type -> lms.v1.ListResultsResponse
+	15, // 53: lms.v1.GradingService.IngestResult:output_type -> lms.v1.IngestResultResponse
+	17, // 54: lms.v1.GradingService.ReportProgress:output_type -> lms.v1.ReportProgressResponse
+	24, // 55: lms.v1.GradingService.ListReviewQueue:output_type -> lms.v1.ListReviewQueueResponse
+	18, // 56: lms.v1.GradingService.ClaimReview:output_type -> lms.v1.ReviewClaim
+	27, // 57: lms.v1.GradingService.ReleaseReview:output_type -> lms.v1.ReleaseReviewResponse
+	19, // 58: lms.v1.GradingService.SubmitReview:output_type -> lms.v1.Review
+	30, // 59: lms.v1.GradingService.OverrideTestScore:output_type -> lms.v1.OverrideTestScoreResponse
+	20, // 60: lms.v1.GradingService.RecordDefence:output_type -> lms.v1.Defence
+	21, // 61: lms.v1.GradingService.GetFinalGrade:output_type -> lms.v1.FinalGrade
+	50, // [50:62] is the sub-list for method output_type
+	38, // [38:50] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_lms_v1_grading_proto_init() }
@@ -1453,13 +2772,15 @@ func file_lms_v1_grading_proto_init() {
 		(*ReportProgressRequest_SubmissionId)(nil),
 		(*ReportProgressRequest_Commit)(nil),
 	}
+	file_lms_v1_grading_proto_msgTypes[15].OneofWrappers = []any{}
+	file_lms_v1_grading_proto_msgTypes[24].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lms_v1_grading_proto_rawDesc), len(file_lms_v1_grading_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   14,
+			NumEnums:      4,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

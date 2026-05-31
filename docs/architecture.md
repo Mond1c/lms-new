@@ -5,10 +5,12 @@
 > `proto/lms/v1/*.proto`. See also [`plan.md`](plan.md) and the root
 > [`CLAUDE.md`](../CLAUDE.md).
 >
-> ⚠️ Several concepts here (human review, defence, review claiming, grading
-> policy, self-hosted runner) are **agreed product design but not yet in the proto
-> contracts**. Those parts are marked **(proposed)**. See
-> [§11 Proposed contract changes](#11-proposed-contract-changes).
+> ℹ️ Human review, defence, review claiming and grading policy are now **encoded
+> in the proto contracts** (Phase 0 — see `identity`/`submission`/`grading`/`gateway`
+> protos and [§11 Contract changes](#11-contract-changes)). They are **contract-only**
+> so far — no service implements them yet. The **self-hosted runner** (and its
+> `vcs.EnqueueTestJob` / test-job topic) remains **(proposed)**, to land with the
+> runner itself.
 
 ## 1. What the system does
 
@@ -410,28 +412,37 @@ consumes test/review/defence changes and publishes `GradingResultEvent`. A
 golang-migrate (db-per-service); slog + OpenTelemetry → Jaeger; ULID ids;
 MinIO/S3 for artifacts and runner logs.
 
-## 11. Proposed contract changes
+## 11. Contract changes
 
-Not yet in `proto/lms/v1/*` — the design above implies these additions
-(implement when picked up; keep proto-first):
+**Landed (Phase 0)** — the design above is now in `proto/lms/v1/*` (contract-only;
+no implementation yet). Keep proto-first when implementing:
 
-- **`identity.proto` · Assignment:** add `bool requires_defense` and
-  `GradingPolicy grading_policy` (`weight_tests`, `weight_quality`,
-  `bool defence_multiplier`, `string custom_formula`) and `RunnerKind runner`
-  (`EXTERNAL_CI` / `SELF_HOSTED`). (`auto_request_review_on_pass` already exists.)
+- **`common.proto`:** `GradingPolicy` (`double weight_tests`,
+  `double weight_quality`, `bool defence_multiplier`, `string custom_formula`) —
+  shared by identity (assignment config) and grading (final-grade computation).
+- **`identity.proto` · Assignment:** added `bool requires_defense`,
+  `GradingPolicy grading_policy`, and `RunnerKind runner`
+  (`RUNNER_KIND_EXTERNAL_CI` / `RUNNER_KIND_SELF_HOSTED`); same fields on
+  `CreateAssignmentRequest`. (`auto_request_review_on_pass` already existed.)
 - **`grading.proto` (assessment):** `ListReviewQueue` (filters: course,
-  assignment, state need-review/under-review/defence, claimed_by);
-  `ClaimReview` / `ReleaseReview` (visible lock); `SubmitReview`
-  (`quality` 0..1, optional `test_override`, outcome); `OverrideTestScore`;
+  assignment, student, `ReviewQueueFilter` need-review/under-review/defence,
+  claimed_by); `ClaimReview` / `ReleaseReview` (visible lock); `SubmitReview`
+  (`quality` 0..1, optional `test_override`, `ReviewOutcome`); `OverrideTestScore`;
   `RecordDefence` (`score` 0..1); `GetFinalGrade`. New messages: `ReviewClaim`,
-  `Review`, `Defence`, `FinalGrade`, `GradingPolicy`.
-- **`submission.proto`:** replace the single `SubmissionState` with the three
-  orthogonal tracks (test / review / defence), or add review/defence fields.
-- **`vcs.proto`:** a `EnqueueTestJob` / job topic for the self-hosted runner;
-  `review_requested` handling already modeled (`EVENT_KIND_REVIEW_REQUESTED`).
+  `Review`, `Defence`, `FinalGrade`, `ReviewQueueItem`.
+- **`submission.proto`:** the single `SubmissionState` is replaced by three
+  orthogonal track enums — `TestState`, `ReviewTrackState` (named to avoid
+  colliding with vcs `ReviewState`), `DefenceState` — on `Submission`,
+  `ListSubmissionsRequest` filters, `SubmissionStatus`, and `UpdateStateRequest`.
 - **`gateway.proto`:** instructor BFF — `ListCourseSubmissions` (filters + who
-  claimed), `ClaimSubmission`/`ReleaseClaim`, `SubmitReview`, `RecordDefence`,
-  `OverrideTestScore`, plus a course-grade overview.
+  claimed, returns `CourseSubmissionCard`), `ClaimSubmission`/`ReleaseClaim`,
+  `SubmitReview`, `RecordDefence`, `OverrideTestScore`, and `CourseGradeOverview`.
+  The acting reviewer/examiner is taken from the auth context, not the request.
+
+**Still proposed** (not in proto — lands with the component):
+
+- **`vcs.proto`:** an `EnqueueTestJob` / job topic for the self-hosted runner.
+  `review_requested` handling is already modeled (`EVENT_KIND_REVIEW_REQUESTED`).
 
 ## 12. Tech stack summary
 

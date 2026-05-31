@@ -48,6 +48,27 @@ const (
 	// GradingServiceReportProgressProcedure is the fully-qualified name of the GradingService's
 	// ReportProgress RPC.
 	GradingServiceReportProgressProcedure = "/lms.v1.GradingService/ReportProgress"
+	// GradingServiceListReviewQueueProcedure is the fully-qualified name of the GradingService's
+	// ListReviewQueue RPC.
+	GradingServiceListReviewQueueProcedure = "/lms.v1.GradingService/ListReviewQueue"
+	// GradingServiceClaimReviewProcedure is the fully-qualified name of the GradingService's
+	// ClaimReview RPC.
+	GradingServiceClaimReviewProcedure = "/lms.v1.GradingService/ClaimReview"
+	// GradingServiceReleaseReviewProcedure is the fully-qualified name of the GradingService's
+	// ReleaseReview RPC.
+	GradingServiceReleaseReviewProcedure = "/lms.v1.GradingService/ReleaseReview"
+	// GradingServiceSubmitReviewProcedure is the fully-qualified name of the GradingService's
+	// SubmitReview RPC.
+	GradingServiceSubmitReviewProcedure = "/lms.v1.GradingService/SubmitReview"
+	// GradingServiceOverrideTestScoreProcedure is the fully-qualified name of the GradingService's
+	// OverrideTestScore RPC.
+	GradingServiceOverrideTestScoreProcedure = "/lms.v1.GradingService/OverrideTestScore"
+	// GradingServiceRecordDefenceProcedure is the fully-qualified name of the GradingService's
+	// RecordDefence RPC.
+	GradingServiceRecordDefenceProcedure = "/lms.v1.GradingService/RecordDefence"
+	// GradingServiceGetFinalGradeProcedure is the fully-qualified name of the GradingService's
+	// GetFinalGrade RPC.
+	GradingServiceGetFinalGradeProcedure = "/lms.v1.GradingService/GetFinalGrade"
 )
 
 // GradingServiceClient is a client for the lms.v1.GradingService service.
@@ -57,6 +78,14 @@ type GradingServiceClient interface {
 	ListResults(context.Context, *connect.Request[v1.ListResultsRequest]) (*connect.Response[v1.ListResultsResponse], error)
 	IngestResult(context.Context, *connect.Request[v1.IngestResultRequest]) (*connect.Response[v1.IngestResultResponse], error)
 	ReportProgress(context.Context, *connect.Request[v1.ReportProgressRequest]) (*connect.Response[v1.ReportProgressResponse], error)
+	// Assessment: shared review queue, claiming, review/defence, final grade.
+	ListReviewQueue(context.Context, *connect.Request[v1.ListReviewQueueRequest]) (*connect.Response[v1.ListReviewQueueResponse], error)
+	ClaimReview(context.Context, *connect.Request[v1.ClaimReviewRequest]) (*connect.Response[v1.ReviewClaim], error)
+	ReleaseReview(context.Context, *connect.Request[v1.ReleaseReviewRequest]) (*connect.Response[v1.ReleaseReviewResponse], error)
+	SubmitReview(context.Context, *connect.Request[v1.SubmitReviewRequest]) (*connect.Response[v1.Review], error)
+	OverrideTestScore(context.Context, *connect.Request[v1.OverrideTestScoreRequest]) (*connect.Response[v1.OverrideTestScoreResponse], error)
+	RecordDefence(context.Context, *connect.Request[v1.RecordDefenceRequest]) (*connect.Response[v1.Defence], error)
+	GetFinalGrade(context.Context, *connect.Request[v1.GetFinalGradeRequest]) (*connect.Response[v1.FinalGrade], error)
 }
 
 // NewGradingServiceClient constructs a client for the lms.v1.GradingService service. By default, it
@@ -100,6 +129,48 @@ func NewGradingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(gradingServiceMethods.ByName("ReportProgress")),
 			connect.WithClientOptions(opts...),
 		),
+		listReviewQueue: connect.NewClient[v1.ListReviewQueueRequest, v1.ListReviewQueueResponse](
+			httpClient,
+			baseURL+GradingServiceListReviewQueueProcedure,
+			connect.WithSchema(gradingServiceMethods.ByName("ListReviewQueue")),
+			connect.WithClientOptions(opts...),
+		),
+		claimReview: connect.NewClient[v1.ClaimReviewRequest, v1.ReviewClaim](
+			httpClient,
+			baseURL+GradingServiceClaimReviewProcedure,
+			connect.WithSchema(gradingServiceMethods.ByName("ClaimReview")),
+			connect.WithClientOptions(opts...),
+		),
+		releaseReview: connect.NewClient[v1.ReleaseReviewRequest, v1.ReleaseReviewResponse](
+			httpClient,
+			baseURL+GradingServiceReleaseReviewProcedure,
+			connect.WithSchema(gradingServiceMethods.ByName("ReleaseReview")),
+			connect.WithClientOptions(opts...),
+		),
+		submitReview: connect.NewClient[v1.SubmitReviewRequest, v1.Review](
+			httpClient,
+			baseURL+GradingServiceSubmitReviewProcedure,
+			connect.WithSchema(gradingServiceMethods.ByName("SubmitReview")),
+			connect.WithClientOptions(opts...),
+		),
+		overrideTestScore: connect.NewClient[v1.OverrideTestScoreRequest, v1.OverrideTestScoreResponse](
+			httpClient,
+			baseURL+GradingServiceOverrideTestScoreProcedure,
+			connect.WithSchema(gradingServiceMethods.ByName("OverrideTestScore")),
+			connect.WithClientOptions(opts...),
+		),
+		recordDefence: connect.NewClient[v1.RecordDefenceRequest, v1.Defence](
+			httpClient,
+			baseURL+GradingServiceRecordDefenceProcedure,
+			connect.WithSchema(gradingServiceMethods.ByName("RecordDefence")),
+			connect.WithClientOptions(opts...),
+		),
+		getFinalGrade: connect.NewClient[v1.GetFinalGradeRequest, v1.FinalGrade](
+			httpClient,
+			baseURL+GradingServiceGetFinalGradeProcedure,
+			connect.WithSchema(gradingServiceMethods.ByName("GetFinalGrade")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -110,6 +181,13 @@ type gradingServiceClient struct {
 	listResults              *connect.Client[v1.ListResultsRequest, v1.ListResultsResponse]
 	ingestResult             *connect.Client[v1.IngestResultRequest, v1.IngestResultResponse]
 	reportProgress           *connect.Client[v1.ReportProgressRequest, v1.ReportProgressResponse]
+	listReviewQueue          *connect.Client[v1.ListReviewQueueRequest, v1.ListReviewQueueResponse]
+	claimReview              *connect.Client[v1.ClaimReviewRequest, v1.ReviewClaim]
+	releaseReview            *connect.Client[v1.ReleaseReviewRequest, v1.ReleaseReviewResponse]
+	submitReview             *connect.Client[v1.SubmitReviewRequest, v1.Review]
+	overrideTestScore        *connect.Client[v1.OverrideTestScoreRequest, v1.OverrideTestScoreResponse]
+	recordDefence            *connect.Client[v1.RecordDefenceRequest, v1.Defence]
+	getFinalGrade            *connect.Client[v1.GetFinalGradeRequest, v1.FinalGrade]
 }
 
 // GetResult calls lms.v1.GradingService.GetResult.
@@ -137,6 +215,41 @@ func (c *gradingServiceClient) ReportProgress(ctx context.Context, req *connect.
 	return c.reportProgress.CallUnary(ctx, req)
 }
 
+// ListReviewQueue calls lms.v1.GradingService.ListReviewQueue.
+func (c *gradingServiceClient) ListReviewQueue(ctx context.Context, req *connect.Request[v1.ListReviewQueueRequest]) (*connect.Response[v1.ListReviewQueueResponse], error) {
+	return c.listReviewQueue.CallUnary(ctx, req)
+}
+
+// ClaimReview calls lms.v1.GradingService.ClaimReview.
+func (c *gradingServiceClient) ClaimReview(ctx context.Context, req *connect.Request[v1.ClaimReviewRequest]) (*connect.Response[v1.ReviewClaim], error) {
+	return c.claimReview.CallUnary(ctx, req)
+}
+
+// ReleaseReview calls lms.v1.GradingService.ReleaseReview.
+func (c *gradingServiceClient) ReleaseReview(ctx context.Context, req *connect.Request[v1.ReleaseReviewRequest]) (*connect.Response[v1.ReleaseReviewResponse], error) {
+	return c.releaseReview.CallUnary(ctx, req)
+}
+
+// SubmitReview calls lms.v1.GradingService.SubmitReview.
+func (c *gradingServiceClient) SubmitReview(ctx context.Context, req *connect.Request[v1.SubmitReviewRequest]) (*connect.Response[v1.Review], error) {
+	return c.submitReview.CallUnary(ctx, req)
+}
+
+// OverrideTestScore calls lms.v1.GradingService.OverrideTestScore.
+func (c *gradingServiceClient) OverrideTestScore(ctx context.Context, req *connect.Request[v1.OverrideTestScoreRequest]) (*connect.Response[v1.OverrideTestScoreResponse], error) {
+	return c.overrideTestScore.CallUnary(ctx, req)
+}
+
+// RecordDefence calls lms.v1.GradingService.RecordDefence.
+func (c *gradingServiceClient) RecordDefence(ctx context.Context, req *connect.Request[v1.RecordDefenceRequest]) (*connect.Response[v1.Defence], error) {
+	return c.recordDefence.CallUnary(ctx, req)
+}
+
+// GetFinalGrade calls lms.v1.GradingService.GetFinalGrade.
+func (c *gradingServiceClient) GetFinalGrade(ctx context.Context, req *connect.Request[v1.GetFinalGradeRequest]) (*connect.Response[v1.FinalGrade], error) {
+	return c.getFinalGrade.CallUnary(ctx, req)
+}
+
 // GradingServiceHandler is an implementation of the lms.v1.GradingService service.
 type GradingServiceHandler interface {
 	GetResult(context.Context, *connect.Request[v1.GetResultRequest]) (*connect.Response[v1.GradingResult], error)
@@ -144,6 +257,14 @@ type GradingServiceHandler interface {
 	ListResults(context.Context, *connect.Request[v1.ListResultsRequest]) (*connect.Response[v1.ListResultsResponse], error)
 	IngestResult(context.Context, *connect.Request[v1.IngestResultRequest]) (*connect.Response[v1.IngestResultResponse], error)
 	ReportProgress(context.Context, *connect.Request[v1.ReportProgressRequest]) (*connect.Response[v1.ReportProgressResponse], error)
+	// Assessment: shared review queue, claiming, review/defence, final grade.
+	ListReviewQueue(context.Context, *connect.Request[v1.ListReviewQueueRequest]) (*connect.Response[v1.ListReviewQueueResponse], error)
+	ClaimReview(context.Context, *connect.Request[v1.ClaimReviewRequest]) (*connect.Response[v1.ReviewClaim], error)
+	ReleaseReview(context.Context, *connect.Request[v1.ReleaseReviewRequest]) (*connect.Response[v1.ReleaseReviewResponse], error)
+	SubmitReview(context.Context, *connect.Request[v1.SubmitReviewRequest]) (*connect.Response[v1.Review], error)
+	OverrideTestScore(context.Context, *connect.Request[v1.OverrideTestScoreRequest]) (*connect.Response[v1.OverrideTestScoreResponse], error)
+	RecordDefence(context.Context, *connect.Request[v1.RecordDefenceRequest]) (*connect.Response[v1.Defence], error)
+	GetFinalGrade(context.Context, *connect.Request[v1.GetFinalGradeRequest]) (*connect.Response[v1.FinalGrade], error)
 }
 
 // NewGradingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -183,6 +304,48 @@ func NewGradingServiceHandler(svc GradingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(gradingServiceMethods.ByName("ReportProgress")),
 		connect.WithHandlerOptions(opts...),
 	)
+	gradingServiceListReviewQueueHandler := connect.NewUnaryHandler(
+		GradingServiceListReviewQueueProcedure,
+		svc.ListReviewQueue,
+		connect.WithSchema(gradingServiceMethods.ByName("ListReviewQueue")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gradingServiceClaimReviewHandler := connect.NewUnaryHandler(
+		GradingServiceClaimReviewProcedure,
+		svc.ClaimReview,
+		connect.WithSchema(gradingServiceMethods.ByName("ClaimReview")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gradingServiceReleaseReviewHandler := connect.NewUnaryHandler(
+		GradingServiceReleaseReviewProcedure,
+		svc.ReleaseReview,
+		connect.WithSchema(gradingServiceMethods.ByName("ReleaseReview")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gradingServiceSubmitReviewHandler := connect.NewUnaryHandler(
+		GradingServiceSubmitReviewProcedure,
+		svc.SubmitReview,
+		connect.WithSchema(gradingServiceMethods.ByName("SubmitReview")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gradingServiceOverrideTestScoreHandler := connect.NewUnaryHandler(
+		GradingServiceOverrideTestScoreProcedure,
+		svc.OverrideTestScore,
+		connect.WithSchema(gradingServiceMethods.ByName("OverrideTestScore")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gradingServiceRecordDefenceHandler := connect.NewUnaryHandler(
+		GradingServiceRecordDefenceProcedure,
+		svc.RecordDefence,
+		connect.WithSchema(gradingServiceMethods.ByName("RecordDefence")),
+		connect.WithHandlerOptions(opts...),
+	)
+	gradingServiceGetFinalGradeHandler := connect.NewUnaryHandler(
+		GradingServiceGetFinalGradeProcedure,
+		svc.GetFinalGrade,
+		connect.WithSchema(gradingServiceMethods.ByName("GetFinalGrade")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/lms.v1.GradingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case GradingServiceGetResultProcedure:
@@ -195,6 +358,20 @@ func NewGradingServiceHandler(svc GradingServiceHandler, opts ...connect.Handler
 			gradingServiceIngestResultHandler.ServeHTTP(w, r)
 		case GradingServiceReportProgressProcedure:
 			gradingServiceReportProgressHandler.ServeHTTP(w, r)
+		case GradingServiceListReviewQueueProcedure:
+			gradingServiceListReviewQueueHandler.ServeHTTP(w, r)
+		case GradingServiceClaimReviewProcedure:
+			gradingServiceClaimReviewHandler.ServeHTTP(w, r)
+		case GradingServiceReleaseReviewProcedure:
+			gradingServiceReleaseReviewHandler.ServeHTTP(w, r)
+		case GradingServiceSubmitReviewProcedure:
+			gradingServiceSubmitReviewHandler.ServeHTTP(w, r)
+		case GradingServiceOverrideTestScoreProcedure:
+			gradingServiceOverrideTestScoreHandler.ServeHTTP(w, r)
+		case GradingServiceRecordDefenceProcedure:
+			gradingServiceRecordDefenceHandler.ServeHTTP(w, r)
+		case GradingServiceGetFinalGradeProcedure:
+			gradingServiceGetFinalGradeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -222,4 +399,32 @@ func (UnimplementedGradingServiceHandler) IngestResult(context.Context, *connect
 
 func (UnimplementedGradingServiceHandler) ReportProgress(context.Context, *connect.Request[v1.ReportProgressRequest]) (*connect.Response[v1.ReportProgressResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.ReportProgress is not implemented"))
+}
+
+func (UnimplementedGradingServiceHandler) ListReviewQueue(context.Context, *connect.Request[v1.ListReviewQueueRequest]) (*connect.Response[v1.ListReviewQueueResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.ListReviewQueue is not implemented"))
+}
+
+func (UnimplementedGradingServiceHandler) ClaimReview(context.Context, *connect.Request[v1.ClaimReviewRequest]) (*connect.Response[v1.ReviewClaim], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.ClaimReview is not implemented"))
+}
+
+func (UnimplementedGradingServiceHandler) ReleaseReview(context.Context, *connect.Request[v1.ReleaseReviewRequest]) (*connect.Response[v1.ReleaseReviewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.ReleaseReview is not implemented"))
+}
+
+func (UnimplementedGradingServiceHandler) SubmitReview(context.Context, *connect.Request[v1.SubmitReviewRequest]) (*connect.Response[v1.Review], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.SubmitReview is not implemented"))
+}
+
+func (UnimplementedGradingServiceHandler) OverrideTestScore(context.Context, *connect.Request[v1.OverrideTestScoreRequest]) (*connect.Response[v1.OverrideTestScoreResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.OverrideTestScore is not implemented"))
+}
+
+func (UnimplementedGradingServiceHandler) RecordDefence(context.Context, *connect.Request[v1.RecordDefenceRequest]) (*connect.Response[v1.Defence], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.RecordDefence is not implemented"))
+}
+
+func (UnimplementedGradingServiceHandler) GetFinalGrade(context.Context, *connect.Request[v1.GetFinalGradeRequest]) (*connect.Response[v1.FinalGrade], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.GradingService.GetFinalGrade is not implemented"))
 }

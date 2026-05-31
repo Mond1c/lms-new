@@ -2,26 +2,43 @@ package handler
 
 import (
 	"context"
-	"errors"
 
 	"connectrpc.com/connect"
 	identityv1 "github.com/Mond1c/lms/gen/go/lms/v1"
 	"github.com/Mond1c/lms/gen/go/lms/v1/lmsv1connect"
 	"github.com/Mond1c/lms/services/identity/internal/domain"
-	"github.com/Mond1c/lms/services/identity/internal/repo"
-	"github.com/Mond1c/lms/services/identity/service"
+	"github.com/Mond1c/lms/services/identity/internal/service"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Identity struct {
 	lmsv1connect.UnimplementedIdentityServiceHandler
-	users *service.UsersService
+	users         *service.UsersService
+	courses       *service.CoursesService
+	enrollments   *service.EnrollmentsService
+	assignments   *service.AssignmentsService
+	vcsIdentities *service.VCSIdentitiesService
+	studentRepos  *service.StudentReposService
 }
 
 var _ lmsv1connect.IdentityServiceHandler = (*Identity)(nil)
 
-func New(users *service.UsersService) *Identity {
-	return &Identity{users: users}
+func New(
+	users *service.UsersService,
+	courses *service.CoursesService,
+	enrollments *service.EnrollmentsService,
+	assignments *service.AssignmentsService,
+	vcsIdentities *service.VCSIdentitiesService,
+	studentRepos *service.StudentReposService,
+) *Identity {
+	return &Identity{
+		users:         users,
+		courses:       courses,
+		enrollments:   enrollments,
+		assignments:   assignments,
+		vcsIdentities: vcsIdentities,
+		studentRepos:  studentRepos,
+	}
 }
 
 func (h *Identity) CreateUser(
@@ -70,7 +87,8 @@ func (h *Identity) ListUsers(
 	ctx context.Context,
 	req *connect.Request[identityv1.ListUsersRequest],
 ) (*connect.Response[identityv1.ListUsersResponse], error) {
-	users, err := h.users.List(ctx, req.Msg.GetPage().GetPageSize(), req.Msg.GetPage().GetPageToken())
+	limit, offset := pageParams(req.Msg.GetPage())
+	users, err := h.users.List(ctx, limit, offset)
 	if err != nil {
 		return nil, toConnectErr(err)
 	}
@@ -80,11 +98,10 @@ func (h *Identity) ListUsers(
 		protoUsers[i] = userToProto(user)
 	}
 
-	// TODO: I do not like this
 	response := &identityv1.ListUsersResponse{
 		Users: protoUsers,
 		Page: &identityv1.PageResponse{
-			NextPageToken: req.Msg.GetPage().GetPageToken() + 1,
+			NextPageToken: nextPageToken(offset, limit, int32(len(users))),
 		},
 	}
 
@@ -95,10 +112,10 @@ func (h *Identity) UpdateUser(
 	ctx context.Context,
 	req *connect.Request[identityv1.UpdateUserRequest],
 ) (*connect.Response[identityv1.User], error) {
-	user, err := h.users.Update(ctx, &domain.User{
+	user, err := h.users.Update(ctx, domain.UserUpdate{
 		ID:          req.Msg.GetId(),
-		DisplayName: req.Msg.GetDisplayName(),
-		TelegramID:  req.Msg.GetTelegramId(),
+		DisplayName: req.Msg.DisplayName,
+		TelegramID:  req.Msg.TelegramId,
 	})
 	if err != nil {
 		return nil, toConnectErr(err)
@@ -118,25 +135,5 @@ func userToProto(user *domain.User) *identityv1.User {
 			UpdatedAt: timestamppb.New(user.UpdatedAt),
 		},
 		// TODO: add vcs info here
-	}
-}
-
-// TODO: this is bad function, maybe store something like mapping error to code?
-func toConnectErr(err error) error {
-	switch {
-	case err == nil:
-		return nil
-	case errors.Is(err, domain.ErrInvalidEmail),
-		errors.Is(err, domain.ErrPasswordTooShort),
-		errors.Is(err, domain.ErrPasswordTooLong),
-		errors.Is(err, service.ErrDisplayNameRequired),
-		errors.Is(err, service.ErrInvalidID):
-		return connect.NewError(connect.CodeInvalidArgument, err)
-	case errors.Is(err, repo.ErrNotFound):
-		return connect.NewError(connect.CodeNotFound, err)
-	case errors.Is(err, repo.ErrEmailTaken):
-		return connect.NewError(connect.CodeAlreadyExists, err)
-	default:
-		return connect.NewError(connect.CodeInternal, err)
 	}
 }

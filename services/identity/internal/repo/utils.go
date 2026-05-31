@@ -2,10 +2,12 @@ package repo
 
 import (
 	"errors"
+	"time"
 
 	"github.com/Mond1c/lms/services/identity/internal/domain"
 	"github.com/Mond1c/lms/services/identity/internal/repo/sqlcgen"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const PGDuplicateValueErrCode = "23505"
@@ -22,6 +24,30 @@ func pgTextFromString(str string) *string {
 		return nil
 	}
 	return &str
+}
+
+func strFromPtr(p *string) string {
+	if p == nil {
+		return ""
+	}
+	return *p
+}
+
+func ptrBool(b bool) *bool { return &b }
+
+func pgTimestamp(t *time.Time) pgtype.Timestamp {
+	if t == nil {
+		return pgtype.Timestamp{}
+	}
+	return pgtype.Timestamp{Time: *t, Valid: true}
+}
+
+func timeFromPg(ts pgtype.Timestamp) *time.Time {
+	if !ts.Valid {
+		return nil
+	}
+	t := ts.Time
+	return &t
 }
 
 func isUniqueViolation(err error, constraint string) bool {

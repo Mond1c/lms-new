@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/Mond1c/lms/services/identity/internal/domain"
 	"github.com/Mond1c/lms/services/identity/internal/repo"
-	"github.com/Mond1c/lms/services/identity/service"
+	"github.com/Mond1c/lms/services/identity/internal/service"
 	"github.com/stretchr/testify/require"
 )
 

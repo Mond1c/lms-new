@@ -12,8 +12,11 @@ SELECT * FROM users WHERE email = $1;
 -- name: UpdateUser :one
 UPDATE users
 SET display_name = COALESCE(sqlc.narg('display_name'), display_name),
-    telegram_id = COALESCE(sqlc.narg('telegram_id'), telegram_id)
-WHERE id = $1
+    telegram_id = CASE
+        WHEN sqlc.narg('set_telegram')::boolean THEN sqlc.narg('telegram_id')
+        ELSE telegram_id
+    END
+WHERE id = sqlc.arg('id')
 RETURNING *;
 
 -- name: ListUsers :many

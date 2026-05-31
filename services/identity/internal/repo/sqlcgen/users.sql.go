@@ -134,20 +134,29 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-SET display_name = COALESCE($2, display_name),
-    telegram_id = COALESCE($3, telegram_id)
-WHERE id = $1
+SET display_name = COALESCE($1, display_name),
+    telegram_id = CASE
+        WHEN $2::boolean THEN $3
+        ELSE telegram_id
+    END
+WHERE id = $4
 RETURNING id, email, display_name, password_hash, telegram_id, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	ID          string
 	DisplayName *string
+	SetTelegram *bool
 	TelegramID  *string
+	ID          string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUser, arg.ID, arg.DisplayName, arg.TelegramID)
+	row := q.db.QueryRow(ctx, updateUser,
+		arg.DisplayName,
+		arg.SetTelegram,
+		arg.TelegramID,
+		arg.ID,
+	)
 	var i User
 	err := row.Scan(
 		&i.ID,

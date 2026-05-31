@@ -69,7 +69,8 @@ func TestMain(m *testing.M) {
 func truncate(t *testing.T) {
 	t.Helper()
 	_, err := testDB.Exec(context.Background(), `
-		TRUNCATE TABLE users RESTART IDENTITY CASCADE;
+		TRUNCATE TABLE users, courses, enrollments, assignments, vcs_identities, student_repos
+		RESTART IDENTITY CASCADE;
 	`)
 	if err != nil {
 		t.Fatalf("truncate: %v", err)

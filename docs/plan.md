@@ -14,13 +14,12 @@ flowchart LR
         b["go.work + per-service modules"]
         c["shared pkg: pg, obs, jwt, kafka"]
         d["docker-compose infra"]
-        e["identity: User CRUD<br/>(handler→service→repo→sqlc)"]
+        e["identity: User + Course + Enroll +<br/>Assignment + VCSIdentity + StudentRepo<br/>(handler→service→repo→sqlc)"]
         f["health/readiness + e2e smoke"]
     end
     subgraph wip["🚧 In progress / skeleton"]
         g["gateway/submission/grading/vcs<br/>(app+handler stubs)"]
         h["pkg/outbox, pkg/grpcauth<br/>(version stubs)"]
-        i["identity: Course/Assignment/<br/>Enrollment/StudentRepo/VCS"]
     end
     subgraph todo["⬜ Not started"]
         j["Kafka producers/consumers"]
@@ -30,9 +29,10 @@ flowchart LR
     done --> wip --> todo
 ```
 
-**Build/test status (verified):** `identity` builds; its `service` and
-`internal/domain` unit tests pass. Repo-layer tests require Docker
-(testcontainers). The historical `NewEmail` bug (commit `85b6cdf`) is fixed.
+**Build/test status (verified):** `identity` builds and is lint-clean; all of
+`User/Course/Enrollment/Assignment/VCSIdentity/StudentRepo` are implemented
+end-to-end with passing `service` unit tests and `repo` integration tests
+(testcontainers Postgres). The historical `NewEmail` bug (commit `85b6cdf`) is fixed.
 
 ## 2. Component status
 
@@ -46,7 +46,7 @@ flowchart LR
 | `pkg/outbox` | 🚧 | version stub only |
 | `pkg/grpcauth` | 🚧 | version stub only — **no auth interceptor yet** |
 | identity · User | ✅ | full vertical slice |
-| identity · Course/Enroll/Assignment/StudentRepo/VCSIdentity | ⬜ | RPCs defined, unimplemented |
+| identity · Course/Enroll/Assignment/StudentRepo/VCSIdentity | ✅ | implemented end-to-end (Phase 1); tests pass |
 | submission | 🚧 | skeleton (Unimplemented) |
 | grading | 🚧 | skeleton (Unimplemented) |
 | vcs | 🚧 | skeleton + `// Temp` domain stub |
@@ -89,17 +89,23 @@ Proto-first: encode the agreed product model before building it (architecture §
 - [ ] _Deferred to Phase 2/3:_ `vcs.proto` `EnqueueTestJob` / test-job topic for
       the self-hosted runner (lands with the runner, not part of Phase 0).
 
-### Phase 1 — Identity, complete & hardened  ·  _now_
-- [ ] Implement Course: `CreateCourse`, `GetCourse`, `ListCourses` (+ migration, sqlc).
-- [ ] Implement Enrollment: `Enroll`, `Unenroll`, `ListEnrollments` (role checks via `domain.Role`).
-- [ ] Implement Assignment incl. `requires_defense`, `grading_policy`, `runner`:
-      `CreateAssignment`, `GetAssignment`, `ListAssignments`.
-- [ ] Implement VCS identity linking: `LinkVCSIdentity`, `UnlinkVCSIdentity`, `ListVCSIdentities`.
-- [ ] Implement StudentRepo: `RegisterStudentRepo`, `GetStudentRepo`.
-- [ ] Fix `ListUsers` pagination (real page tokens, not `token+1`).
-- [ ] Centralize error→Connect-code mapping (replace ad-hoc `toConnectErr`).
-- [ ] Allow unsetting `telegram_id` in `UpdateUser`.
-- [ ] Move `service/` under `internal/service` for consistency.
+### Phase 1 — Identity, complete & hardened  ·  ✅ _done_
+- [x] Implement Course: `CreateCourse`, `GetCourse`, `ListCourses` (+ migration, sqlc).
+- [x] Implement Enrollment: `Enroll`, `Unenroll`, `ListEnrollments` (role checks via `domain.Role`).
+- [x] Implement Assignment incl. `requires_defense`, `grading_policy`, `runner`:
+      `CreateAssignment`, `GetAssignment`, `ListAssignments` (runner defaults to
+      `external_ci`; grading weights default to 0.7/0.3).
+- [x] Implement VCS identity linking: `LinkVCSIdentity` (upsert), `UnlinkVCSIdentity`, `ListVCSIdentities`.
+- [x] Implement StudentRepo: `RegisterStudentRepo` (upsert), `GetStudentRepo`.
+- [x] Fix `ListUsers` pagination (offset-based page tokens via shared `pageParams`/`nextPageToken`).
+- [x] Centralize error→Connect-code mapping (table-driven `toConnectErr` in `handler/errors.go`;
+      service validation errors wrap `service.ErrValidation`).
+- [x] Allow unsetting `telegram_id` in `UpdateUser` (via `domain.UserUpdate` pointer semantics).
+- [x] Move `service/` under `internal/service` for consistency.
+
+> Each slice landed end-to-end (migration → sqlc → repo → service → handler) with
+> service unit tests + repo integration tests (testcontainers Postgres); `make
+> build`/`test`/`lint` green.
 
 ### Phase 2 — VCS provider engine
 - [ ] Real `domain` (replace `// Temp` `NormilizedEvent`/`ProviderKind`).
@@ -175,10 +181,14 @@ Proto-first: encode the agreed product model before building it (architecture §
 - `pkg/grpcauth` & `pkg/outbox` are stubs — **no auth and no outbox yet**.
 - `vcs/internal/domain/provider.go` is a `// Temp` stub (`NormilizedEvent`
   misspelling vs proto `NormalizedEvent`).
-- `identity` `service/` sits outside `internal/`.
-- `ListUsers` pagination is a placeholder; `toConnectErr` is ad hoc.
 - bcrypt cost is `DefaultCost` (TODO in `password.go` to raise it).
 - No CI pipeline; lint/test are local-only.
+- identity Course VCS binding is persisted but has no setter RPC yet (no input on
+  `CreateCourse`); `GetUser` still doesn't embed VCS identities (dedicated
+  `ListVCSIdentities` RPC covers it).
+- _Resolved in Phase 1:_ `service/` moved under `internal/`; `ListUsers`
+  pagination and centralized error mapping done; `UpdateUser` can unset
+  `telegram_id`.
 
 ## 6. Decisions made
 

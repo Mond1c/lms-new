@@ -14,6 +14,7 @@ import (
 var (
 	ErrNotFound   = errors.New("not found")
 	ErrEmailTaken = errors.New("email already taken")
+	ErrConflict   = errors.New("conflict")
 )
 
 type UserRepo struct {
@@ -63,13 +64,19 @@ func (r *UserRepo) GetByID(ctx context.Context, id string) (*domain.User, error)
 	return userFromRow(row), nil
 }
 
-func (r *UserRepo) Update(ctx context.Context, u *domain.User) (*domain.User, error) {
-	row, err := r.q.UpdateUser(ctx, sqlcgen.UpdateUserParams{
+func (r *UserRepo) Update(ctx context.Context, u domain.UserUpdate) (*domain.User, error) {
+	params := sqlcgen.UpdateUserParams{
 		ID:          u.ID,
-		DisplayName: &u.DisplayName,
-		TelegramID:  &u.TelegramID,
-	}) // TODO: i do not like this, because telegram id is empty string always (think about this). Also sometimes i want to ulink my tg
+		DisplayName: u.DisplayName,
+	}
+	// A non-nil TelegramID means "set it" — including to the empty string, which
+	// clears it (stored as NULL). A nil TelegramID leaves the value untouched.
+	if u.TelegramID != nil {
+		params.SetTelegram = ptrBool(true)
+		params.TelegramID = pgTextFromString(*u.TelegramID)
+	}
 
+	row, err := r.q.UpdateUser(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrNotFound

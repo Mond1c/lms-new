@@ -100,6 +100,48 @@ func TestUserRepo_NullableFields(t *testing.T) {
 	})
 }
 
+func TestUserRepo_UpdateTelegram(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	r := NewUsersRepo(testDB)
+
+	u := newUser(t, "tg@example.com")
+	u.TelegramID = "@before"
+	require.NoError(t, r.Create(ctx, u))
+
+	t.Run("set new value", func(t *testing.T) {
+		tg := "@after"
+		got, err := r.Update(ctx, domain.UserUpdate{ID: u.ID, TelegramID: &tg})
+		require.NoError(t, err)
+		require.Equal(t, "@after", got.TelegramID)
+	})
+
+	t.Run("nil leaves telegram unchanged", func(t *testing.T) {
+		name := "New Name"
+		got, err := r.Update(ctx, domain.UserUpdate{ID: u.ID, DisplayName: &name})
+		require.NoError(t, err)
+		require.Equal(t, "New Name", got.DisplayName)
+		require.Equal(t, "@after", got.TelegramID, "telegram must survive a name-only update")
+	})
+
+	t.Run("empty string clears telegram", func(t *testing.T) {
+		empty := ""
+		got, err := r.Update(ctx, domain.UserUpdate{ID: u.ID, TelegramID: &empty})
+		require.NoError(t, err)
+		require.Equal(t, "", got.TelegramID)
+
+		reloaded, err := r.GetByID(ctx, u.ID)
+		require.NoError(t, err)
+		require.Equal(t, "", reloaded.TelegramID, "cleared telegram must persist as unset")
+	})
+
+	t.Run("missing id", func(t *testing.T) {
+		name := "x"
+		_, err := r.Update(ctx, domain.UserUpdate{ID: "does-not-exist", DisplayName: &name})
+		require.ErrorIs(t, err, ErrNotFound)
+	})
+}
+
 func TestUserRepo_List(t *testing.T) {
 	truncate(t)
 	ctx := context.Background()

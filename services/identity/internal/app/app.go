@@ -16,7 +16,7 @@ import (
 	"github.com/Mond1c/lms/services/identity/internal/config"
 	"github.com/Mond1c/lms/services/identity/internal/handler"
 	"github.com/Mond1c/lms/services/identity/internal/repo"
-	"github.com/Mond1c/lms/services/identity/service"
+	"github.com/Mond1c/lms/services/identity/internal/service"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -70,11 +70,16 @@ func New(ctx context.Context, cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("otel interceptor: %w", err)
 	}
 
-	usersRepo := repo.NewUsersRepo(a.pool)
-	usersSvc := service.NewUsersService(usersRepo)
+	usersSvc := service.NewUsersService(repo.NewUsersRepo(a.pool))
+	coursesSvc := service.NewCoursesService(repo.NewCoursesRepo(a.pool))
+	enrollmentsSvc := service.NewEnrollmentsService(repo.NewEnrollmentsRepo(a.pool))
+	assignmentsSvc := service.NewAssignmentsService(repo.NewAssignmentsRepo(a.pool))
+	vcsIdentitiesSvc := service.NewVCSIdentitiesService(repo.NewVCSIdentitiesRepo(a.pool))
+	studentReposSvc := service.NewStudentReposService(repo.NewStudentReposRepo(a.pool))
+
 	mux := http.NewServeMux()
 	path, h := lmsv1connect.NewIdentityServiceHandler(
-		handler.New(usersSvc),
+		handler.New(usersSvc, coursesSvc, enrollmentsSvc, assignmentsSvc, vcsIdentitiesSvc, studentReposSvc),
 		connect.WithInterceptors(otelInterceptor),
 	)
 	mux.Handle(path, h)

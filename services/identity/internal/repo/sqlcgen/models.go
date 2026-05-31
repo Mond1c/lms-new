@@ -8,10 +8,71 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Assignment struct {
+	ID                      string
+	CourseID                string
+	Slug                    string
+	Title                   string
+	DescriptionMarkdown     string
+	Deadline                pgtype.Timestamp
+	HardDeadline            pgtype.Timestamp
+	MaxScore                int32
+	TemplateRepo            string
+	RepoNamingPattern       string
+	AutoRequestReviewOnPass bool
+	RequiresDefense         bool
+	WeightTests             float64
+	WeightQuality           float64
+	DefenceMultiplier       bool
+	CustomFormula           string
+	Runner                  string
+	CreatedAt               pgtype.Timestamp
+	UpdatedAt               pgtype.Timestamp
+}
+
+type Course struct {
+	ID                  string
+	Code                string
+	Title               string
+	Description         string
+	InstructorID        string
+	VcsProviderKind     *int32
+	VcsProviderInstance *string
+	VcsTargetOrg        *string
+	VcsStudentTeam      *string
+	VcsReviewerTeam     *string
+	VcsReviewerLogins   []string
+	CreatedAt           pgtype.Timestamp
+	UpdatedAt           pgtype.Timestamp
+}
+
+type Enrollment struct {
+	ID         string
+	UserID     string
+	CourseID   string
+	Role       string
+	EnrolledAt pgtype.Timestamp
+}
+
 type SchemaBootstrap struct {
 	ID          int16
 	Initialized bool
 	CreatedAt   pgtype.Timestamp
+}
+
+type StudentRepo struct {
+	ID               string
+	UserID           string
+	AssignmentID     string
+	ProviderKind     int32
+	ProviderInstance string
+	FullName         string
+	ExternalID       int64
+	State            string
+	CloneUrlHttps    string
+	CloneUrlSsh      string
+	CreatedAt        pgtype.Timestamp
+	UpdatedAt        pgtype.Timestamp
 }
 
 type User struct {
@@ -22,4 +83,17 @@ type User struct {
 	TelegramID   *string
 	CreatedAt    pgtype.Timestamp
 	UpdatedAt    pgtype.Timestamp
+}
+
+type VcsIdentity struct {
+	UserID           string
+	ProviderKind     int32
+	ProviderInstance string
+	ExternalUserID   int64
+	ExternalLogin    string
+	AccessToken      *string
+	RefreshToken     *string
+	ExpiresAt        pgtype.Timestamp
+	TokenValid       bool
+	LinkedAt         pgtype.Timestamp
 }

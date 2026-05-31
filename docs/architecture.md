@@ -121,8 +121,10 @@ flowchart TB
 > ran in external CI or our runner — so the two are interchangeable per
 > assignment.
 
-> Reality check: only `identity` has business logic (users). Everything else is
-> an app+handler skeleton returning `Unimplemented`; the runner doesn't exist yet.
+> Reality check: only `identity` has business logic — but it now implements its
+> whole RPC surface (users, courses, enrollments, assignments, VCS identities,
+> student repos). Everything else is an app+handler skeleton returning
+> `Unimplemented`; the runner doesn't exist yet.
 
 ## 4. Assessment model (grade composition)
 
@@ -265,8 +267,8 @@ Rules: dependencies point **inward**; `service` imports neither ConnectRPC nor
 SQL; **interfaces live at the consumer**; sentinel errors per layer, wrapped with
 `%w`, mapped to Connect codes only in the handler.
 
-> Wrinkle: `identity` currently has its `service` package outside `internal/`.
-> Prefer `internal/service` for new code.
+> Note: identity's business layer lives in `internal/service/` (moved there in
+> Phase 1). Keep new services under `internal/`.
 
 ## 8. Domain model
 

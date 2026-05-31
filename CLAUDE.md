@@ -25,8 +25,9 @@ The end-to-end flow it is built around:
 
 Status: **early development.** The proto contracts and infra wiring are
 substantially defined; **identity** is the only service with real business logic
-(users only so far). The other services are app/handler skeletons returning
-`Unimplemented`. There is no frontend yet.
+— but it now implements its full RPC surface (User, Course, Enrollment,
+Assignment, VCSIdentity, StudentRepo). The other services are app/handler
+skeletons returning `Unimplemented`. There is no frontend yet.
 
 ## ⚠️ Module layout — read first
 
@@ -91,10 +92,9 @@ deploy/            # docker-compose.yml, Dockerfile (multi-service), init-db.sql
 test/e2e/          # cross-service smoke/e2e tests
 ```
 
-Note: identity currently also has a `service/` package **outside** `internal/`
-(`services/identity/service/`). That's inconsistent with the layout above and is a
-known wrinkle — prefer `internal/service` for new code unless matching existing
-imports.
+Note: identity's business layer lives in `internal/service/` (the old top-level
+`service/` package was moved there in Phase 1). Keep new services under
+`internal/`.
 
 ## Architecture & stack
 
@@ -156,10 +156,11 @@ imports.
 
 ## Build/test status (verified)
 
-`identity` builds and its unit tests pass (`service`, `internal/domain`).
-Repo-layer tests need Docker (testcontainers spins up Postgres). The historical
-`NewEmail returns original value` bug from commit `85b6cdf` has **since been
-fixed** — `NewEmail` now trims+lowercases and returns the normalized value.
+`identity` builds, is lint-clean, and its full RPC surface is implemented with
+passing `service` unit tests and `repo` integration tests (testcontainers spins
+up Postgres for the repo layer). The historical `NewEmail returns original value`
+bug from commit `85b6cdf` has **since been fixed** — `NewEmail` now
+trims+lowercases and returns the normalized value.
 
 ## Known issues / rough edges
 
@@ -167,12 +168,10 @@ fixed** — `NewEmail` now trims+lowercases and returns the normalized value.
   `NormilizedEvent` (note the misspelling vs. proto `NormalizedEvent`) and
   `ProviderKind = int32` alias. The real VCS domain isn't built yet.
 - **Skeleton services.** vcs / submission / grading / gateway have app + config +
-  a handler embedding `Unimplemented…Handler`. Only identity has logic — and only
-  `User` RPCs; Course/Enrollment/Assignment/VCSIdentity/StudentRepo from
-  `identity.proto` are defined but not implemented.
-- **identity `service/` is outside `internal/`** (see layout note above).
-- TODOs worth knowing: `handler.go` `ListUsers` pagination is a placeholder and
-  error→code mapping is ad hoc; `repo.UpdateUser` can't unset `telegram_id`.
+  a handler embedding `Unimplemented…Handler` — no business logic yet. identity is
+  the only service with logic, and it now implements its whole RPC surface.
+- identity Course persists a VCS binding but has no setter RPC yet (no input on
+  `CreateCourse`); `GetUser` doesn't embed VCS identities (use `ListVCSIdentities`).
 
 ## Where to look first
 
